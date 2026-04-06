@@ -1,67 +1,36 @@
-import mongoose from "mongoose";
+import { insertCompany, InsertCompanyProps } from "../../services/db";
+import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import * as z from "zod";
 
-import { Company, User } from "../../services/database";
+const CreateCompanySchema = z.object({
+  userId: z.string("Invalid userId"),
+  name: z.string("Name must be a string"),
+  description: z.string("Description must be a string if passed").optional(),
+});
 
-export type CreateCompanyProps = {
-  userId: string;
-  name: string;
-  description?: string;
-};
-
-export const createCompany = async ({
-  userId,
-  name,
-  description,
-}: CreateCompanyProps) => {
+export const createCompany = async (companyProps: InsertCompanyProps) => {
   try {
-    const user = await User.findOne({
-      _id: userId,
-    });
+    CreateCompanySchema.parse(companyProps);
 
-    if (!user) {
+    const newCompany = await insertCompany(companyProps);
+
+    return {
+      status: HTTP_STATUSES.SUCCESS.EMPTY,
+      message: "Company successfully created",
+      companyId: newCompany.id,
+    };
+  } catch (caught: any) {
+    if (caught instanceof z.ZodError) {
       throw {
-        status: 404,
-        error: "User not found",
+        status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,
+        error: caught.issues.map(({ message }) => message),
       };
     }
 
-    const now = new Date();
-
-    const newCompany = await Company.create({
-      owner: userId,
-      name,
-      createdBy: userId,
-      createdAt: now,
-      workers: [
-        {
-          _id: new mongoose.Types.ObjectId(),
-          userId,
-          status: "active",
-          email: user.email,
-          role: "owner",
-          addedAt: now,
-        },
-      ],
-      profile: {},
-      projects: [],
-      clients: [],
-      description,
-    });
-
-    if (!newCompany) {
-      throw { status: 500, error: "There was an error creating this company" };
-    }
-
-    return {
-      status: 201,
-      message: "Company successfully created",
-      companyId: newCompany._id,
-    };
-  } catch (caught: any) {
-    const { status = 500, error = "There was an error creating this company" } =
-      caught;
-
-    console.log(caught);
+    const {
+      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+      error = ["There was an error creating this company"],
+    } = caught;
 
     throw {
       status: status,

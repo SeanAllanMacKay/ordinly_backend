@@ -1,0 +1,1 @@
+ALTER TABLE "Task" ADD COLUMN "updatedDate" timestamp DEFAULT now() NOT NULL;

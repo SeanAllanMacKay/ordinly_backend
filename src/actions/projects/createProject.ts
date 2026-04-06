@@ -1,59 +1,46 @@
-import { Project } from "../../services/database";
 import { HTTP_STATUSES } from "../HTTP_STATUSES";
 
-export type CreateProjectProps = {
-  userId: string;
-  companyId?: string;
-  name: string;
-  description?: string;
-  status?: string;
-  priority?: string;
-  startDate?: Date;
-  dueDate?: Date;
-};
+import { insertProject, InsertProjectProps } from "../../services/db";
+import * as z from "zod";
 
-export const createProject = async ({
-  userId,
-  companyId,
-  name,
-  description,
-  status,
-  priority,
-  startDate,
-  dueDate,
-}: CreateProjectProps) => {
-  const now = new Date();
+const CreateProjectSchema = z.object({
+  userId: z.string("Invalid userId"),
+  companyId: z.string().optional(),
+  name: z.string("Name must be a string"),
+  description: z.string("Description must be a string if passed").optional(),
+  status: z.string().optional(),
+  priority: z.string().optional(),
+  startDate: z.coerce.date().optional(),
+  dueDate: z.coerce.date().optional(),
+});
 
-  const projectInfo = {
-    name,
-    description,
-    status,
-    priority,
-    startDate: startDate ? new Date(startDate) : undefined,
-    dueDate: dueDate ? new Date(dueDate) : undefined,
-    owner: companyId
-      ? { variant: "company", id: companyId }
-      : { variant: "user", id: userId },
-    createdBy: userId,
-    createdAt: now,
-    updatedAt: now,
-  };
+export const createProject = async (createProjectProps: InsertProjectProps) => {
+  try {
+    CreateProjectSchema.parse(createProjectProps);
 
-  const newProject = await Project.create(projectInfo);
+    const newProject = await insertProject(createProjectProps);
 
-  if (!newProject) {
+    return {
+      status: HTTP_STATUSES.SUCCESS.CREATED,
+      message: "Project created",
+      project: newProject,
+    };
+  } catch (caught: any) {
+    if (caught instanceof z.ZodError) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,
+        error: caught.issues.map(({ message }) => message),
+      };
+    }
+
+    const {
+      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+      error = ["There was an error creating this project"],
+    } = caught;
+
     throw {
-      status: HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-      error: "There was an error creating this project",
+      status: status,
+      error: error,
     };
   }
-
-  return {
-    status: HTTP_STATUSES.SUCCESS.CREATED,
-    message: "Project created",
-    project: {
-      _id: newProject?._id,
-      ...projectInfo,
-    },
-  };
 };

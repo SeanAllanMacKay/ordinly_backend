@@ -1,0 +1,1 @@
+ALTER TABLE "TaskChecklistItem" ADD COLUMN "order" integer NOT NULL;

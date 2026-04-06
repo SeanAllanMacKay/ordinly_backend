@@ -23,7 +23,7 @@ const userSchema = new Schema<UserDocumentType>(
     companies: [Schema.Types.ObjectId],
     projects: [Schema.Types.ObjectId],
   },
-  { collection: "Users" }
+  { collection: "Users" },
 );
 
 database.model("User", userSchema);

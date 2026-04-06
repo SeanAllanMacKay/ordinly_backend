@@ -1,42 +1,37 @@
 import bcrypt from "bcryptjs";
-
-import { ObjectId } from "mongodb";
-
-import { User } from "../../services/database";
-
 import send from "../../services/email";
+import { HTTP_STATUSES } from "../";
+import * as z from "zod";
 
-import { ClientUserType, HTTP_STATUSES } from "../";
+import {
+  selectUserByEmail,
+  insertUser,
+  InsertUserProps,
+} from "../../services/db";
 
-import type { APIResponse } from "../../routers/types";
-import type { UserType } from "../../services/database/types";
-
-type SignUpUserType = Omit<
-  UserType,
-  | "accountType"
-  | "isPublic"
-  | "isVerified"
-  | "verificationCode"
-  | "companies"
-  | "projects"
-  | "profile"
->;
-
-type SignUpProps = SignUpUserType & {
+type SignUpProps = InsertUserProps & {
   referer: string;
 };
 
 const successMessage = "Verification email sent!";
 
+const SignUpSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+  referer: z.string().optional(),
+  name: z.string(),
+});
+
 export const signUp = async ({
   email,
   password,
   referer,
-  name,
   ...rest
-}: SignUpProps): Promise<APIResponse<{ user?: ClientUserType }>> => {
+}: SignUpProps) => {
   try {
-    const existingAccount = await User.findOne({ email: email.toLowerCase() });
+    SignUpSchema.parse({ email, password, referer, ...rest });
+
+    const existingAccount = await selectUserByEmail({ email });
 
     if (existingAccount) {
       if (existingAccount.isVerified) {
@@ -53,23 +48,11 @@ export const signUp = async ({
     } else {
       const hashedPassword = await bcrypt.hashSync(password, 8);
 
-      const newUser = await User.create({
-        _id: new ObjectId(),
-        email: email.toLowerCase(),
-        name,
-        password: hashedPassword,
-        isVerified: false,
-        accountType: "basic",
-        isPublic: false,
+      const newUser = await insertUser({
         ...rest,
+        email,
+        password: hashedPassword,
       });
-
-      if (!newUser) {
-        throw {
-          status: HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-          error: "There was an error creating this account",
-        };
-      }
 
       await send({
         email,
@@ -81,20 +64,20 @@ export const signUp = async ({
       return {
         status: HTTP_STATUSES.SUCCESS.CREATED,
         message: successMessage,
-        user: {
-          _id: newUser._id?.toString() ?? "",
-          name,
-          email,
-          isVerified: false,
-          companies: [],
-          projects: [],
-        },
+        user: newUser,
       };
     }
   } catch (caught: any) {
+    if (caught instanceof z.ZodError) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,
+        error: caught.issues.map(({ message }) => message),
+      };
+    }
+
     const {
       status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-      error = "There was an error creating this account",
+      error = ["There was an error creating this account"],
     } = caught;
 
     throw {

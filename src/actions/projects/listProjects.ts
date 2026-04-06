@@ -1,64 +1,46 @@
-import { Project } from "../../services/database";
-import { ProjectDocument } from "../../services/database/types";
-import { DEFAULT_PAGE_SIZE } from "../../services/database/constants";
 import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import { selectProjects, SelectProjectsProps } from "../../services/db";
+import * as z from "zod";
 
-type ListProjectsArgs = {
-  userId: string;
-  companyId?: string;
-  page: number;
-};
+const ListProjectsSchema = z.object({
+  userId: z.string("Invalid userId"),
+  companyId: z.string("Invalid companyId").optional(),
+  page: z.coerce.number("Page must be a number if passed").optional(),
+  pageSize: z.coerce.number("pageSize must be a number if passed").optional(),
+});
 
-export const listProjects = async ({ userId, page }: ListProjectsArgs) => {
-  const [
-    {
+export const listProjects = async (listProjectsProps: SelectProjectsProps) => {
+  try {
+    ListProjectsSchema.parse(listProjectsProps);
+
+    const { projects, totalItems, totalPages } =
+      await selectProjects(listProjectsProps);
+
+    return {
+      status: projects?.length
+        ? HTTP_STATUSES.SUCCESS.OK
+        : HTTP_STATUSES.SUCCESS.EMPTY,
+      message: "Projects fetched",
       projects,
-      info: [{ total } = { total: 0 }],
-    },
-  ] = await Project.aggregate([
-    { $sort: { updatedAt: -1 } },
-    {
-      $match: {
-        $or: [{ "owner.id": userId.toString() }],
-        deletedAt: { $exists: false },
-      },
-    },
-    {
-      $facet: {
-        projects: [
-          { $skip: (Number(page) - 1) * DEFAULT_PAGE_SIZE },
-          { $limit: DEFAULT_PAGE_SIZE },
-        ],
-        info: [{ $count: "total" }],
-      },
-    },
-  ]);
+      totalItems,
+      totalPages,
+    };
+  } catch (caught: any) {
+    if (caught instanceof z.ZodError) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,
+        error: caught.issues.map(({ message }) => message),
+      };
+    }
 
-  return {
-    status: HTTP_STATUSES.SUCCESS.OK,
-    message: "Projects fetched",
-    projects: projects?.map(
-      ({
-        name,
-        description,
-        _id,
-        owner,
-        status,
-        startDate,
-        dueDate,
-        priority,
-      }: ProjectDocument) => ({
-        name,
-        description,
-        _id,
-        owner,
-        status,
-        startDate,
-        dueDate,
-        priority,
-      })
-    ),
-    totalItems: total,
-    totalPages: Math.ceil(total / DEFAULT_PAGE_SIZE),
-  };
+    const {
+      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+      error = ["There was an error fetching your projects"],
+    } = caught;
+
+    throw {
+      status: status,
+      error: error,
+    };
+  }
 };

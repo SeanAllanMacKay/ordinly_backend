@@ -1,28 +1,21 @@
 import auth from "./";
 
-import { getClientUserById } from "../../actions";
+import { getUserById } from "../../actions";
 
 import type { RequestHandler } from "express";
 
 // @ts-ignore
 const verifyToken: RequestHandler = async (req, res, next) => {
   const {
-    cookies,
     signedCookies: { auth: token },
   } = req;
 
-  console.log("cookies", cookies);
-  console.log("token", token);
-
   if (token) {
-    const verifiedToken = (await auth.verify(token)) as { _id: string };
-
-    console.log("verifiedToken", verifiedToken);
+    const verifiedToken = (await auth.verify(token)) as { id: string };
 
     if (verifiedToken) {
-      const { user } = await getClientUserById({ _id: verifiedToken._id });
+      const { user } = await getUserById({ id: verifiedToken.id });
 
-      console.log("user", user._id);
       // @ts-ignore
       req.user = user;
 

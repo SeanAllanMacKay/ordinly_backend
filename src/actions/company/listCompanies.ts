@@ -1,63 +1,41 @@
-import { Company } from "../../services/database";
+import { selectCompanies, SelectCompaniesProps } from "../../services/db";
+import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import * as z from "zod";
 
-type GetCompanyProps = {
-  userId: string;
-  page: number;
-};
+const ListCompaniesSchema = z.object({
+  userId: z.string("Invalid userId"),
+  page: z.coerce.number("Page must be a number if passed").optional(),
+  pageSize: z.coerce.number("pageSize must be a number if passed").optional(),
+});
 
-const PAGE_SIZE = 15;
-
-export const listCompanies = async ({ userId, page }: GetCompanyProps) => {
+export const listCompanies = async (listCompanyProps: SelectCompaniesProps) => {
   try {
-    const [
-      {
-        companies,
-        info: [{ total } = { total: 0 }],
-      },
-    ] = await Company.aggregate([
-      { $sort: { createdAt: -1 } },
-      {
-        $match: {
-          $and: [
-            {
-              workers: {
-                $elemMatch: {
-                  userId: userId.toString(),
-                  status: { $nin: ["pending", "inactive"] },
-                },
-              },
-            },
-            { deletedAt: { $exists: false } },
-          ],
-        },
-      },
-      {
-        $facet: {
-          companies: [
-            { $skip: (Number(page) - 1) * PAGE_SIZE },
-            { $limit: PAGE_SIZE },
-          ],
-          info: [{ $count: "total" }],
-        },
-      },
-    ]);
+    ListCompaniesSchema.parse(listCompanyProps);
 
-    if (!companies) {
-      throw { status: 404, error: "Companies not found" };
-    }
+    const { companies, totalItems, totalPages } =
+      await selectCompanies(listCompanyProps);
 
     return {
-      status: 200,
+      status: companies?.length
+        ? HTTP_STATUSES.SUCCESS.OK
+        : HTTP_STATUSES.SUCCESS.EMPTY,
       message: "Companies fetched",
       companies,
-      totalItems: total,
-      totalPages: Math.ceil(total / PAGE_SIZE),
+      totalItems,
+      totalPages,
     };
   } catch (caught: any) {
     console.log(caught);
+    if (caught instanceof z.ZodError) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,
+        error: caught.issues.map(({ message }) => message),
+      };
+    }
+
     const {
-      status = 500,
-      error = "There was an error fetching your companies",
+      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+      error = ["There was an error fetching your companies"],
     } = caught;
 
     throw {

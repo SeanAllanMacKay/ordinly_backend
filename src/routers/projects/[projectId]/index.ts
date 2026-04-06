@@ -1,11 +1,8 @@
 import { Router } from "express";
 import verifyToken from "../../../services/auth/verifyToken";
-import {
-  editPersonalProject,
-  getPersonalProject,
-} from "../../../actions/user/project";
+import { updateProject, getProject } from "../../../actions/projects";
 import { HTTP_STATUSES } from "../../../actions";
-import taskRouter from "./task";
+import tasksRouter from "./tasks";
 
 const router = Router({ mergeParams: true });
 
@@ -18,8 +15,8 @@ router
         user,
       } = req;
 
-      const { status, message, project } = await getPersonalProject({
-        userId: user._id,
+      const { status, message, project } = await getProject({
+        userId: user.id,
         projectId,
       });
 
@@ -41,8 +38,8 @@ router
         body,
       } = req;
 
-      const { status, message, project } = await editPersonalProject({
-        userId: user._id,
+      const { status, message, project } = await updateProject({
+        userId: user.id,
         projectId,
         ...body,
       });
@@ -58,6 +55,6 @@ router
     }
   });
 
-router.use("/task", taskRouter);
+router.use("/tasks", tasksRouter);
 
 export default router;

@@ -15,7 +15,7 @@ router.route("/").get(verifyToken, async (req: any, res) => {
 
     const { status, message, companies, totalItems, totalPages } =
       await listCompanies({
-        userId: user._id,
+        userId: user.id,
         page,
       });
 
@@ -36,7 +36,7 @@ router.route("/").post(verifyToken, async (req: any, res) => {
 
     const { status, message } = await createCompany({
       ...body,
-      userId: user._id,
+      userId: user.id,
     });
 
     res.status(status).send({ message });

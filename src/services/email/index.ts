@@ -70,18 +70,20 @@ export default async ({
   ...rest
 }: EmailProps): Promise<EmailReturn | undefined> => {
   try {
-    const email = {
-      from: SENDGRID_EMAIL_ADDRESS,
-      to: emailAddress,
-      ...emailTypes[type](rest),
-    };
+    if (SENDGRID_EMAIL_ADDRESS) {
+      const email = {
+        from: SENDGRID_EMAIL_ADDRESS,
+        to: emailAddress,
+        ...emailTypes[type](rest),
+      };
 
-    try {
-      await sgMail.send(email);
-      return { email };
-    } catch (emailError) {
-      console.error(emailError);
-      throw { email };
+      try {
+        await sgMail.send(email);
+        return { email };
+      } catch (emailError) {
+        console.error(emailError);
+        throw { email };
+      }
     }
   } catch (caught: any) {}
 };

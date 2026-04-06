@@ -3,6 +3,7 @@ export const HTTP_STATUSES = {
     OK: 200,
     CREATED: 201,
     ACCEPTED: 202,
+    EMPTY: 204,
   },
 
   CLIENT_ERROR: {
