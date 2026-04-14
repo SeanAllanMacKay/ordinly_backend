@@ -1,5 +1,8 @@
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
-import { selectTaskStatuses, SelectTaskStatusesProps } from "../../services/db";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
+import {
+  selectTaskStatuses,
+  SelectTaskStatusesProps,
+} from "../../services/db/index.js";
 import * as z from "zod";
 
 const ListTaskStatusesSchema = z.object({

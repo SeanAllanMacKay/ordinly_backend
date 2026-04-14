@@ -1,5 +1,8 @@
-import { selectCompanies, SelectCompaniesProps } from "../../services/db";
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import {
+  selectCompanies,
+  SelectCompaniesProps,
+} from "../../services/db/index.js";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import * as z from "zod";
 
 const ListCompaniesSchema = z.object({

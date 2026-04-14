@@ -1,5 +1,9 @@
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
-import { selectProject, SelectProjectTaskProps } from "../../services/db";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
+import {
+  selectProject,
+  selectProjectTask,
+  SelectProjectTaskProps,
+} from "../../services/db/index.js";
 import * as z from "zod";
 
 const GetProjectTaskSchema = z.object({
@@ -14,7 +18,7 @@ export const getProjectTask = async (
   try {
     GetProjectTaskSchema.parse(getProjectTaskProps);
 
-    const task = await selectProject(getProjectTaskProps);
+    const task = await selectProjectTask(getProjectTaskProps);
 
     if (!task) {
       throw {

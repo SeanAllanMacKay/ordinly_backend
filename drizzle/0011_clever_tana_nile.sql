@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "unique_personal_company" ON "UserCompany" USING btree ("userId") WHERE "isPersonal" = true;

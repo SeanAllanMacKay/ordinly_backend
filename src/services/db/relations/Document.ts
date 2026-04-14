@@ -7,7 +7,7 @@ import {
   CompanyDocument,
   ProjectDocument,
   TaskDocument,
-} from "../schemas";
+} from "../schemas/index.js";
 
 export const DocumentRelations = relations(Document, ({ one, many }) => ({
   createdBy: one(User, {

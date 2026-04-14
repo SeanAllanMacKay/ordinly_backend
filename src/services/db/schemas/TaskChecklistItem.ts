@@ -7,8 +7,8 @@ import {
   integer,
 } from "drizzle-orm/pg-core";
 
-import { User } from "./User";
-import { Task } from "./Task";
+import { User } from "./User.js";
+import { Task } from "./Task.js";
 
 export const TaskChecklistItem = pgTable("TaskChecklistItem", {
   id: uuid().defaultRandom().unique().primaryKey(),

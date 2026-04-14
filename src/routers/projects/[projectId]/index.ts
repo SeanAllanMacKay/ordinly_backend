@@ -1,8 +1,8 @@
 import { Router } from "express";
-import verifyToken from "../../../services/auth/verifyToken";
-import { updateProject, getProject } from "../../../actions/projects";
-import { HTTP_STATUSES } from "../../../actions";
-import tasksRouter from "./tasks";
+import verifyToken from "../../../services/auth/verifyToken.js";
+import { updateProject, getProject } from "../../../actions/projects/index.js";
+import { HTTP_STATUSES } from "../../../actions/index.js";
+import tasksRouter from "./tasks/index.js";
 
 const router = Router({ mergeParams: true });
 

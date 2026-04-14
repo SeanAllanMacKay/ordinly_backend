@@ -1,5 +1,11 @@
 import { relations } from "drizzle-orm";
-import { ProjectClient, Company, Client, Project, User } from "../schemas";
+import {
+  ProjectClient,
+  Company,
+  Client,
+  Project,
+  User,
+} from "../schemas/index.js";
 
 export const ProjectClientRelations = relations(ProjectClient, ({ one }) => ({
   client: one(Client, {

@@ -1,18 +1,16 @@
-import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
-import { User } from "./User";
-import { CompanyProfile } from "./CompanyProfile";
+import { User } from "./User.js";
+import { Document } from "./Document.js";
 
 export const Company = pgTable("Company", {
   id: uuid().defaultRandom().unique().primaryKey(),
+  name: text().notNull(),
+  logo: uuid().references(() => Document.id),
   owner: uuid()
     .references(() => User.id)
     .notNull(),
-  name: text().notNull(),
-  description: text(),
-  profile: uuid()
-    .references(() => CompanyProfile.id)
-    .notNull(),
+  isPersonal: boolean().notNull().default(false),
 
   createdDate: timestamp().defaultNow().notNull(),
   createdBy: uuid()

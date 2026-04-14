@@ -1,6 +1,6 @@
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
-import { insertTask, InsertTaskProps } from "../../services/db";
+import { insertTask, InsertTaskProps } from "../../services/db/index.js";
 import * as z from "zod";
 
 const CreateTaskSchema = z.object({

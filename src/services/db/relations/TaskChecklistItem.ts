@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { Task } from "../schemas";
+import { Task } from "../schemas/index.js";
 import { TaskChecklistItem } from "../schemas/TaskChecklistItem";
 
 export const TaskChecklistItemRelations = relations(

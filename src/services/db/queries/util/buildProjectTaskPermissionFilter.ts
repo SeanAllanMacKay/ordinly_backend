@@ -1,5 +1,5 @@
 import { exists, or, and, eq } from "drizzle-orm";
-import { CompanyProject, db, UserCompany, UserProject } from "../..";
+import { CompanyProject, db, UserCompany, UserProject } from "../../index.js";
 
 export const buildProjectTaskPermissionFilter = ({
   userId,

@@ -1,11 +1,11 @@
-import send from "../../services/email";
-import type { APIResponse } from "../../routers/types";
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import send from "../../services/email/index.js";
+import type { APIResponse } from "../../routers/types.js";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
 import {
   selectUserByVerificationCode,
   updateUserById,
-} from "../../services/db";
+} from "../../services/db/index.js";
 import * as z from "zod";
 
 const VerifyAccountSchema = z.object({

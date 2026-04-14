@@ -8,7 +8,9 @@ import {
   CompanyProject,
   CompanyDocument,
   CompanySubscription,
-} from "../schemas";
+  CompanyPaymentMethod,
+  Document,
+} from "../schemas/index.js";
 
 export const CompanyRelations = relations(Company, ({ one, many }) => ({
   owner: one(User, {
@@ -23,10 +25,6 @@ export const CompanyRelations = relations(Company, ({ one, many }) => ({
     fields: [Company.deletedBy],
     references: [User.id],
   }),
-  profile: one(CompanyProfile, {
-    fields: [Company.profile],
-    references: [CompanyProfile.id],
-  }),
   subscription: one(CompanySubscription),
 
   users: many(UserCompany, { relationName: "company_to_userCompany" }),
@@ -36,5 +34,11 @@ export const CompanyRelations = relations(Company, ({ one, many }) => ({
   }),
   documents: many(CompanyDocument, {
     relationName: "company_to_companyDocument",
+  }),
+  paymentMethods: many(CompanyPaymentMethod),
+  profile: one(CompanyProfile),
+  logo: one(Document, {
+    fields: [Company.logo],
+    references: [Document.id],
   }),
 }));

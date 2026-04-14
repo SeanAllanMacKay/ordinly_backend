@@ -1,7 +1,10 @@
 import { Router } from "express";
-import verifyToken from "../../services/auth/verifyToken";
-import { listTaskPriorities, listTaskStatuses } from "../../actions";
-import { HTTP_STATUSES } from "../../actions";
+import verifyToken from "../../services/auth/verifyToken.js";
+import {
+  listTaskPriorities,
+  listTaskStatuses,
+  HTTP_STATUSES,
+} from "../../actions/index.js";
 
 const router = Router({ mergeParams: true });
 

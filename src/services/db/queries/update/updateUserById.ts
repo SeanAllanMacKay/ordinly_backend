@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { db, User } from "../../";
+import { db, User } from "../../index.js";
 
 export type UpdateUserProps = { userId: string } & Partial<
   Omit<typeof User.$inferInsert, "id" | "verificationCode" | "createdDate">

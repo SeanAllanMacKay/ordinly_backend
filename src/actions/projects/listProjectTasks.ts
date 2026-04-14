@@ -1,5 +1,8 @@
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
-import { selectProjectTasks, SelectProjectTasksProps } from "../../services/db";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
+import {
+  selectProjectTasks,
+  SelectProjectTasksProps,
+} from "../../services/db/index.js";
 import * as z from "zod";
 
 const ListProjectTasksSchema = z.object({

@@ -1,0 +1,32 @@
+export const companyRolePermissionAction = [
+  "company",
+  "profile",
+  "workers",
+  "roles",
+  "documents",
+  "folders",
+  "invoices",
+  "license_numbers",
+  "all_clients",
+  "all_projects",
+  "all_tasks",
+  "all_checklist_items",
+  "assigned_projects",
+  "assigned_tasks",
+  "assigned_clients",
+  "assigned_checklist_items",
+  "project_documents",
+  "task_documents",
+  "checklist_item_documents",
+] as const;
+
+export const projectPermissionAction = [
+  "invoices",
+  "project_documents",
+  "all_tasks",
+  "assigned_tasks",
+  "task_documents",
+  "all_checklist_items",
+  "assigned_checklist_items",
+  "checklist_item_documents",
+] as const;

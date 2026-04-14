@@ -1,4 +1,4 @@
-import { db, TaskStatus } from "../../";
+import { db, TaskStatus } from "../../index.js";
 
 export type SelectTaskStatusesProps = {
   companyId?: (typeof TaskStatus.$inferInsert)["companyId"];

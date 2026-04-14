@@ -1,8 +1,8 @@
 import { pgTable, uuid, timestamp, check } from "drizzle-orm/pg-core";
 
-import { Company } from "./Company";
-import { User } from "./User";
-import { Project } from "./Project";
+import { Company } from "./Company.js";
+import { User } from "./User.js";
+import { Project } from "./Project.js";
 import { sql } from "drizzle-orm";
 
 export const UserProject = pgTable(

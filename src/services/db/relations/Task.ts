@@ -7,7 +7,7 @@ import {
   Project,
   TaskDocument,
   UserTask,
-} from "../schemas";
+} from "../schemas/index.js";
 import { TaskChecklistItem } from "../schemas/TaskChecklistItem";
 
 export const TaskRelations = relations(Task, ({ one, many }) => ({

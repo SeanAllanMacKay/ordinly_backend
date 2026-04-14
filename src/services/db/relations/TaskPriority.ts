@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { TaskPriority, User, Company } from "../schemas";
+import { TaskPriority, User, Company } from "../schemas/index.js";
 
 export const TaskPriorityRelations = relations(TaskPriority, ({ one }) => ({
   company: one(Company, {

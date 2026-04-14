@@ -1,9 +1,9 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
-import { TaskStatus } from "./TaskStatus";
-import { TaskPriority } from "./TaskPriority";
-import { User } from "./User";
-import { Project } from "./Project";
+import { TaskStatus } from "./TaskStatus.js";
+import { TaskPriority } from "./TaskPriority.js";
+import { User } from "./User.js";
+import { Project } from "./Project.js";
 
 export const Task = pgTable("Task", {
   id: uuid().defaultRandom().unique().primaryKey(),

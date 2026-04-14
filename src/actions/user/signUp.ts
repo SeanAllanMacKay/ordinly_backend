@@ -1,13 +1,13 @@
 import bcrypt from "bcryptjs";
-import send from "../../services/email";
-import { HTTP_STATUSES } from "../";
+import send from "../../services/email/index.js";
+import { HTTP_STATUSES } from "../index.js";
 import * as z from "zod";
 
 import {
   selectUserByEmail,
   insertUser,
   InsertUserProps,
-} from "../../services/db";
+} from "../../services/db/index.js";
 
 type SignUpProps = InsertUserProps & {
   referer: string;

@@ -6,7 +6,7 @@ import {
   UserDocument,
   UserProject,
   UserTask,
-} from "../schemas";
+} from "../schemas/index.js";
 
 export const UserRelations = relations(User, ({ many }) => ({
   companies: many(UserCompany, { relationName: "user_to_userCompany" }),

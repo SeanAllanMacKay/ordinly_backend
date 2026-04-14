@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { Client, User, UserClient } from "../schemas";
+import { Client, User, UserClient } from "../schemas/index.js";
 
 export const UserClientRelations = relations(UserClient, ({ one }) => ({
   user: one(User, {

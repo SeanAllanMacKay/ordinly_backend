@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { HTTP_STATUSES, login } from "../../actions";
+import { HTTP_STATUSES, login } from "../../actions/index.js";
 
 const router = Router({ mergeParams: true });
 

@@ -1,13 +1,13 @@
-import { pgTable, uuid, text, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
-import { User } from "./User";
+import { User } from "./User.js";
 
 export const Document = pgTable("Document", {
   id: uuid().defaultRandom().unique().primaryKey(),
   name: text().notNull(),
   description: text(),
-  size: integer().notNull(),
   externalId: text().notNull(),
+  externalURL: text().notNull(),
 
   createdDate: timestamp().defaultNow().notNull(),
   createdBy: uuid()

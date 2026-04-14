@@ -1,6 +1,6 @@
-import auth from "./";
+import auth from "./index.js";
 
-import { getUserById } from "../../actions";
+import { getUserById } from "../../actions/index.js";
 
 import type { RequestHandler } from "express";
 

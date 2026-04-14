@@ -1,4 +1,4 @@
-import { db, TaskPriority } from "../../";
+import { db, TaskPriority } from "../../index.js";
 
 export type SelectTaskPrioritiesProps = {
   companyId?: (typeof TaskPriority.$inferInsert)["companyId"];

@@ -1,6 +1,6 @@
 import { eq, and } from "drizzle-orm";
 
-import { db, UserProject } from "../../";
+import { db, UserProject } from "../../index.js";
 
 export type SelectProjectProps = {
   userId: string;

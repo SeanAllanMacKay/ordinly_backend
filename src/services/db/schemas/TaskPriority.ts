@@ -1,7 +1,7 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
-import { User } from "./User";
-import { Company } from "./Company";
+import { User } from "./User.js";
+import { Company } from "./Company.js";
 
 export const TaskPriority = pgTable("TaskPriority", {
   id: uuid().defaultRandom().unique().primaryKey(),

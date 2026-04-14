@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { verifyAccount } from "../../actions";
+import { verifyAccount } from "../../actions/index.js";
 
 const router = Router({ mergeParams: true });
 

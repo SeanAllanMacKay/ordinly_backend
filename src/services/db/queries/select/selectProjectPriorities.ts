@@ -1,4 +1,4 @@
-import { db, ProjectPriority } from "../../";
+import { db, ProjectPriority } from "../../index.js";
 
 export type SelectProjectPrioritiesProps = {
   companyId?: (typeof ProjectPriority.$inferInsert)["companyId"];

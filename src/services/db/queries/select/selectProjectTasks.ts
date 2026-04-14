@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import { db, Task, TaskChecklistItem } from "../../";
-import { buildProjectTaskPermissionFilter } from "../util/buildProjectTaskPermissionFilter";
+import { db, Task } from "../../index.js";
+import { buildProjectTaskPermissionFilter } from "../util/buildProjectTaskPermissionFilter.js";
 
 export type SelectProjectTasksProps = {
   userId: string;

@@ -1,6 +1,6 @@
-import { Task, TaskChecklistItem, db } from "../../";
+import { Task, TaskChecklistItem, db } from "../../index.js";
 
-export type InsertTaskProps = {
+export type InsertProjectTaskProps = {
   userId: string;
   projectId: string;
   checklist: string[];
@@ -13,7 +13,7 @@ export const insertProjectTask = async ({
   userId,
   checklist,
   ...restTask
-}: InsertTaskProps) => {
+}: InsertProjectTaskProps) => {
   return await db.transaction(async (transaction) => {
     const [task] = await transaction
       .insert(Task)

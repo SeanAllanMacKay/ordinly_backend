@@ -1,8 +1,8 @@
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
-import { InsertTaskProps } from "../../services/db";
+import { InsertTaskProps } from "../../services/db/index.js";
 import * as z from "zod";
-import { insertProjectTask } from "../../services/db/queries/insert/insertProjectTask";
+import { insertProjectTask } from "../../services/db/index.js";
 
 const CreateProjectTaskSchema = z.object({
   userId: z.string("Invalid userId"),

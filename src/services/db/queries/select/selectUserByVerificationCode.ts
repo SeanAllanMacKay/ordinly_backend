@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { db, User } from "../../";
+import { db, User } from "../../index.js";
 
 export const selectUserByVerificationCode = async ({
   verificationCode,

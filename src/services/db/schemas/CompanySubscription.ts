@@ -1,7 +1,7 @@
 import { pgTable, uuid, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
-import { Company } from "./Company";
-import { User } from "./User";
+import { Company } from "./Company.js";
+import { User } from "./User.js";
 
 export const CompanySubscription = pgTable("CompanySubscription", {
   id: uuid().defaultRandom().unique().primaryKey(),

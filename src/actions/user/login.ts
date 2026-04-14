@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import auth from "../../services/auth";
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import auth from "../../services/auth/index.js";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import * as z from "zod";
-import { selectUserByEmail } from "../../services/db";
+import { selectUserByEmail } from "../../services/db/index.js";
 
 const LoginSchema = z.object({
   email: z.email("Invalid email"),

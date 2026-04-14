@@ -1,9 +1,9 @@
 import { pgTable, uuid, timestamp } from "drizzle-orm/pg-core";
 
-import { Company } from "./Company";
-import { Client } from "./Client";
-import { Project } from "./Project";
-import { User } from "./User";
+import { Company } from "./Company.js";
+import { Client } from "./Client.js";
+import { Project } from "./Project.js";
+import { User } from "./User.js";
 
 export const ProjectClient = pgTable("ProjectClient", {
   id: uuid().defaultRandom().unique().primaryKey(),

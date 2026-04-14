@@ -1,4 +1,4 @@
-import { Task, db } from "../../";
+import { Task, db } from "../../index.js";
 
 export type InsertTaskProps = {
   userId: string;

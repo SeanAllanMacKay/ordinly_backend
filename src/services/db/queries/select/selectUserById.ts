@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { db, User } from "../../";
+import { db, User } from "../../index.js";
 
 export const selectUserById = async ({ userId }: { userId: string }) => {
   return await db.query.User.findFirst({

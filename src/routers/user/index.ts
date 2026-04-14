@@ -1,9 +1,9 @@
 import { Router } from "express";
-import verifyToken from "../../services/auth/verifyToken";
-import signUpRouter from "./sign-up";
-import verifyAccountRouter from "./verify-account";
-import loginRouter from "./login";
-import { HTTP_STATUSES } from "../../actions";
+import verifyToken from "../../services/auth/verifyToken.js";
+import signUpRouter from "./sign-up.js";
+import verifyAccountRouter from "./verify-account.js";
+import loginRouter from "./login.js";
+import { HTTP_STATUSES } from "../../actions/index.js";
 
 const router = Router({ mergeParams: true });
 

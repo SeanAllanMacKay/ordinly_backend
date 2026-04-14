@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import path from "path";
-import * as schema from "./schemas";
-import * as relations from "./relations";
+import * as schema from "./schemas/index.js";
+import * as relations from "./relations/index.js";
 import * as fs from "fs";
 
 const client = new Pool({
@@ -13,11 +13,13 @@ const client = new Pool({
   database: process.env.DB_DATABASE!,
   ssl: {
     rejectUnauthorized: true,
-    ca: fs.readFileSync(path.resolve(__dirname, "../../../ca.pem")).toString(),
+    ca: fs
+      .readFileSync(path.resolve(import.meta.dirname, "../../../ca.pem"))
+      .toString(),
   },
 });
 
 export const db = drizzle(client, { schema: { ...schema, ...relations } });
 
-export * from "./schemas";
-export * from "./queries";
+export * from "./schemas/index.js";
+export * from "./queries/index.js";

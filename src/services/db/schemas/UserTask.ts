@@ -1,8 +1,8 @@
 import { pgTable, uuid, timestamp } from "drizzle-orm/pg-core";
 
-import { Company } from "./Company";
-import { User } from "./User";
-import { Task } from "./Task";
+import { Company } from "./Company.js";
+import { User } from "./User.js";
+import { Task } from "./Task.js";
 
 export const UserTask = pgTable("UserTask", {
   id: uuid().defaultRandom().unique().primaryKey(),

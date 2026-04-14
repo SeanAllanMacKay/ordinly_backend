@@ -9,7 +9,7 @@ import {
   ProjectDocument,
   CompanyProject,
   Task,
-} from "../schemas";
+} from "../schemas/index.js";
 
 export const ProjectRelations = relations(Project, ({ one, many }) => ({
   priority: one(ProjectPriority, {

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { ProjectDocument, Document, User, Project } from "../schemas";
+import { ProjectDocument, Document, User, Project } from "../schemas/index.js";
 
 export const ProjectDocumentRelations = relations(
   ProjectDocument,

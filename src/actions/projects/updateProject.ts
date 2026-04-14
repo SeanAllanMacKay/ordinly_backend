@@ -1,9 +1,9 @@
 import {
   updateProject as updateProjectQuery,
   UpdateProjectProps,
-} from "../../services/db";
+} from "../../services/db/index.js";
 import * as z from "zod";
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
 const UpdateProjectSchema = z.object({
   userId: z.string("Invalid userId"),
@@ -11,10 +11,10 @@ const UpdateProjectSchema = z.object({
   companyId: z.string().optional(),
   name: z.string("Name must be a string"),
   description: z.string("Description must be a string if passed").optional(),
-  status: z.string(),
-  priority: z.string(),
-  startDate: z.date().optional(),
-  dueDate: z.date().optional(),
+  status: z.string().optional(),
+  priority: z.string().optional(),
+  startDate: z.coerce.date().optional(),
+  dueDate: z.coerce.date().optional(),
 });
 
 export const updateProject = async (updateProjectProps: UpdateProjectProps) => {
@@ -29,6 +29,7 @@ export const updateProject = async (updateProjectProps: UpdateProjectProps) => {
       project,
     };
   } catch (caught: any) {
+    console.log(caught);
     if (caught instanceof z.ZodError) {
       throw {
         status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,

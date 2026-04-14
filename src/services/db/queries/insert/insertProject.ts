@@ -1,4 +1,11 @@
-import { Project, UserProject, CompanyProject, db } from "../../";
+import { and, eq } from "drizzle-orm";
+import {
+  Project,
+  UserProject,
+  CompanyProject,
+  db,
+  Company,
+} from "../../index.js";
 
 export type InsertProjectProps = { userId: string; companyId?: string } & Omit<
   typeof Project.$inferInsert,
@@ -36,14 +43,26 @@ export const insertProject = async ({
       assignedBy: userId,
     });
 
-    if (companyId) {
-      await transaction.insert(CompanyProject).values({
-        companyId,
-        projectId: project.id,
-        isOwner: true,
-        assignedBy: userId,
+    if (!companyId) {
+      const personalCompany = await transaction.query.Company.findFirst({
+        where: () =>
+          and(eq(Company.isPersonal, true), eq(Company.owner, userId)),
       });
+
+      if (!personalCompany?.id) {
+        transaction.rollback();
+        throw new Error("Personal company not found");
+      }
+
+      companyId = personalCompany?.id;
     }
+
+    await transaction.insert(CompanyProject).values({
+      companyId,
+      projectId: project.id,
+      isOwner: true,
+      assignedBy: userId,
+    });
 
     return project;
   });

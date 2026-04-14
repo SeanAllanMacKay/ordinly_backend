@@ -1,53 +1,60 @@
 import { Router } from "express";
-import verifyToken from "../../services/auth/verifyToken";
-import { createCompany } from "../../actions/company/createCompany";
-import { HTTP_STATUSES } from "../../actions";
-import { listCompanies } from "../../actions/company/listCompanies";
+import verifyToken from "../../services/auth/verifyToken.js";
+import { createCompany } from "../../actions/company/createCompany.js";
+import { HTTP_STATUSES } from "../../actions/index.js";
+import { listCompanies } from "../../actions/company/listCompanies.js";
+import { singleFileHandler } from "../../services/files/index.js";
 
 const router = Router({ mergeParams: true });
 
-router.route("/").get(verifyToken, async (req: any, res) => {
-  try {
-    const {
-      query: { page },
-      user,
-    } = req;
+router
+  .route("/")
+  .get(verifyToken, async (req: any, res) => {
+    try {
+      const {
+        query: { page },
+        user,
+      } = req;
 
-    const { status, message, companies, totalItems, totalPages } =
-      await listCompanies({
-        userId: user.id,
-        page,
-      });
+      const { status, message, companies, totalItems, totalPages } =
+        await listCompanies({
+          userId: user.id,
+          page,
+        });
 
-    res.status(status).send({ message, companies, totalItems, totalPages });
-  } catch (caught: any) {
-    const {
-      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-      error = "There was an error fetching your companies",
-    } = caught;
+      res.status(status).send({ message, companies, totalItems, totalPages });
+    } catch (caught: any) {
+      const {
+        status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+        error = "There was an error fetching your companies",
+      } = caught;
 
-    res.status(status).send({ error });
-  }
-});
+      res.status(status).send({ error });
+    }
+  })
+  .post(
+    verifyToken,
+    singleFileHandler({ fieldName: "logo", uploadType: "image" }),
+    async (req: any, res) => {
+      try {
+        const { body, user, logo } = req;
 
-router.route("/").post(verifyToken, async (req: any, res) => {
-  try {
-    const { body, user } = req;
+        const { status, message, company } = await createCompany({
+          ...body,
+          userId: user.id,
+          logo,
+        });
 
-    const { status, message } = await createCompany({
-      ...body,
-      userId: user.id,
-    });
+        res.status(status).send({ message, company });
+      } catch (caught: any) {
+        const {
+          status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+          error = "There was an error creating this company",
+        } = caught;
 
-    res.status(status).send({ message });
-  } catch (caught: any) {
-    const {
-      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-      error = "There was an error creating this company",
-    } = caught;
-
-    res.status(status).send({ error });
-  }
-});
+        res.status(status).send({ error });
+      }
+    },
+  );
 
 export default router;

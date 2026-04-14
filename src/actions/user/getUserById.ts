@@ -1,7 +1,7 @@
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import { FlattenMaps } from "mongoose";
-import { CompanyDocument } from "../../services/database/types";
-import { selectUserById } from "../../services/db";
+import { CompanyDocument } from "../../services/database/types/index.js";
+import { selectUserById } from "../../services/db/index.js";
 
 type GetClientUserByIdProps = {
   id: string;

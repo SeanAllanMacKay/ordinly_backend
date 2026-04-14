@@ -1,3 +1,3 @@
-export * from "./select";
-export * from "./insert";
-export * from "./update";
+export * from "./select/index.js";
+export * from "./insert/index.js";
+export * from "./update/index.js";

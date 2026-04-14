@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { TaskDocument, Document, User, Task } from "../schemas";
+import { TaskDocument, Document, User, Task } from "../schemas/index.js";
 
 export const TaskDocumentRelations = relations(TaskDocument, ({ one }) => ({
   task: one(Task, {

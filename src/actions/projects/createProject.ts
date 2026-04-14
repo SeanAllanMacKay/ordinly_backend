@@ -1,17 +1,26 @@
-import { HTTP_STATUSES } from "../HTTP_STATUSES";
+import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
-import { insertProject, InsertProjectProps } from "../../services/db";
+import { insertProject, InsertProjectProps } from "../../services/db/index.js";
 import * as z from "zod";
 
 const CreateProjectSchema = z.object({
   userId: z.string("Invalid userId"),
-  companyId: z.string().optional(),
-  name: z.string("Name must be a string"),
-  description: z.string("Description must be a string if passed").optional(),
+  companyId: z.string("Invalid companyId").optional(),
+  name: z.string(),
+  description: z.string().optional(),
   status: z.string().optional(),
   priority: z.string().optional(),
   startDate: z.coerce.date().optional(),
   dueDate: z.coerce.date().optional(),
+  items: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        name: z.string(),
+        isComplete: z.boolean(),
+      }),
+    )
+    .optional(),
 });
 
 export const createProject = async (createProjectProps: InsertProjectProps) => {
@@ -26,6 +35,7 @@ export const createProject = async (createProjectProps: InsertProjectProps) => {
       project: newProject,
     };
   } catch (caught: any) {
+    console.log(caught);
     if (caught instanceof z.ZodError) {
       throw {
         status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,

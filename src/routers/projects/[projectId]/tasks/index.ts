@@ -1,11 +1,11 @@
 import { Router } from "express";
-import verifyToken from "../../../../services/auth/verifyToken";
+import verifyToken from "../../../../services/auth/verifyToken.js";
 import {
   createProjectTask,
   listProjectTasks,
-} from "../../../../actions/projects";
-import { HTTP_STATUSES } from "../../../../actions";
-import taskRouter from "./[taskId]";
+} from "../../../../actions/projects/index.js";
+import { HTTP_STATUSES } from "../../../../actions/index.js";
+import taskRouter from "./[taskId]/index.js";
 
 const router = Router({ mergeParams: true });
 
@@ -20,12 +20,13 @@ router
 
       console.log();
 
-      const { status, message, tasks } = await listProjectTasks({
-        userId: user.id,
-        projectId,
-      });
+      const { status, message, tasks, totalItems, totalPages } =
+        await listProjectTasks({
+          userId: user.id,
+          projectId,
+        });
 
-      res.status(status).send({ message, tasks });
+      res.status(status).send({ message, tasks, totalItems, totalPages });
     } catch (caught: any) {
       const {
         status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,

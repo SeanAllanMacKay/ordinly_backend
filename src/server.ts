@@ -1,10 +1,11 @@
 import express from "express";
 import { createServer } from "http";
 import bodyParser from "body-parser";
-import routers from "./routers";
+import routers from "./routers/index.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import ngrok from "@ngrok/ngrok";
+import fileStorage from "./services/files.js";
 
 const API_PORT = process.env.API_PORT;
 const FE_ORIGIN = process.env.FE_ORIGIN;
