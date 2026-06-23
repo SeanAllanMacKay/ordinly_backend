@@ -20,7 +20,7 @@ const UpdateRolePermissionsSchema = z.object({
       levelId: z.string("Invalid levelId"),
     }),
   ),
-});
+}).meta({ id: "PUT /api/company/{companyId}/roles/{roleId}/permissions", route: "PUT /api/company/{companyId}/roles/{roleId}/permissions" });
 
 export type UpdateRolePermissionsProps = z.infer<
   typeof UpdateRolePermissionsSchema

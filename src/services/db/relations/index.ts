@@ -1,4 +1,5 @@
 export * from "./Client.js";
+export * from "./Contact.js";
 export * from "./Company.js";
 export * from "./CompanyDocument.js";
 export * from "./CompanyProject.js";
@@ -46,3 +47,6 @@ export * from "./CompanyProfileLocation.js";
 export * from "./CompanyProfilePhoneNumber.js";
 export * from "./CompanyProfileWebsite.js";
 export * from "./ProjectLocation.js";
+export * from "./Team.js";
+export * from "./TeamMember.js";
+export * from "./CompanyInvitation.js";

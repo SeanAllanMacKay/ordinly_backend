@@ -17,6 +17,8 @@ export const Client = pgTable("Client", {
   createdBy: uuid()
     .references(() => User.id)
     .notNull(),
+  updatedDate: timestamp(),
+  updatedBy: uuid().references(() => User.id),
   deletedDate: timestamp(),
   deletedBy: uuid().references(() => User.id),
 });

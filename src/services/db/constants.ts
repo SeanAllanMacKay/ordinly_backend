@@ -3,6 +3,7 @@ export const companyRolePermissionAction = [
   "profile",
   "workers",
   "roles",
+  "teams",
   "documents",
   "folders",
   "invoices",
@@ -32,6 +33,13 @@ export const projectPermissionAction = [
   "checklist_item_documents",
 ] as const;
 
+export const companyInvitationStatus = [
+  "pending",
+  "accepted",
+  "revoked",
+  "declined",
+] as const;
+
 export const locationType = [
   "country",
   "region",
@@ -42,6 +50,11 @@ export const locationType = [
   "neighborhood",
   "address",
 ] as const;
+
+// Polymorphic owner types for shared contact sub-entities (PhoneNumber,
+// EmailAddress, Location). These attach to many parents via `ownerType` +
+// `ownerId`; extend this list as new owners are added.
+export const ownerType = ["client", "contact"] as const;
 
 export const taskType = ["phase", "milestone", "task"] as const;
 

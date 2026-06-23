@@ -1,4 +1,8 @@
 export * from "./Client.js";
+export * from "./Contact.js";
+export * from "./PhoneNumber.js";
+export * from "./EmailAddress.js";
+export * from "./Location.js";
 export * from "./Company.js";
 export * from "./CompanyDocument.js";
 export * from "./CompanyProfile.js";
@@ -49,3 +53,6 @@ export * from "./CompanyProfileWebsite.js";
 export * from "./ProjectLocation.js";
 export * from "./TaskRelationship.js";
 export * from "./TaskSequence.js";
+export * from "./Team.js";
+export * from "./TeamMember.js";
+export * from "./CompanyInvitation.js";

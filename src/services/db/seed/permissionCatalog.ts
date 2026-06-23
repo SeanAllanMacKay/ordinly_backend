@@ -104,6 +104,12 @@ export const companyPermissionCatalog: Record<
     description: "Company roles and the permissions assigned to them.",
     levels: collectionLevels("roles"),
   },
+  teams: {
+    name: "Teams",
+    category: "Company",
+    description: "Company teams and their membership.",
+    levels: collectionLevels("teams"),
+  },
   documents: {
     name: "Documents",
     category: "Documents",

@@ -21,7 +21,7 @@ const CreateCompanySchema = z.object({
       }),
     })
     .optional(),
-});
+}).meta({ id: "POST /api/company", route: "POST /api/company", multipart: { file: "logo" } });
 
 export const createCompany = async (
   companyProps: InsertCompanyProps & { logo: Express.Multer.File },

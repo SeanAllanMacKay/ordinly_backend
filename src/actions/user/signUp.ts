@@ -8,6 +8,11 @@ import {
   selectUserByEmail,
   insertUser,
   InsertUserProps,
+  selectPendingInvitationsByEmail,
+  insertCompanyMember,
+  updateCompanyInvitation,
+  selectCompanyById,
+  selectUserById,
 } from "../../services/db/index.js";
 
 type SignUpProps = InsertUserProps & {
@@ -21,7 +26,7 @@ const SignUpSchema = z.object({
   password: z.string().min(8),
   referer: z.string().optional(),
   name: z.string(),
-});
+}).meta({ id: "POST /api/user/sign-up", route: "POST /api/user/sign-up" });
 
 export const signUp = async ({
   email,
@@ -54,6 +59,48 @@ export const signUp = async ({
         email,
         password: hashedPassword,
       });
+
+      // Turn any pending company invitations addressed to this email into real
+      // memberships now that the account exists. Best-effort: a failure here
+      // shouldn't block account creation.
+      try {
+        const invitations = await selectPendingInvitationsByEmail({ email });
+
+        for (const invitation of invitations) {
+          await insertCompanyMember({
+            companyId: invitation.companyId,
+            userId: newUser.id,
+            roleIds: [invitation.roleId],
+            assignedBy: invitation.invitedBy ?? newUser.id,
+          });
+
+          await updateCompanyInvitation({
+            invitationId: invitation.id,
+            status: "accepted",
+          });
+
+          // Notify the inviter (or the company owner) that it was accepted.
+          const company = await selectCompanyById({
+            companyId: invitation.companyId,
+          });
+          const inviterId = invitation.invitedBy ?? company?.owner;
+
+          if (inviterId) {
+            const inviter = await selectUserById({ userId: inviterId });
+
+            if (inviter?.email) {
+              await send({
+                email: inviter.email,
+                type: "acceptedInvitationToCompany",
+                userName: newUser.name,
+                companyName: company?.name ?? "your company",
+              });
+            }
+          }
+        }
+      } catch (conversionError) {
+        console.log("Invitation conversion failed", conversionError);
+      }
 
       await send({
         email,

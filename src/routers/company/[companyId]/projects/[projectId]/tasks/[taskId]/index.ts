@@ -3,6 +3,7 @@ import verifyToken from "../../../../../../../services/auth/verifyToken.js";
 import {
   getProjectTask,
   updateProjectTask,
+  deleteProjectTask,
 } from "../../../../../../../actions/projects/index.js";
 import { HTTP_STATUSES } from "../../../../../../../actions/index.js";
 import checklistRouter from "./checklist.js";
@@ -57,6 +58,30 @@ router
       const {
         status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
         error = "There was an error editing this task",
+      } = caught;
+
+      res.status(status).send({ error });
+    }
+  })
+  .delete(verifyToken, async (req: any, res) => {
+    try {
+      const {
+        params: { companyId, projectId, taskId },
+        user,
+      } = req;
+
+      const { status, message, task } = await deleteProjectTask({
+        userId: user.id,
+        companyId,
+        projectId,
+        taskId,
+      });
+
+      res.status(status).send({ message, task });
+    } catch (caught: any) {
+      const {
+        status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+        error = "There was an error deleting this task",
       } = caught;
 
       res.status(status).send({ error });

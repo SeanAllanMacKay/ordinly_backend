@@ -10,7 +10,7 @@ import * as z from "zod";
 
 const VerifyAccountSchema = z.object({
   code: z.string("Invalid code"),
-});
+}).meta({ id: "POST /api/user/verify-account", route: "POST /api/user/verify-account" });
 
 type VerifyAccountProps = {
   code: string;

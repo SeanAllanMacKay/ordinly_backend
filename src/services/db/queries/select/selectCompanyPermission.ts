@@ -12,6 +12,7 @@ import {
   CompanyPermissionLevel,
   UserProject,
   UserTask,
+  UserClient,
 } from "../../index.js";
 import { companyRolePermissionAction } from "../../constants.js";
 
@@ -110,6 +111,7 @@ export const resolveCompanyPermissions = async ({
       and(
         eq(UserCompany.userId, userId),
         eq(UserCompany.companyId, companyId),
+        isNull(UserCompany.deletedDate),
       ),
     );
 
@@ -162,6 +164,25 @@ export const isUserAssignedToTask = async ({
 }) => {
   const row = await db.query.UserTask.findFirst({
     where: and(eq(UserTask.userId, userId), eq(UserTask.taskId, taskId)),
+    columns: { id: true },
+  });
+
+  return !!row;
+};
+
+/** Whether the user is directly assigned to the client (UserClient). */
+export const isUserAssignedToClient = async ({
+  userId,
+  clientId,
+}: {
+  userId: string;
+  clientId: string;
+}) => {
+  const row = await db.query.UserClient.findFirst({
+    where: and(
+      eq(UserClient.userId, userId),
+      eq(UserClient.clientId, clientId),
+    ),
     columns: { id: true },
   });
 

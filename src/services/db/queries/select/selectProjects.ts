@@ -1,4 +1,4 @@
-import { eq, count, and, exists } from "drizzle-orm";
+import { eq, count, and, exists, isNull } from "drizzle-orm";
 
 import { db, Project, CompanyProject, UserProject } from "../../index.js";
 
@@ -21,6 +21,7 @@ export const selectProjects = async ({
   // Project belongs to the company, and (when restricted) is assigned to the user.
   const buildConditions = (projectId: typeof Project.id) =>
     and(
+      isNull(Project.deletedDate),
       exists(
         db
           .select()

@@ -10,6 +10,7 @@ import {
   CompanySubscription,
   CompanyPaymentMethod,
   Document,
+  Team,
 } from "../schemas/index.js";
 
 export const CompanyRelations = relations(Company, ({ one, many }) => ({
@@ -28,6 +29,7 @@ export const CompanyRelations = relations(Company, ({ one, many }) => ({
   subscription: one(CompanySubscription),
 
   users: many(UserCompany, { relationName: "company_to_userCompany" }),
+  teams: many(Team),
   clients: many(Client),
   projects: many(CompanyProject, {
     relationName: "company_to_companyProject",

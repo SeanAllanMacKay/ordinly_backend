@@ -1,4 +1,4 @@
-import { and, eq, exists } from "drizzle-orm";
+import { and, eq, exists, isNull } from "drizzle-orm";
 import { db, Document, TaskDocument, Task, CompanyProject } from "../../index.js";
 
 export type SelectProjectTaskDocumentProps = {
@@ -20,6 +20,7 @@ export const selectProjectTaskDocument = async ({
   const result = await db.query.Document.findFirst({
     where: and(
       eq(Document.id, documentId),
+      isNull(Document.deletedDate),
       exists(
         db
           .select()
@@ -30,6 +31,7 @@ export const selectProjectTaskDocument = async ({
               eq(TaskDocument.documentId, Document.id),
               eq(Task.id, taskId),
               eq(Task.projectId, projectId),
+              isNull(Task.deletedDate),
               exists(
                 db
                   .select()

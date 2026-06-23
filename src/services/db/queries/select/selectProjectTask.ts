@@ -1,5 +1,5 @@
-import { and, eq } from "drizzle-orm";
-import { db, CompanyProject } from "../../index.js";
+import { and, eq, isNull } from "drizzle-orm";
+import { db, TaskChecklistItem, CompanyProject } from "../../index.js";
 
 export type SelectProjectTaskProps = {
   userId: string;
@@ -20,6 +20,7 @@ export const selectProjectTask = async ({
       and(
         eq(task.id, taskId),
         eq(task.projectId, projectId),
+        isNull(task.deletedDate),
         exists(
           db
             .select()
@@ -35,7 +36,9 @@ export const selectProjectTask = async ({
     with: {
       status: true,
       priority: true,
-      checklist: true,
+      checklist: {
+        where: isNull(TaskChecklistItem.deletedDate),
+      },
       documents: {
         with: {
           document: true,

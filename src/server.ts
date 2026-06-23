@@ -41,6 +41,24 @@ server.listen(API_PORT, () => {
 
 if (process.env.NODE_ENV === "development") {
   (async () => {
+    // Dev-only API reference. Dynamic imports keep swagger-ui-express and the
+    // openapi module (and its deps) out of production.
+    try {
+      const { default: swaggerUi } = await import("swagger-ui-express");
+      const { buildOpenApiSpec } = await import("./services/openapi/index.js");
+
+      const spec = buildOpenApiSpec(app);
+
+      app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(spec));
+      app.get("/api/docs.json", (_req, res) => res.json(spec));
+
+      console.log(
+        `OpenAPI docs available at: http://localhost:${API_PORT}/api/docs`,
+      );
+    } catch (error) {
+      console.warn("Failed to mount OpenAPI docs:", error);
+    }
+
     const listener = await ngrok.forward({
       addr: API_PORT,
       domain: NGROK_DOMAIN,

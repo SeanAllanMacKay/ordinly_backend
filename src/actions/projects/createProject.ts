@@ -30,7 +30,7 @@ const CreateProjectSchema = z.object({
       longitude: z.number(),
     })
     .optional(),
-});
+}).meta({ id: "POST /api/company/{companyId}/projects", route: "POST /api/company/{companyId}/projects" });
 
 export const createProject = async (createProjectProps: InsertProjectProps) => {
   try {

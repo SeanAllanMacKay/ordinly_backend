@@ -3,6 +3,7 @@ import { relations } from "drizzle-orm";
 import {
   Client,
   Company,
+  Contact,
   User,
   ProjectClient,
   UserClient,
@@ -30,6 +31,7 @@ export const ClientRelations = relations(Client, ({ one, many }) => ({
     references: [Company.id],
   }),
 
+  contacts: many(Contact),
   projects: many(ProjectClient, { relationName: "client_to_projectClient" }),
   users: many(UserClient, { relationName: "client_to_userClient" }),
 }));

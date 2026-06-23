@@ -9,7 +9,7 @@ const ListCompaniesSchema = z.object({
   userId: z.string("Invalid userId"),
   page: z.coerce.number("Page must be a number if passed").optional(),
   pageSize: z.coerce.number("pageSize must be a number if passed").optional(),
-});
+}).meta({ id: "GET /api/company", route: "GET /api/company" });
 
 export const listCompanies = async (listCompanyProps: SelectCompaniesProps) => {
   try {

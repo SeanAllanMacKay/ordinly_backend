@@ -1,9 +1,8 @@
-import { pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { Project } from "./Project.js";
-import { locationType } from "../constants.js";
-
-export const LocationTypeEnum = pgEnum("location_type", locationType);
+// The "location_type" pg enum is declared once on the canonical Location table.
+import { LocationTypeEnum } from "./Location.js";
 
 export const ProjectLocation = pgTable("ProjectLocation", {
   id: uuid().defaultRandom().unique().primaryKey(),

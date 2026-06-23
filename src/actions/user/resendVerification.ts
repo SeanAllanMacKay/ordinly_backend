@@ -8,7 +8,7 @@ import * as z from "zod";
 const ResendVerificationSchema = z.object({
   email: z.email(),
   referer: z.string().optional(),
-});
+}).meta({ id: "POST /api/user/resend-verification", route: "POST /api/user/resend-verification" });
 
 type ResendVerificationProps = {
   email: string;

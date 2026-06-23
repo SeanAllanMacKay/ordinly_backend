@@ -28,6 +28,8 @@ export const UserCompany = pgTable(
     assignedBy: uuid()
       .references(() => User.id)
       .notNull(),
+    deletedDate: timestamp(),
+    deletedBy: uuid().references(() => User.id),
   },
   (table) => {
     return {

@@ -33,7 +33,7 @@ const UpdateProjectSchema = z.object({
       longitude: z.number(),
     })
     .optional(),
-});
+}).meta({ id: "PUT /api/company/{companyId}/projects/{projectId}", route: "PUT /api/company/{companyId}/projects/{projectId}" });
 
 export const updateProject = async (updateProjectProps: UpdateProjectProps) => {
   try {

@@ -20,7 +20,7 @@ const UpdateProjectTaskChecklistSchema = z.object({
       order: z.number(),
     }),
   ),
-});
+}).meta({ id: "PUT /api/company/{companyId}/projects/{projectId}/tasks/{taskId}/checklist", route: "PUT /api/company/{companyId}/projects/{projectId}/tasks/{taskId}/checklist" });
 
 export const updateProjectTaskChecklist = async (
   updateProjectTaskChecklistProps: UpdateProjectTaskChecklistProps,

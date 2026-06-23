@@ -12,7 +12,7 @@ const ListProjectTasksSchema = z.object({
   projectId: z.string("Invalid projectId"),
   page: z.number("Invalid page").optional(),
   pageSize: z.number("Invalid pageSize").optional(),
-});
+}).meta({ id: "GET /api/company/{companyId}/projects/{projectId}/tasks", route: "GET /api/company/{companyId}/projects/{projectId}/tasks" });
 
 export const listProjectTasks = async (
   listProjectStatusesProps: SelectProjectTasksProps,

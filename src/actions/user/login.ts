@@ -7,7 +7,7 @@ import { selectUserByEmail } from "../../services/db/index.js";
 const LoginSchema = z.object({
   email: z.email("Invalid email"),
   password: z.string("Invalid password"),
-});
+}).meta({ id: "POST /api/user/login", route: "POST /api/user/login" });
 
 type LoginProps = {
   email: string;

@@ -3,6 +3,7 @@ import {
   resolveCompanyPermissions,
   isUserAssignedToProject,
   isUserAssignedToTask,
+  isUserAssignedToClient,
   CompanyPermissionKey,
   PermissionBits,
 } from "../../services/db/index.js";
@@ -25,6 +26,7 @@ const notFound = (message = "Company not found") => ({
  * so callers pass the parent task id as `assetId`.
  */
 const ASSET_KEYS = {
+  client: { all: "all_clients", assigned: "assigned_clients" },
   project: { all: "all_projects", assigned: "assigned_projects" },
   task: { all: "all_tasks", assigned: "assigned_tasks" },
   checklist: { all: "all_checklist_items", assigned: "assigned_checklist_items" },
@@ -93,14 +95,37 @@ export const assertCompanyAssetPermission = async ({
 
   if (permissions[assigned]?.[action]) {
     const isAssigned =
-      scope === "project"
-        ? await isUserAssignedToProject({ userId, projectId: assetId })
-        : await isUserAssignedToTask({ userId, taskId: assetId });
+      scope === "client"
+        ? await isUserAssignedToClient({ userId, clientId: assetId })
+        : scope === "project"
+          ? await isUserAssignedToProject({ userId, projectId: assetId })
+          : await isUserAssignedToTask({ userId, taskId: assetId });
 
     if (isAssigned) return;
   }
 
   throw forbidden();
+};
+
+/**
+ * Assert the user is the company owner. Unlike assertCompanyPermission this has
+ * no permission-bit fallback — only the owner passes. Used for destructive,
+ * company-wide actions such as deleting the company.
+ */
+export const assertCompanyOwner = async ({
+  userId,
+  companyId,
+}: {
+  userId: string;
+  companyId: string;
+}) => {
+  const { exists, isOwner } = await resolveCompanyPermissions({
+    userId,
+    companyId,
+  });
+
+  if (!exists) throw notFound();
+  if (!isOwner) throw forbidden();
 };
 
 /**

@@ -17,7 +17,7 @@ const UpdateProjectTaskSchema = z.object({
   priority: z.string().optional(),
   startDate: z.coerce.date().optional(),
   dueDate: z.coerce.date().optional(),
-});
+}).meta({ id: "PUT /api/company/{companyId}/projects/{projectId}/tasks/{taskId}", route: "PUT /api/company/{companyId}/projects/{projectId}/tasks/{taskId}" });
 
 export const updateProjectTask = async (
   updateProjectProps: UpdateProjectTaskProps,

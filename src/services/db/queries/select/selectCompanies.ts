@@ -1,4 +1,4 @@
-import { eq, or, count, and } from "drizzle-orm";
+import { eq, or, count, and, isNull } from "drizzle-orm";
 
 import { db, Company, UserCompany } from "../../index.js";
 import { fileService } from "../../../files/index.js";
@@ -21,6 +21,7 @@ export const selectCompanies = async ({
     .where(
       and(
         eq(Company.isPersonal, false),
+        isNull(Company.deletedDate),
         or(eq(Company.owner, userId), eq(UserCompany.userId, userId)),
       ),
     );
@@ -29,6 +30,7 @@ export const selectCompanies = async ({
     where: (company, { exists }) =>
       and(
         eq(Company.isPersonal, false),
+        isNull(Company.deletedDate),
         exists(
           db
             .select()

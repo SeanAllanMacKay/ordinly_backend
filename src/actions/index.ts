@@ -2,5 +2,8 @@ export * from "./user/index.js";
 export * from "./projects/index.js";
 export * from "./task/index.js";
 export * from "./roles/index.js";
+export * from "./company/users/index.js";
+export * from "./company/teams/index.js";
+export * from "./company/clients/index.js";
 export * from "./permissions/index.js";
 export * from "./HTTP_STATUSES.js";

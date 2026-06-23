@@ -190,6 +190,20 @@
       "when": 1781899682624,
       "tag": "0026_right_mach_iv",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1782249410253,
+      "tag": "0027_steady_mysterio",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1782254564883,
+      "tag": "0028_cultured_gideon",
+      "breakpoints": true
     }
   ]
 }

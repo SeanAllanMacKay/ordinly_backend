@@ -1,5 +1,5 @@
-import { and, eq, exists } from "drizzle-orm";
-import { db, Task, CompanyProject, UserTask } from "../../index.js";
+import { and, eq, exists, isNull } from "drizzle-orm";
+import { db, Task, TaskChecklistItem, CompanyProject, UserTask } from "../../index.js";
 
 export type SelectProjectTasksProps = {
   userId: string;
@@ -24,6 +24,7 @@ export const selectProjectTasks = async ({
   // the action-layer RBAC guard; this only scopes for integrity + read tier.
   const buildConditions = (taskId: typeof Task.id) =>
     and(
+      isNull(Task.deletedDate),
       eq(Task.projectId, projectId),
       exists(
         db
@@ -55,7 +56,9 @@ export const selectProjectTasks = async ({
     with: {
       status: true,
       priority: true,
-      checklist: true,
+      checklist: {
+        where: isNull(TaskChecklistItem.deletedDate),
+      },
     },
     orderBy: (tasks, { desc }) => desc(tasks.updatedDate),
     limit: pageSize,

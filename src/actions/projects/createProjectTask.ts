@@ -33,7 +33,7 @@ const CreateProjectTaskSchema = z.object({
       }),
     )
     .optional(),
-});
+}).meta({ id: "POST /api/company/{companyId}/projects/{projectId}/tasks", route: "POST /api/company/{companyId}/projects/{projectId}/tasks" });
 
 export const createProjectTask = async (
   createTaskProps: InsertTaskProps & {
