@@ -1,38 +1,59 @@
-import { eq, count, and } from "drizzle-orm";
+import { eq, count, and, exists } from "drizzle-orm";
 
-import { db, Project, UserProject } from "../../index.js";
+import { db, Project, CompanyProject, UserProject } from "../../index.js";
 
 export type SelectProjectsProps = {
-  userId?: string;
-  companyId?: string;
+  userId: string;
+  companyId: string;
+  /** When true, restrict to projects the user is assigned to (assigned_* tier). */
+  assignedOnly?: boolean;
   page?: number;
   pageSize?: number;
 };
 
 export const selectProjects = async ({
   userId,
+  companyId,
+  assignedOnly = false,
   page = 1,
   pageSize = 15,
 }: SelectProjectsProps) => {
-  const [{ totalItems }] = await db
-    .selectDistinct({ totalItems: count() })
-    .from(Project)
-    .innerJoin(UserProject, eq(Project.id, UserProject.projectId))
-    .where(userId ? eq(UserProject.userId, userId) : undefined);
-
-  const projects = await db.query.Project.findMany({
-    where: (project, { exists }) =>
+  // Project belongs to the company, and (when restricted) is assigned to the user.
+  const buildConditions = (projectId: typeof Project.id) =>
+    and(
       exists(
         db
           .select()
-          .from(UserProject)
+          .from(CompanyProject)
           .where(
             and(
-              eq(UserProject.projectId, project.id),
-              userId ? eq(UserProject.userId, userId) : undefined,
+              eq(CompanyProject.projectId, projectId),
+              eq(CompanyProject.companyId, companyId),
             ),
           ),
       ),
+      assignedOnly
+        ? exists(
+            db
+              .select()
+              .from(UserProject)
+              .where(
+                and(
+                  eq(UserProject.projectId, projectId),
+                  eq(UserProject.userId, userId),
+                ),
+              ),
+          )
+        : undefined,
+    );
+
+  const [{ totalItems }] = await db
+    .select({ totalItems: count() })
+    .from(Project)
+    .where(buildConditions(Project.id));
+
+  const projects = await db.query.Project.findMany({
+    where: (project) => buildConditions(project.id),
     with: {
       status: true,
       priority: true,

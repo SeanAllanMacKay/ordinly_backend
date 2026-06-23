@@ -1,14 +1,15 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import {
-  selectProjectTask,
   selectProjectTaskDocument,
   SelectProjectTaskDocumentProps,
 } from "../../services/db/index.js";
+import { assertCompanyPermission } from "../permissions/index.js";
 import * as z from "zod";
 import { fileService } from "../../services/files/index.js";
 
 const GetProjectTaskSchema = z.object({
   userId: z.string("Invalid userId"),
+  companyId: z.string("Invalid companyId"),
   projectId: z.string("Invalid projectId"),
   taskId: z.string("Invalid taskId"),
   documentId: z.string("Invalid documentId"),
@@ -19,6 +20,15 @@ export const getProjectTaskDocument = async (
 ) => {
   try {
     GetProjectTaskSchema.parse(getProjectTaskDocumentProps);
+
+    const { userId, companyId } = getProjectTaskDocumentProps;
+
+    await assertCompanyPermission({
+      userId,
+      companyId,
+      key: "task_documents",
+      action: "read",
+    });
 
     const document = await selectProjectTaskDocument(
       getProjectTaskDocumentProps,

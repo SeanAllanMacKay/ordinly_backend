@@ -1,6 +1,7 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
 import { insertProject, InsertProjectProps } from "../../services/db/index.js";
+import { assertCompanyPermission } from "../permissions/index.js";
 import * as z from "zod";
 
 const CreateProjectSchema = z.object({
@@ -34,6 +35,22 @@ const CreateProjectSchema = z.object({
 export const createProject = async (createProjectProps: InsertProjectProps) => {
   try {
     CreateProjectSchema.parse(createProjectProps);
+
+    const { userId, companyId } = createProjectProps;
+
+    if (!companyId) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,
+        error: ["companyId is required"],
+      };
+    }
+
+    await assertCompanyPermission({
+      userId,
+      companyId,
+      key: "all_projects",
+      action: "create",
+    });
 
     const newProject = await insertProject(createProjectProps);
 

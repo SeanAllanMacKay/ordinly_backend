@@ -1,16 +1,28 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import { selectProject, SelectProjectProps } from "../../services/db/index.js";
+import { assertCompanyAssetPermission } from "../permissions/index.js";
 import * as z from "zod";
 import { getBatchLocationData } from "../../services/maps/getBatchProjectLocationData.js";
 
 const GetProjectsSchema = z.object({
   userId: z.string("Invalid userId"),
-  projectId: z.string("Invalid projectId").optional(),
+  companyId: z.string("Invalid companyId"),
+  projectId: z.string("Invalid projectId"),
 });
 
 export const getProject = async (getProjectProps: SelectProjectProps) => {
   try {
     GetProjectsSchema.parse(getProjectProps);
+
+    const { userId, companyId, projectId } = getProjectProps;
+
+    await assertCompanyAssetPermission({
+      userId,
+      companyId,
+      scope: "project",
+      assetId: projectId,
+      action: "read",
+    });
 
     const project = await selectProject(getProjectProps);
 

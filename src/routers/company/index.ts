@@ -5,6 +5,7 @@ import { createCompany } from "../../actions/company/createCompany.js";
 import { HTTP_STATUSES } from "../../actions/index.js";
 import { listCompanies } from "../../actions/company/listCompanies.js";
 import { singleFileHandler } from "../../services/files/index.js";
+import companyIdRouter from "./[companyId]/index.js";
 
 const router = Router({ mergeParams: true });
 
@@ -59,5 +60,7 @@ router
       }
     },
   );
+
+router.use("/:companyId", companyIdRouter);
 
 export default router;

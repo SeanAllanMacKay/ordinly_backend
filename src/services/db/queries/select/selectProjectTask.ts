@@ -1,22 +1,37 @@
 import { and, eq } from "drizzle-orm";
-import { db, Task } from "../../index.js";
-import { buildProjectTaskPermissionFilter } from "../util/buildProjectTaskPermissionFilter.js";
+import { db, CompanyProject } from "../../index.js";
 
 export type SelectProjectTaskProps = {
   userId: string;
+  companyId: string;
   projectId: string;
   taskId: string;
 };
 
+// Scoped to the project + owning company for integrity; authorization is handled
+// by the action-layer RBAC guard.
 export const selectProjectTask = async ({
-  userId,
+  companyId,
   projectId,
   taskId,
 }: SelectProjectTaskProps) => {
-  const permissions = buildProjectTaskPermissionFilter({ userId, projectId });
-
   const task = await db.query.Task.findFirst({
-    where: and(permissions, eq(Task.id, taskId)),
+    where: (task, { exists }) =>
+      and(
+        eq(task.id, taskId),
+        eq(task.projectId, projectId),
+        exists(
+          db
+            .select()
+            .from(CompanyProject)
+            .where(
+              and(
+                eq(CompanyProject.projectId, projectId),
+                eq(CompanyProject.companyId, companyId),
+              ),
+            ),
+        ),
+      ),
     with: {
       status: true,
       priority: true,

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import verifyToken from "../../../../../services/auth/verifyToken.js";
-import { HTTP_STATUSES } from "../../../../../actions/index.js";
-import { getProjectTaskDocument } from "../../../../../actions/projects/getProjectTaskDocument.js";
+import verifyToken from "../../../../../../../services/auth/verifyToken.js";
+import { HTTP_STATUSES } from "../../../../../../../actions/index.js";
+import { getProjectTaskDocument } from "../../../../../../../actions/projects/getProjectTaskDocument.js";
 
 const router = Router({ mergeParams: true });
 
@@ -10,7 +10,7 @@ router
   .get(verifyToken, async (req: any, res) => {
     try {
       const {
-        params: { projectId, taskId, documentId },
+        params: { companyId, projectId, taskId, documentId },
         user,
       } = req;
 
@@ -20,6 +20,7 @@ router
         document: { downloadURL },
       } = await getProjectTaskDocument({
         userId: user.id,
+        companyId,
         projectId,
         taskId,
         documentId,

@@ -1,12 +1,12 @@
 import { Router } from "express";
-import verifyToken from "../../../../services/auth/verifyToken.js";
+import verifyToken from "../../../../../../services/auth/verifyToken.js";
 import {
   createProjectTask,
   listProjectTasks,
-} from "../../../../actions/projects/index.js";
-import { HTTP_STATUSES } from "../../../../actions/index.js";
+} from "../../../../../../actions/projects/index.js";
+import { HTTP_STATUSES } from "../../../../../../actions/index.js";
 import taskRouter from "./[taskId]/index.js";
-import { multiFileHandler } from "../../../../services/files/fileMiddleware.js";
+import { multiFileHandler } from "../../../../../../services/files/fileMiddleware.js";
 
 const router = Router({ mergeParams: true });
 
@@ -15,13 +15,14 @@ router
   .get(verifyToken, async (req: any, res) => {
     try {
       const {
-        params: { projectId },
+        params: { companyId, projectId },
         user,
       } = req;
 
       const { status, message, tasks, totalItems, totalPages } =
         await listProjectTasks({
           userId: user.id,
+          companyId,
           projectId,
         });
 
@@ -43,13 +44,14 @@ router
         const {
           body,
           user,
-          params: { projectId },
+          params: { companyId, projectId },
           documents,
         } = req;
 
         const { status, message, task } = await createProjectTask({
           ...body,
           userId: user.id,
+          companyId,
           projectId,
           documents,
         });

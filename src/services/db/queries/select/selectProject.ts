@@ -1,15 +1,19 @@
 import { eq, and } from "drizzle-orm";
 
-import { db, UserProject } from "../../index.js";
+import { db, CompanyProject } from "../../index.js";
 
 export type SelectProjectProps = {
   userId: string;
   projectId: string;
+  companyId: string;
 };
 
+// Scoped to the owning company (via CompanyProject) — authorization is handled
+// by the action-layer RBAC guard, so this only enforces that the project
+// actually belongs to the company in the path (a mismatch returns undefined).
 export const selectProject = async ({
-  userId,
   projectId,
+  companyId,
 }: SelectProjectProps) => {
   return await db.query.Project.findFirst({
     where: (project, { exists }) =>
@@ -18,11 +22,11 @@ export const selectProject = async ({
         exists(
           db
             .select()
-            .from(UserProject)
+            .from(CompanyProject)
             .where(
               and(
-                eq(UserProject.projectId, project.id),
-                eq(UserProject.userId, userId),
+                eq(CompanyProject.projectId, project.id),
+                eq(CompanyProject.companyId, companyId),
               ),
             ),
         ),

@@ -1,20 +1,21 @@
 import { Router } from "express";
-import verifyToken from "../../../../../services/auth/verifyToken.js";
-import { updateProjectTaskChecklist } from "../../../../../actions/projects/index.js";
-import { HTTP_STATUSES } from "../../../../../actions/index.js";
+import verifyToken from "../../../../../../../services/auth/verifyToken.js";
+import { updateProjectTaskChecklist } from "../../../../../../../actions/projects/index.js";
+import { HTTP_STATUSES } from "../../../../../../../actions/index.js";
 
 const router = Router({ mergeParams: true });
 
 router.route("/").put(verifyToken, async (req: any, res) => {
   try {
     const {
-      params: { projectId, taskId },
+      params: { companyId, projectId, taskId },
       user,
       body,
     } = req;
 
     const { status, message, task } = await updateProjectTaskChecklist({
       userId: user.id,
+      companyId,
       projectId,
       taskId,
       ...body,

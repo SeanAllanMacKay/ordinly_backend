@@ -1,7 +1,7 @@
 import { Router } from "express";
-import verifyToken from "../../../services/auth/verifyToken.js";
-import { updateProject, getProject } from "../../../actions/projects/index.js";
-import { HTTP_STATUSES } from "../../../actions/index.js";
+import verifyToken from "../../../../../services/auth/verifyToken.js";
+import { updateProject, getProject } from "../../../../../actions/projects/index.js";
+import { HTTP_STATUSES } from "../../../../../actions/index.js";
 import tasksRouter from "./tasks/index.js";
 
 const router = Router({ mergeParams: true });
@@ -11,12 +11,13 @@ router
   .get(verifyToken, async (req: any, res) => {
     try {
       const {
-        params: { projectId },
+        params: { companyId, projectId },
         user,
       } = req;
 
       const { status, message, project } = await getProject({
         userId: user.id,
+        companyId,
         projectId,
       });
 
@@ -33,13 +34,14 @@ router
   .put(verifyToken, async (req: any, res) => {
     try {
       const {
-        params: { projectId },
+        params: { companyId, projectId },
         user,
         body,
       } = req;
 
       const { status, message, project } = await updateProject({
         userId: user.id,
+        companyId,
         projectId,
         ...body,
       });

@@ -1,6 +1,13 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
-import { upsertRolePermissions } from "../../services/db/index.js";
+import {
+  upsertRolePermissions,
+  selectRoleCompany,
+} from "../../services/db/index.js";
+import {
+  assertCompanyPermission,
+  assertNotPersonalCompany,
+} from "../permissions/index.js";
 import * as z from "zod";
 
 const UpdateRolePermissionsSchema = z.object({
@@ -26,6 +33,33 @@ export const updateRolePermissions = async (
 ) => {
   try {
     UpdateRolePermissionsSchema.parse(props);
+
+    const { userId, roleId, scope } = props;
+
+    const role = await selectRoleCompany({ roleId, scope });
+
+    if (!role.exists) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.NOT_FOUND,
+        error: ["Role not found"],
+      };
+    }
+
+    // System/global role templates (null companyId) can't be edited.
+    if (!role.companyId) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+        error: ["System roles can't be edited"],
+      };
+    }
+
+    await assertNotPersonalCompany({ userId, companyId: role.companyId });
+    await assertCompanyPermission({
+      userId,
+      companyId: role.companyId,
+      key: "roles",
+      action: "update",
+    });
 
     const assignments = await upsertRolePermissions(props);
 

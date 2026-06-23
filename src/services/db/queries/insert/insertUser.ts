@@ -1,4 +1,13 @@
-import { Company, db, User, UserCompany } from "../../index.js";
+import { and, eq, isNull } from "drizzle-orm";
+
+import {
+  Company,
+  CompanyRole,
+  db,
+  User,
+  UserCompany,
+  UserCompanyRole,
+} from "../../index.js";
 
 export type InsertUserProps = Omit<
   typeof User.$inferInsert,
@@ -38,11 +47,33 @@ export const insertUser = async ({
       })
       .returning();
 
-    await transaction.insert(UserCompany).values({
-      userId: user.id,
-      companyId: personalCompany.id,
-      isPersonal: true,
-      assignedBy: user.id,
+    const [userCompany] = await transaction
+      .insert(UserCompany)
+      .values({
+        userId: user.id,
+        companyId: personalCompany.id,
+        isPersonal: true,
+        assignedBy: user.id,
+      })
+      .returning();
+
+    // Assign the global "Owner" role so the user has a role row in their
+    // personal company (mirrors insertCompany). Owner-bypass also covers them
+    // via Company.owner, but this keeps the RBAC data consistent.
+    const [ownerRole] = await transaction
+      .select({ id: CompanyRole.id })
+      .from(CompanyRole)
+      .where(and(eq(CompanyRole.name, "Owner"), isNull(CompanyRole.companyId)));
+
+    if (!ownerRole) {
+      throw new Error(
+        'Global "Owner" CompanyRole not found — run seedCompanyRoles() first.',
+      );
+    }
+
+    await transaction.insert(UserCompanyRole).values({
+      userCompanyId: userCompany.id,
+      roleId: ownerRole.id,
     });
 
     return user;

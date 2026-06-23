@@ -3,7 +3,9 @@ import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import {
   selectPermissionCatalog,
   selectRolePermissions,
+  selectRoleCompany,
 } from "../../services/db/index.js";
+import { assertCompanyPermission } from "../permissions/index.js";
 import * as z from "zod";
 
 const GetRolePermissionsSchema = z.object({
@@ -21,7 +23,27 @@ export const getRolePermissions = async (props: GetRolePermissionsProps) => {
   try {
     GetRolePermissionsSchema.parse(props);
 
-    const { roleId, scope } = props;
+    const { userId, roleId, scope } = props;
+
+    const role = await selectRoleCompany({ roleId, scope });
+
+    if (!role.exists) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.NOT_FOUND,
+        error: ["Role not found"],
+      };
+    }
+
+    // Company-owned roles require the "roles" read permission in that company.
+    // Global/system roles (null companyId) are shared read-only templates.
+    if (role.companyId) {
+      await assertCompanyPermission({
+        userId,
+        companyId: role.companyId,
+        key: "roles",
+        action: "read",
+      });
+    }
 
     const [catalog, assignments] = await Promise.all([
       selectPermissionCatalog({ scope }),

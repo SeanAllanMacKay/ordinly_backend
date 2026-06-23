@@ -13,3 +13,5 @@ export * from "./selectTaskStatuses.js";
 export * from "./selectProjectTaskDocument.js";
 export * from "./selectPermissionCatalog.js";
 export * from "./selectRolePermissions.js";
+export * from "./selectCompanyPermission.js";
+export * from "./selectRoleCompany.js";

@@ -1,14 +1,13 @@
 import { Router } from "express";
-import verifyToken from "../../services/auth/verifyToken.js";
+import verifyToken from "../../../../services/auth/verifyToken.js";
 import {
   listProjects,
   createProject,
   listProjectPriorities,
   listProjectStatuses,
-} from "../../actions/index.js";
-import { HTTP_STATUSES } from "../../actions/index.js";
+} from "../../../../actions/index.js";
+import { HTTP_STATUSES } from "../../../../actions/index.js";
 import projectIdRouter from "./[projectId]/index.js";
-import { getBatchLocationData } from "../../services/maps/getBatchProjectLocationData.js";
 
 const router = Router({ mergeParams: true });
 
@@ -16,12 +15,14 @@ router.route("/").get(verifyToken, async (req: any, res) => {
   try {
     const {
       query: { page },
+      params: { companyId },
       user,
     } = req;
 
     const { status, message, projects, totalItems, totalPages } =
       await listProjects({
         userId: user.id,
+        companyId,
         page: Number(page),
       });
 
@@ -46,11 +47,16 @@ router.route("/").get(verifyToken, async (req: any, res) => {
 
 router.route("/").post(verifyToken, async (req: any, res) => {
   try {
-    const { body, user } = req;
+    const {
+      body,
+      user,
+      params: { companyId },
+    } = req;
 
     const { status, message, project } = await createProject({
       ...body,
       userId: user.id,
+      companyId,
     });
 
     res.status(status).send({ message, project });

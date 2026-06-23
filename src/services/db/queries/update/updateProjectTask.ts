@@ -1,15 +1,17 @@
-import { eq } from "drizzle-orm";
-import { db, Project, Task } from "../../index.js";
+import { and, eq, exists } from "drizzle-orm";
+import { db, Project, Task, CompanyProject } from "../../index.js";
 
 export type UpdateProjectTaskProps = {
   userId: string;
   taskId: string;
   projectId: string;
+  companyId: string;
 } & Partial<Omit<typeof Task.$inferInsert, "id" | "createdDate" | "createdBy">>;
 
 export const updateProjectTask = async ({
   userId,
   projectId,
+  companyId,
   taskId,
   name,
   description,
@@ -19,6 +21,7 @@ export const updateProjectTask = async ({
   dueDate,
 }: UpdateProjectTaskProps) => {
   return await db.transaction(async (transaction) => {
+    // Scoped by project + owning company so a mismatched task matches no row.
     const [task] = await transaction
       .update(Task)
       .set({
@@ -30,7 +33,23 @@ export const updateProjectTask = async ({
         dueDate: dueDate ? new Date(dueDate) : undefined,
         createdDate: new Date(),
       })
-      .where(eq(Task.id, taskId))
+      .where(
+        and(
+          eq(Task.id, taskId),
+          eq(Task.projectId, projectId),
+          exists(
+            db
+              .select()
+              .from(CompanyProject)
+              .where(
+                and(
+                  eq(CompanyProject.projectId, projectId),
+                  eq(CompanyProject.companyId, companyId),
+                ),
+              ),
+          ),
+        ),
+      )
       .returning();
 
     await transaction

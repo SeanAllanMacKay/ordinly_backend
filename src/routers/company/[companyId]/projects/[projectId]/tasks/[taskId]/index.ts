@@ -1,10 +1,10 @@
 import { Router } from "express";
-import verifyToken from "../../../../../services/auth/verifyToken.js";
+import verifyToken from "../../../../../../../services/auth/verifyToken.js";
 import {
   getProjectTask,
   updateProjectTask,
-} from "../../../../../actions/projects/index.js";
-import { HTTP_STATUSES } from "../../../../../actions/index.js";
+} from "../../../../../../../actions/projects/index.js";
+import { HTTP_STATUSES } from "../../../../../../../actions/index.js";
 import checklistRouter from "./checklist.js";
 import documentsRouter from "./documents.js";
 
@@ -15,12 +15,13 @@ router
   .get(verifyToken, async (req: any, res) => {
     try {
       const {
-        params: { projectId, taskId },
+        params: { companyId, projectId, taskId },
         user,
       } = req;
 
       const { status, message, task } = await getProjectTask({
         userId: user.id,
+        companyId,
         projectId,
         taskId,
       });
@@ -38,13 +39,14 @@ router
   .put(verifyToken, async (req: any, res) => {
     try {
       const {
-        params: { projectId, taskId },
+        params: { companyId, projectId, taskId },
         user,
         body,
       } = req;
 
       const { status, message, task } = await updateProjectTask({
         userId: user.id,
+        companyId,
         projectId,
         taskId,
         ...body,

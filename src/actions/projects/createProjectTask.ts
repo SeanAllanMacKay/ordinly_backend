@@ -1,8 +1,9 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import { randomUUID as uuid } from "crypto";
-import { InsertTaskProps } from "../../services/db/index.js";
+import { InsertTaskProps, isProjectInCompany } from "../../services/db/index.js";
 import * as z from "zod";
 import { insertProjectTask } from "../../services/db/index.js";
+import { assertCompanyPermission } from "../permissions/index.js";
 import { fileService } from "../../services/files/index.js";
 import { taskType } from "../../services/db/constants.js";
 
@@ -10,7 +11,7 @@ const CreateProjectTaskSchema = z.object({
   userId: z.string("Invalid userId"),
   projectId: z.string("Invalid projectId"),
   type: z.enum(taskType),
-  companyId: z.string("Invalid companyId").optional(),
+  companyId: z.string("Invalid companyId"),
   name: z.string("Name must be a string"),
   description: z.string("Description must be a string if passed").optional(),
   status: z.string().optional(),
@@ -35,10 +36,38 @@ const CreateProjectTaskSchema = z.object({
 });
 
 export const createProjectTask = async (
-  createTaskProps: InsertTaskProps & { documents: Express.Multer.File[] },
+  createTaskProps: InsertTaskProps & {
+    companyId: string;
+    documents: Express.Multer.File[];
+  },
 ) => {
   try {
     CreateProjectTaskSchema.parse(createTaskProps);
+
+    const { userId, companyId, projectId } = createTaskProps;
+
+    await assertCompanyPermission({
+      userId,
+      companyId,
+      key: "all_tasks",
+      action: "create",
+    });
+
+    if (createTaskProps.documents?.length) {
+      await assertCompanyPermission({
+        userId,
+        companyId,
+        key: "task_documents",
+        action: "create",
+      });
+    }
+
+    if (!(await isProjectInCompany({ projectId, companyId }))) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.NOT_FOUND,
+        error: ["Project not found"],
+      };
+    }
 
     const taskId = uuid();
 

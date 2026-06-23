@@ -2,13 +2,14 @@ import {
   updateProject as updateProjectQuery,
   UpdateProjectProps,
 } from "../../services/db/index.js";
+import { assertCompanyAssetPermission } from "../permissions/index.js";
 import * as z from "zod";
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
 const UpdateProjectSchema = z.object({
   userId: z.string("Invalid userId"),
   projectId: z.string(),
-  companyId: z.string().optional(),
+  companyId: z.string("Invalid companyId"),
   name: z.string("Name must be a string"),
   description: z.string("Description must be a string if passed").optional(),
   status: z.string().optional(),
@@ -38,7 +39,24 @@ export const updateProject = async (updateProjectProps: UpdateProjectProps) => {
   try {
     UpdateProjectSchema.parse(updateProjectProps);
 
+    const { userId, companyId, projectId } = updateProjectProps;
+
+    await assertCompanyAssetPermission({
+      userId,
+      companyId,
+      scope: "project",
+      assetId: projectId,
+      action: "update",
+    });
+
     const project = await updateProjectQuery(updateProjectProps);
+
+    if (!project) {
+      throw {
+        status: HTTP_STATUSES.CLIENT_ERROR.NOT_FOUND,
+        error: ["Project not found"],
+      };
+    }
 
     return {
       status: HTTP_STATUSES.SUCCESS.ACCEPTED,

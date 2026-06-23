@@ -5,6 +5,7 @@ export type UpdateProjectTaskChecklistProps = {
   userId: string;
   taskId: string;
   projectId: string;
+  companyId: string;
   items: Omit<
     typeof TaskChecklistItem.$inferInsert,
     "createdDate" | "createdBy"

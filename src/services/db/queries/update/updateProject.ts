@@ -1,9 +1,10 @@
-import { eq } from "drizzle-orm";
-import { db, Project, ProjectLocation } from "../../index.js";
+import { eq, and, exists } from "drizzle-orm";
+import { db, Project, ProjectLocation, CompanyProject } from "../../index.js";
 
 export type UpdateProjectProps = {
   userId: string;
   projectId: string;
+  companyId: string;
 } & Partial<
   Omit<
     typeof Project.$inferInsert,
@@ -14,6 +15,7 @@ export type UpdateProjectProps = {
 export const updateProject = async ({
   userId,
   projectId,
+  companyId,
   name,
   description,
   status,
@@ -23,6 +25,8 @@ export const updateProject = async ({
   location,
 }: UpdateProjectProps) => {
   return await db.transaction(async (transaction) => {
+    // Scoped by companyId so a project that doesn't belong to the company in the
+    // path matches no row (returns undefined → 404 in the action).
     const [project] = await transaction
       .update(Project)
       .set({
@@ -34,7 +38,22 @@ export const updateProject = async ({
         dueDate: dueDate ? new Date(dueDate) : undefined,
         updatedDate: new Date(),
       })
-      .where(eq(Project.id, projectId))
+      .where(
+        and(
+          eq(Project.id, projectId),
+          exists(
+            db
+              .select()
+              .from(CompanyProject)
+              .where(
+                and(
+                  eq(CompanyProject.projectId, projectId),
+                  eq(CompanyProject.companyId, companyId),
+                ),
+              ),
+          ),
+        ),
+      )
       .returning();
 
     if (location) {
