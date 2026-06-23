@@ -1,5 +1,6 @@
 import { Router } from "express";
 import verifyToken from "../../services/auth/verifyToken.js";
+import requireVerified from "../../services/auth/requireVerified.js";
 import { createCompany } from "../../actions/company/createCompany.js";
 import { HTTP_STATUSES } from "../../actions/index.js";
 import { listCompanies } from "../../actions/company/listCompanies.js";
@@ -34,6 +35,7 @@ router
   })
   .post(
     verifyToken,
+    requireVerified,
     singleFileHandler({ fieldName: "logo", uploadType: "image" }),
     async (req: any, res) => {
       try {
@@ -47,6 +49,7 @@ router
 
         res.status(status).send({ message, company });
       } catch (caught: any) {
+        console.log({ caught });
         const {
           status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
           error = "There was an error creating this company",

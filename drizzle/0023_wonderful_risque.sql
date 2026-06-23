@@ -1,0 +1,1 @@
+ALTER TABLE "TaskPriority" ADD COLUMN "isCritical" boolean DEFAULT false NOT NULL;

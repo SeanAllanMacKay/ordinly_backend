@@ -1,6 +1,7 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import { selectProject, SelectProjectProps } from "../../services/db/index.js";
 import * as z from "zod";
+import { getBatchLocationData } from "../../services/maps/getBatchProjectLocationData.js";
 
 const GetProjectsSchema = z.object({
   userId: z.string("Invalid userId"),
@@ -23,9 +24,10 @@ export const getProject = async (getProjectProps: SelectProjectProps) => {
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Project fetched",
-      project,
+      project: (await getBatchLocationData({ projects: [project] }))[0],
     };
   } catch (caught: any) {
+    console.log(caught);
     if (caught instanceof z.ZodError) {
       throw {
         status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,

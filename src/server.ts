@@ -5,7 +5,6 @@ import routers from "./routers/index.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import ngrok from "@ngrok/ngrok";
-import fileStorage from "./services/files.js";
 
 const API_PORT = process.env.API_PORT;
 const FE_ORIGIN = process.env.FE_ORIGIN;
@@ -21,20 +20,23 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: [`http://${FE_ORIGIN}`, `https://${FE_ORIGIN}`],
+    origin: [
+      `http://${FE_ORIGIN}`,
+      `https://${FE_ORIGIN}`,
+      process.env.NODE_ENV === "development" && `http://${NGROK_DOMAIN}`,
+    ],
   }),
 );
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser(COOKIE_SECRET));
+app.use("/api", routers);
 
 const server = createServer(app);
 
 server.listen(API_PORT, () => {
   console.log(`Server online: connected to port ${API_PORT}`);
   console.log(`Accepting requests from ${FE_ORIGIN}`);
-
-  app.use("/api", routers);
 });
 
 if (process.env.NODE_ENV === "development") {

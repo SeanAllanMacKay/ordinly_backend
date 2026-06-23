@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { HTTP_STATUSES, login } from "../../actions/index.js";
+import { AUTH_COOKIE_OPTIONS } from "../../services/auth/index.js";
 
 const router = Router({ mergeParams: true });
 
@@ -13,12 +14,7 @@ router.route("/").post(async (req: any, res) => {
     const { status, user, newToken } = await login({ password, email });
 
     if (newToken) {
-      res.cookie("auth", newToken, {
-        httpOnly: true,
-        signed: true,
-        sameSite: "none",
-        secure: true,
-      });
+      res.cookie("auth", newToken, AUTH_COOKIE_OPTIONS);
     }
 
     res.status(status).send({ user });

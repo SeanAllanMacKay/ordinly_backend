@@ -1,0 +1,1 @@
+ALTER TABLE "Project" ADD COLUMN "updatedDate" timestamp DEFAULT now() NOT NULL;

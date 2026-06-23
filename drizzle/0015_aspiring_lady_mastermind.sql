@@ -1,0 +1,1 @@
+CREATE TYPE "public"."location_type" AS ENUM('country', 'region', 'postcode', 'district', 'place', 'locality', 'neighborhood', 'address');

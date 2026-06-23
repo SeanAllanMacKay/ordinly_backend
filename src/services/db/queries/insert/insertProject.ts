@@ -5,12 +5,13 @@ import {
   CompanyProject,
   db,
   Company,
+  ProjectLocation,
 } from "../../index.js";
 
 export type InsertProjectProps = { userId: string; companyId?: string } & Omit<
   typeof Project.$inferInsert,
   "id" | "createdDate" | "createdBy" | "deletedDate" | "deletedBy"
->;
+> & { location: Omit<typeof ProjectLocation.$inferInsert, "id" | "projectId"> };
 
 export const insertProject = async ({
   userId,
@@ -21,6 +22,7 @@ export const insertProject = async ({
   priority,
   startDate,
   dueDate,
+  location,
 }: InsertProjectProps) => {
   return await db.transaction(async (transaction) => {
     const [project] = await transaction
@@ -63,6 +65,12 @@ export const insertProject = async ({
       isOwner: true,
       assignedBy: userId,
     });
+
+    if (location) {
+      await transaction
+        .insert(ProjectLocation)
+        .values({ projectId: project.id, ...location });
+    }
 
     return project;
   });

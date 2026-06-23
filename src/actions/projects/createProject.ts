@@ -21,6 +21,14 @@ const CreateProjectSchema = z.object({
       }),
     )
     .optional(),
+  location: z
+    .object({
+      name: z.string().optional(),
+      type: z.string(),
+      latitude: z.number(),
+      longitude: z.number(),
+    })
+    .optional(),
 });
 
 export const createProject = async (createProjectProps: InsertProjectProps) => {

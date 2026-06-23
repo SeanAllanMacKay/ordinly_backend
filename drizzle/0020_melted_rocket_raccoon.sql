@@ -1,0 +1,1 @@
+ALTER TABLE "Task" ADD COLUMN "isMilestone" boolean DEFAULT false NOT NULL;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { HTTP_STATUSES, signUp } from "../../actions/index.js";
+import { AUTH_COOKIE_OPTIONS } from "../../services/auth/index.js";
 
 const router = Router({ mergeParams: true });
 
@@ -10,12 +11,16 @@ router.route("/").post(async (req: any, res) => {
       body: { email, password, name },
     } = req;
 
-    const { status, message, user } = await signUp({
+    const { status, message, user, newToken } = await signUp({
       email,
       name,
       password,
       referer: req.headers.referer?.split("?")[0] as string,
     });
+
+    if (newToken) {
+      res.cookie("auth", newToken, AUTH_COOKIE_OPTIONS);
+    }
 
     res.status(status).send({ message, ...(user ? { user } : {}) });
   } catch (caught: any) {

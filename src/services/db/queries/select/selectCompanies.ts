@@ -1,7 +1,7 @@
-import { eq, asc, or, count, and } from "drizzle-orm";
+import { eq, or, count, and } from "drizzle-orm";
 
 import { db, Company, UserCompany } from "../../index.js";
-import { getDownloadURI } from "../../../files/getDownloadURI.js";
+import { fileService } from "../../../files/index.js";
 
 export type SelectCompaniesProps = {
   userId: string;
@@ -43,6 +43,7 @@ export const selectCompanies = async ({
       ),
     with: {
       logo: true,
+      profile: true,
     },
     orderBy: (company, { desc }) => desc(company.createdDate),
     limit: pageSize,
@@ -56,9 +57,8 @@ export const selectCompanies = async ({
         logo: company.logo
           ? {
               ...company.logo,
-              externalURL: await getDownloadURI({
-                bucketName: process.env.BUCKET_NAME!,
-                fileName: company.logo.name,
+              externalURL: await fileService.getCompanyLogoURL({
+                path: company.logo.externalURL,
               }),
             }
           : undefined,

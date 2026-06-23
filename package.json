@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec tsx --env-file=.env ./src/server.ts"
+    "dev": "nodemon --exec tsx --env-file=.env ./src/server.ts",
+    "db:generate": "tsx node_modules/drizzle-kit/bin.cjs generate",
+    "db:migrate": "tsx node_modules/drizzle-kit/bin.cjs migrate",
+    "db:seed": "tsx --env-file=.env src/services/db/seed/seedDefaults.ts"
   },
   "author": "Sean MacKay",
   "license": "ISC",
@@ -22,8 +25,11 @@
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.1",
+    "drizzle-seed": "^0.3.1",
     "express": "^4.21.0",
+    "html-to-text": "^9.0.5",
     "http": "^0.0.1-security",
+    "http-proxy-middleware": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.0",
@@ -38,12 +44,14 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@mapbox/mapbox-sdk": "^0.16.2",
     "@types/backblaze-b2": "^1.5.6",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/file-type": "^10.9.3",
+    "@types/html-to-text": "^9.0.4",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/multer": "^2.1.0",
     "@types/pg": "^8.18.0",

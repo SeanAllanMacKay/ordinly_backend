@@ -1,17 +1,22 @@
+import { and, eq, isNull } from "drizzle-orm";
+
 import {
   Company,
   CompanyProfile,
+  CompanyRole,
   Document,
   UserCompany,
   UserCompanyRole,
   db,
 } from "../../index.js";
-import { uploadSingle } from "../../../files/index.js";
+import { fileService } from "../../../files/index.js";
 
 export type InsertCompanyProps = {
   userId: string;
-  logo?: Awaited<ReturnType<typeof uploadSingle>>;
+  logo?: Awaited<ReturnType<typeof fileService.uploadCompanyLogo>>;
   companyId?: string;
+  description?: string;
+  shortDescription?: string;
 } & Omit<
   typeof Company.$inferInsert,
   | "id"
@@ -27,6 +32,8 @@ export type InsertCompanyProps = {
 export const insertCompany = async ({
   userId,
   name,
+  description,
+  shortDescription,
   companyId,
   logo,
 }: InsertCompanyProps) => {
@@ -39,8 +46,9 @@ export const insertCompany = async ({
         .values({
           name: logo.fileName,
           externalId: logo.fileId,
-          externalURL: logo.url,
+          externalPath: logo.path,
           createdBy: userId,
+          isPublic: logo.isPublic,
         })
         .returning();
 
@@ -62,6 +70,8 @@ export const insertCompany = async ({
       .insert(CompanyProfile)
       .values({
         companyId: company.id,
+        description: description ?? "",
+        shortDescription: shortDescription ?? "",
       })
       .returning();
 
@@ -74,10 +84,22 @@ export const insertCompany = async ({
       })
       .returning();
 
+    const [ownerRole] = await transaction
+      .select({ id: CompanyRole.id })
+      .from(CompanyRole)
+      .where(
+        and(eq(CompanyRole.name, "Owner"), isNull(CompanyRole.companyId)),
+      );
+
+    if (!ownerRole) {
+      throw new Error(
+        'Global "Owner" CompanyRole not found — run seedCompanyRoles() first.',
+      );
+    }
+
     await transaction.insert(UserCompanyRole).values({
       userCompanyId: userCompany.id,
-      //TODO: Make this less fragile
-      roleId: "c18d5e2a-9a2d-42c2-8515-a270b5b970db",
+      roleId: ownerRole.id,
     });
 
     return company;

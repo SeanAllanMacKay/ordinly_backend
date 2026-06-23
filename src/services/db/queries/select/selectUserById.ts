@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { db, User } from "../../index.js";
+import { db, User, UserCompany } from "../../index.js";
 
 export const selectUserById = async ({ userId }: { userId: string }) => {
   return await db.query.User.findFirst({
@@ -14,6 +14,7 @@ export const selectUserById = async ({ userId }: { userId: string }) => {
     },
     with: {
       companies: {
+        where: eq(UserCompany.isPersonal, false),
         columns: {},
         with: {
           company: true,

@@ -92,6 +92,104 @@
       "when": 1775931877419,
       "tag": "0012_deep_sue_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1776476722810,
+      "tag": "0013_sour_doctor_strange",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1776711395268,
+      "tag": "0014_silly_menace",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1776818275738,
+      "tag": "0015_aspiring_lady_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1776818359442,
+      "tag": "0016_organic_eternity",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1776902677846,
+      "tag": "0017_tiresome_tattoo",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1776910797041,
+      "tag": "0018_huge_xavin",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1776913335508,
+      "tag": "0019_chemical_goblin_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1776954060495,
+      "tag": "0020_melted_rocket_raccoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1777046407317,
+      "tag": "0021_dashing_zarda",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1777050289865,
+      "tag": "0022_modern_pride",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1777146089449,
+      "tag": "0023_wonderful_risque",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1777151511344,
+      "tag": "0024_spotty_lady_ursula",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1781896038448,
+      "tag": "0025_chilly_proemial_gods",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1781899682624,
+      "tag": "0026_right_mach_iv",
+      "breakpoints": true
     }
   ]
 }

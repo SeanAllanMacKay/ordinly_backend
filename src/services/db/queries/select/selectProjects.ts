@@ -36,8 +36,9 @@ export const selectProjects = async ({
     with: {
       status: true,
       priority: true,
+      locations: true,
     },
-    orderBy: (projects, { asc }) => asc(projects.name),
+    orderBy: (projects, { desc }) => desc(projects.updatedDate),
     limit: pageSize,
     offset: (page - 1) * pageSize,
   });

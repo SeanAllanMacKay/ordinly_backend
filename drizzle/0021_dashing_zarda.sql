@@ -1,0 +1,1 @@
+ALTER TABLE "Document" ADD COLUMN "isPublic" boolean DEFAULT false NOT NULL;

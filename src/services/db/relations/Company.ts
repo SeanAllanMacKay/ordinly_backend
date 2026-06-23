@@ -36,7 +36,10 @@ export const CompanyRelations = relations(Company, ({ one, many }) => ({
     relationName: "company_to_companyDocument",
   }),
   paymentMethods: many(CompanyPaymentMethod),
-  profile: one(CompanyProfile),
+  profile: one(CompanyProfile, {
+    fields: [Company.id],
+    references: [CompanyProfile.companyId],
+  }),
   logo: one(Document, {
     fields: [Company.logo],
     references: [Document.id],

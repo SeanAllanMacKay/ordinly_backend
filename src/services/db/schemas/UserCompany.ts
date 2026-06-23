@@ -3,6 +3,8 @@ import {
   uuid,
   timestamp,
   uniqueIndex,
+  unique,
+  index,
   boolean,
 } from "drizzle-orm/pg-core";
 
@@ -33,6 +35,17 @@ export const UserCompany = pgTable(
       uniquePersonalCompany: uniqueIndex("unique_personal_company")
         .on(table.userId)
         .where(sql`"isPersonal" = true`),
+      // One membership row per (user, company); also the FK target for
+      // UserProject/UserTask so workers can only be assigned under a company
+      // they actually belong to.
+      userCompanyUnique: unique("user_company_unique").on(
+        table.userId,
+        table.companyId,
+      ),
+      // Reverse lookup: all members of a company
+      userCompanyCompanyIdx: index("user_company_company_idx").on(
+        table.companyId,
+      ),
     };
   },
 );

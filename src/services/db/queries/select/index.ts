@@ -10,3 +10,6 @@ export * from "./selectProjectTasks.js";
 export * from "./selectProjectTask.js";
 export * from "./selectTaskPriorities.js";
 export * from "./selectTaskStatuses.js";
+export * from "./selectProjectTaskDocument.js";
+export * from "./selectPermissionCatalog.js";
+export * from "./selectRolePermissions.js";

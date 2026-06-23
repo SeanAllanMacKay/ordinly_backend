@@ -15,6 +15,23 @@ const UpdateProjectSchema = z.object({
   priority: z.string().optional(),
   startDate: z.coerce.date().optional(),
   dueDate: z.coerce.date().optional(),
+  items: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        name: z.string(),
+        isComplete: z.boolean(),
+      }),
+    )
+    .optional(),
+  location: z
+    .object({
+      name: z.string().optional(),
+      type: z.string(),
+      latitude: z.number(),
+      longitude: z.number(),
+    })
+    .optional(),
 });
 
 export const updateProject = async (updateProjectProps: UpdateProjectProps) => {

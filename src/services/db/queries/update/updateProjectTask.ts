@@ -18,18 +18,28 @@ export const updateProjectTask = async ({
   startDate,
   dueDate,
 }: UpdateProjectTaskProps) => {
-  const [task] = await db
-    .update(Task)
-    .set({
-      name,
-      description,
-      status,
-      priority,
-      startDate: startDate ? new Date(startDate) : undefined,
-      dueDate: dueDate ? new Date(dueDate) : undefined,
-    })
-    .where(eq(Task.id, taskId))
-    .returning();
+  return await db.transaction(async (transaction) => {
+    const [task] = await transaction
+      .update(Task)
+      .set({
+        name,
+        description,
+        status,
+        priority,
+        startDate: startDate ? new Date(startDate) : undefined,
+        dueDate: dueDate ? new Date(dueDate) : undefined,
+        createdDate: new Date(),
+      })
+      .where(eq(Task.id, taskId))
+      .returning();
 
-  return task;
+    await transaction
+      .update(Project)
+      .set({
+        updatedDate: new Date(),
+      })
+      .where(eq(Project.id, projectId));
+
+    return task;
+  });
 };

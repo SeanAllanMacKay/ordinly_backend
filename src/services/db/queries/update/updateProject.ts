@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { db, Project } from "../../index.js";
+import { db, Project, ProjectLocation } from "../../index.js";
 
 export type UpdateProjectProps = {
   userId: string;
@@ -9,7 +9,7 @@ export type UpdateProjectProps = {
     typeof Project.$inferInsert,
     "id" | "verificationCode" | "createdDate" | "createdBy"
   >
->;
+> & { location: Omit<typeof ProjectLocation.$inferInsert, "id"> };
 
 export const updateProject = async ({
   userId,
@@ -20,19 +20,33 @@ export const updateProject = async ({
   priority,
   startDate,
   dueDate,
+  location,
 }: UpdateProjectProps) => {
-  const [project] = await db
-    .update(Project)
-    .set({
-      name,
-      description,
-      status,
-      priority,
-      startDate: startDate ? new Date(startDate) : undefined,
-      dueDate: dueDate ? new Date(dueDate) : undefined,
-    })
-    .where(eq(Project.id, projectId))
-    .returning();
+  return await db.transaction(async (transaction) => {
+    const [project] = await transaction
+      .update(Project)
+      .set({
+        name,
+        description,
+        status,
+        priority,
+        startDate: startDate ? new Date(startDate) : undefined,
+        dueDate: dueDate ? new Date(dueDate) : undefined,
+        updatedDate: new Date(),
+      })
+      .where(eq(Project.id, projectId))
+      .returning();
 
-  return project;
+    if (location) {
+      await transaction
+        .insert(ProjectLocation)
+        .values({ ...location, projectId })
+        .onConflictDoUpdate({
+          target: ProjectLocation.projectId,
+          set: location,
+        });
+    }
+
+    return project;
+  });
 };

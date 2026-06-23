@@ -1,0 +1,4537 @@
+{
+  "id": "d31e4a30-0f7b-44d3-b31b-4efc498a1828",
+  "prevId": "0103a700-deec-4f16-9756-0df10e59f087",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Client": {
+      "name": "Client",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clientCompanyId": {
+          "name": "clientCompanyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clientUserId": {
+          "name": "clientUserId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Client_companyId_Company_id_fk": {
+          "name": "Client_companyId_Company_id_fk",
+          "tableFrom": "Client",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Client_clientCompanyId_Company_id_fk": {
+          "name": "Client_clientCompanyId_Company_id_fk",
+          "tableFrom": "Client",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "clientCompanyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Client_clientUserId_User_id_fk": {
+          "name": "Client_clientUserId_User_id_fk",
+          "tableFrom": "Client",
+          "tableTo": "User",
+          "columnsFrom": [
+            "clientUserId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Client_createdBy_User_id_fk": {
+          "name": "Client_createdBy_User_id_fk",
+          "tableFrom": "Client",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Client_deletedBy_User_id_fk": {
+          "name": "Client_deletedBy_User_id_fk",
+          "tableFrom": "Client",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Client_id_unique": {
+          "name": "Client_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Company": {
+      "name": "Company",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logo": {
+          "name": "logo",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "owner": {
+          "name": "owner",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isPersonal": {
+          "name": "isPersonal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Company_logo_Document_id_fk": {
+          "name": "Company_logo_Document_id_fk",
+          "tableFrom": "Company",
+          "tableTo": "Document",
+          "columnsFrom": [
+            "logo"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Company_owner_User_id_fk": {
+          "name": "Company_owner_User_id_fk",
+          "tableFrom": "Company",
+          "tableTo": "User",
+          "columnsFrom": [
+            "owner"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Company_createdBy_User_id_fk": {
+          "name": "Company_createdBy_User_id_fk",
+          "tableFrom": "Company",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Company_deletedBy_User_id_fk": {
+          "name": "Company_deletedBy_User_id_fk",
+          "tableFrom": "Company",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Company_id_unique": {
+          "name": "Company_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyDocument": {
+      "name": "CompanyDocument",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "documentId": {
+          "name": "documentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyDocument_companyId_Company_id_fk": {
+          "name": "CompanyDocument_companyId_Company_id_fk",
+          "tableFrom": "CompanyDocument",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyDocument_documentId_Document_id_fk": {
+          "name": "CompanyDocument_documentId_Document_id_fk",
+          "tableFrom": "CompanyDocument",
+          "tableTo": "Document",
+          "columnsFrom": [
+            "documentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyDocument_createdBy_User_id_fk": {
+          "name": "CompanyDocument_createdBy_User_id_fk",
+          "tableFrom": "CompanyDocument",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyDocument_id_unique": {
+          "name": "CompanyDocument_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfile": {
+      "name": "CompanyProfile",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shortDescription": {
+          "name": "shortDescription",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "establishedDate": {
+          "name": "establishedDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfile_companyId_Company_id_fk": {
+          "name": "CompanyProfile_companyId_Company_id_fk",
+          "tableFrom": "CompanyProfile",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfile_id_unique": {
+          "name": "CompanyProfile_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "CompanyProfile_companyId_unique": {
+          "name": "CompanyProfile_companyId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "companyId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProject": {
+      "name": "CompanyProject",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isOwner": {
+          "name": "isOwner",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignedDate": {
+          "name": "assignedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "assignedBy": {
+          "name": "assignedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProject_companyId_Company_id_fk": {
+          "name": "CompanyProject_companyId_Company_id_fk",
+          "tableFrom": "CompanyProject",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProject_projectId_Project_id_fk": {
+          "name": "CompanyProject_projectId_Project_id_fk",
+          "tableFrom": "CompanyProject",
+          "tableTo": "Project",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProject_assignedBy_User_id_fk": {
+          "name": "CompanyProject_assignedBy_User_id_fk",
+          "tableFrom": "CompanyProject",
+          "tableTo": "User",
+          "columnsFrom": [
+            "assignedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProject_id_unique": {
+          "name": "CompanyProject_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyStatus": {
+      "name": "CompanyStatus",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyStatus_createdBy_User_id_fk": {
+          "name": "CompanyStatus_createdBy_User_id_fk",
+          "tableFrom": "CompanyStatus",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyStatus_deletedBy_User_id_fk": {
+          "name": "CompanyStatus_deletedBy_User_id_fk",
+          "tableFrom": "CompanyStatus",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyStatus_id_unique": {
+          "name": "CompanyStatus_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanySubscription": {
+      "name": "CompanySubscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "externalSubscriptionId": {
+          "name": "externalSubscriptionId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "externalCustomerId": {
+          "name": "externalCustomerId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanySubscription_companyId_Company_id_fk": {
+          "name": "CompanySubscription_companyId_Company_id_fk",
+          "tableFrom": "CompanySubscription",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanySubscription_createdBy_User_id_fk": {
+          "name": "CompanySubscription_createdBy_User_id_fk",
+          "tableFrom": "CompanySubscription",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanySubscription_deletedBy_User_id_fk": {
+          "name": "CompanySubscription_deletedBy_User_id_fk",
+          "tableFrom": "CompanySubscription",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanySubscription_id_unique": {
+          "name": "CompanySubscription_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Document": {
+      "name": "Document",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "externalId": {
+          "name": "externalId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "externalPath": {
+          "name": "externalPath",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isPublic": {
+          "name": "isPublic",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Document_createdBy_User_id_fk": {
+          "name": "Document_createdBy_User_id_fk",
+          "tableFrom": "Document",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Document_deletedBy_User_id_fk": {
+          "name": "Document_deletedBy_User_id_fk",
+          "tableFrom": "Document",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Document_id_unique": {
+          "name": "Document_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Project": {
+      "name": "Project",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shortDescription": {
+          "name": "shortDescription",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "priority": {
+          "name": "priority",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dueDate": {
+          "name": "dueDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedDate": {
+          "name": "updatedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Project_status_ProjectStatus_id_fk": {
+          "name": "Project_status_ProjectStatus_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "ProjectStatus",
+          "columnsFrom": [
+            "status"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Project_priority_ProjectPriority_id_fk": {
+          "name": "Project_priority_ProjectPriority_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "ProjectPriority",
+          "columnsFrom": [
+            "priority"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Project_createdBy_User_id_fk": {
+          "name": "Project_createdBy_User_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Project_deletedBy_User_id_fk": {
+          "name": "Project_deletedBy_User_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Project_id_unique": {
+          "name": "Project_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectClient": {
+      "name": "ProjectClient",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "clientId": {
+          "name": "clientId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectClient_clientId_Client_id_fk": {
+          "name": "ProjectClient_clientId_Client_id_fk",
+          "tableFrom": "ProjectClient",
+          "tableTo": "Client",
+          "columnsFrom": [
+            "clientId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectClient_projectId_Project_id_fk": {
+          "name": "ProjectClient_projectId_Project_id_fk",
+          "tableFrom": "ProjectClient",
+          "tableTo": "Project",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectClient_companyId_Company_id_fk": {
+          "name": "ProjectClient_companyId_Company_id_fk",
+          "tableFrom": "ProjectClient",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectClient_createdBy_User_id_fk": {
+          "name": "ProjectClient_createdBy_User_id_fk",
+          "tableFrom": "ProjectClient",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectClient_id_unique": {
+          "name": "ProjectClient_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectDocument": {
+      "name": "ProjectDocument",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "documentId": {
+          "name": "documentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectDocument_projectId_Project_id_fk": {
+          "name": "ProjectDocument_projectId_Project_id_fk",
+          "tableFrom": "ProjectDocument",
+          "tableTo": "Project",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectDocument_documentId_Document_id_fk": {
+          "name": "ProjectDocument_documentId_Document_id_fk",
+          "tableFrom": "ProjectDocument",
+          "tableTo": "Document",
+          "columnsFrom": [
+            "documentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectDocument_createdBy_User_id_fk": {
+          "name": "ProjectDocument_createdBy_User_id_fk",
+          "tableFrom": "ProjectDocument",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectDocument_id_unique": {
+          "name": "ProjectDocument_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectPriority": {
+      "name": "ProjectPriority",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectPriority_companyId_Company_id_fk": {
+          "name": "ProjectPriority_companyId_Company_id_fk",
+          "tableFrom": "ProjectPriority",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectPriority_createdBy_User_id_fk": {
+          "name": "ProjectPriority_createdBy_User_id_fk",
+          "tableFrom": "ProjectPriority",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectPriority_deletedBy_User_id_fk": {
+          "name": "ProjectPriority_deletedBy_User_id_fk",
+          "tableFrom": "ProjectPriority",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectPriority_id_unique": {
+          "name": "ProjectPriority_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectStatus": {
+      "name": "ProjectStatus",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isTerminal": {
+          "name": "isTerminal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectStatus_companyId_Company_id_fk": {
+          "name": "ProjectStatus_companyId_Company_id_fk",
+          "tableFrom": "ProjectStatus",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectStatus_createdBy_User_id_fk": {
+          "name": "ProjectStatus_createdBy_User_id_fk",
+          "tableFrom": "ProjectStatus",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectStatus_deletedBy_User_id_fk": {
+          "name": "ProjectStatus_deletedBy_User_id_fk",
+          "tableFrom": "ProjectStatus",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectStatus_id_unique": {
+          "name": "ProjectStatus_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Task": {
+      "name": "Task",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "priority": {
+          "name": "priority",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dueDate": {
+          "name": "dueDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isMilestone": {
+          "name": "isMilestone",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedDate": {
+          "name": "updatedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Task_projectId_Project_id_fk": {
+          "name": "Task_projectId_Project_id_fk",
+          "tableFrom": "Task",
+          "tableTo": "Project",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Task_status_TaskStatus_id_fk": {
+          "name": "Task_status_TaskStatus_id_fk",
+          "tableFrom": "Task",
+          "tableTo": "TaskStatus",
+          "columnsFrom": [
+            "status"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Task_priority_TaskPriority_id_fk": {
+          "name": "Task_priority_TaskPriority_id_fk",
+          "tableFrom": "Task",
+          "tableTo": "TaskPriority",
+          "columnsFrom": [
+            "priority"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Task_createdBy_User_id_fk": {
+          "name": "Task_createdBy_User_id_fk",
+          "tableFrom": "Task",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Task_deletedBy_User_id_fk": {
+          "name": "Task_deletedBy_User_id_fk",
+          "tableFrom": "Task",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Task_id_unique": {
+          "name": "Task_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.TaskDocument": {
+      "name": "TaskDocument",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "taskId": {
+          "name": "taskId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "documentId": {
+          "name": "documentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TaskDocument_taskId_Task_id_fk": {
+          "name": "TaskDocument_taskId_Task_id_fk",
+          "tableFrom": "TaskDocument",
+          "tableTo": "Task",
+          "columnsFrom": [
+            "taskId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskDocument_documentId_Document_id_fk": {
+          "name": "TaskDocument_documentId_Document_id_fk",
+          "tableFrom": "TaskDocument",
+          "tableTo": "Document",
+          "columnsFrom": [
+            "documentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskDocument_createdBy_User_id_fk": {
+          "name": "TaskDocument_createdBy_User_id_fk",
+          "tableFrom": "TaskDocument",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "TaskDocument_id_unique": {
+          "name": "TaskDocument_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.TaskPriority": {
+      "name": "TaskPriority",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isCritical": {
+          "name": "isCritical",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TaskPriority_companyId_Company_id_fk": {
+          "name": "TaskPriority_companyId_Company_id_fk",
+          "tableFrom": "TaskPriority",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskPriority_createdBy_User_id_fk": {
+          "name": "TaskPriority_createdBy_User_id_fk",
+          "tableFrom": "TaskPriority",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskPriority_deletedBy_User_id_fk": {
+          "name": "TaskPriority_deletedBy_User_id_fk",
+          "tableFrom": "TaskPriority",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "TaskPriority_id_unique": {
+          "name": "TaskPriority_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.TaskStatus": {
+      "name": "TaskStatus",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isTerminal": {
+          "name": "isTerminal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TaskStatus_companyId_Company_id_fk": {
+          "name": "TaskStatus_companyId_Company_id_fk",
+          "tableFrom": "TaskStatus",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskStatus_createdBy_User_id_fk": {
+          "name": "TaskStatus_createdBy_User_id_fk",
+          "tableFrom": "TaskStatus",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskStatus_deletedBy_User_id_fk": {
+          "name": "TaskStatus_deletedBy_User_id_fk",
+          "tableFrom": "TaskStatus",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "TaskStatus_id_unique": {
+          "name": "TaskStatus_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.User": {
+      "name": "User",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isVerified": {
+          "name": "isVerified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verificationCode": {
+          "name": "verificationCode",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "User_id_unique": {
+          "name": "User_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "User_email_unique": {
+          "name": "User_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.UserCompany": {
+      "name": "UserCompany",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isPersonal": {
+          "name": "isPersonal",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "assignedDate": {
+          "name": "assignedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "assignedBy": {
+          "name": "assignedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "unique_personal_company": {
+          "name": "unique_personal_company",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"isPersonal\" = true",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "UserCompany_userId_User_id_fk": {
+          "name": "UserCompany_userId_User_id_fk",
+          "tableFrom": "UserCompany",
+          "tableTo": "User",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserCompany_companyId_Company_id_fk": {
+          "name": "UserCompany_companyId_Company_id_fk",
+          "tableFrom": "UserCompany",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserCompany_assignedBy_User_id_fk": {
+          "name": "UserCompany_assignedBy_User_id_fk",
+          "tableFrom": "UserCompany",
+          "tableTo": "User",
+          "columnsFrom": [
+            "assignedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.UserProject": {
+      "name": "UserProject",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignedDate": {
+          "name": "assignedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "assignedBy": {
+          "name": "assignedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "UserProject_userId_User_id_fk": {
+          "name": "UserProject_userId_User_id_fk",
+          "tableFrom": "UserProject",
+          "tableTo": "User",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserProject_projectId_Project_id_fk": {
+          "name": "UserProject_projectId_Project_id_fk",
+          "tableFrom": "UserProject",
+          "tableTo": "Project",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserProject_companyId_Company_id_fk": {
+          "name": "UserProject_companyId_Company_id_fk",
+          "tableFrom": "UserProject",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserProject_assignedBy_User_id_fk": {
+          "name": "UserProject_assignedBy_User_id_fk",
+          "tableFrom": "UserProject",
+          "tableTo": "User",
+          "columnsFrom": [
+            "assignedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "UserProject_id_unique": {
+          "name": "UserProject_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "name_or_clientCompanyId_or_userId": {
+          "name": "name_or_clientCompanyId_or_userId",
+          "value": "\"UserProject\".\"userId\" IS NOT NULL AND \"UserProject\".\"companyId\" IS NULL OR \"UserProject\".\"companyId\" IS NOT NULL AND \"UserProject\".\"userId\" IS NULL"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.UserTask": {
+      "name": "UserTask",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "taskId": {
+          "name": "taskId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignedDate": {
+          "name": "assignedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "assignedBy": {
+          "name": "assignedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "UserTask_userId_User_id_fk": {
+          "name": "UserTask_userId_User_id_fk",
+          "tableFrom": "UserTask",
+          "tableTo": "User",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserTask_taskId_Task_id_fk": {
+          "name": "UserTask_taskId_Task_id_fk",
+          "tableFrom": "UserTask",
+          "tableTo": "Task",
+          "columnsFrom": [
+            "taskId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserTask_companyId_Company_id_fk": {
+          "name": "UserTask_companyId_Company_id_fk",
+          "tableFrom": "UserTask",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserTask_assignedBy_User_id_fk": {
+          "name": "UserTask_assignedBy_User_id_fk",
+          "tableFrom": "UserTask",
+          "tableTo": "User",
+          "columnsFrom": [
+            "assignedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "UserTask_id_unique": {
+          "name": "UserTask_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.UserClient": {
+      "name": "UserClient",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clientId": {
+          "name": "clientId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignedDate": {
+          "name": "assignedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "assignedBy": {
+          "name": "assignedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "UserClient_userId_User_id_fk": {
+          "name": "UserClient_userId_User_id_fk",
+          "tableFrom": "UserClient",
+          "tableTo": "User",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserClient_clientId_Client_id_fk": {
+          "name": "UserClient_clientId_Client_id_fk",
+          "tableFrom": "UserClient",
+          "tableTo": "Client",
+          "columnsFrom": [
+            "clientId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserClient_assignedBy_User_id_fk": {
+          "name": "UserClient_assignedBy_User_id_fk",
+          "tableFrom": "UserClient",
+          "tableTo": "User",
+          "columnsFrom": [
+            "assignedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "UserClient_id_unique": {
+          "name": "UserClient_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.UserDocument": {
+      "name": "UserDocument",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "documentId": {
+          "name": "documentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "UserDocument_userId_User_id_fk": {
+          "name": "UserDocument_userId_User_id_fk",
+          "tableFrom": "UserDocument",
+          "tableTo": "User",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserDocument_documentId_Document_id_fk": {
+          "name": "UserDocument_documentId_Document_id_fk",
+          "tableFrom": "UserDocument",
+          "tableTo": "Document",
+          "columnsFrom": [
+            "documentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserDocument_createdBy_User_id_fk": {
+          "name": "UserDocument_createdBy_User_id_fk",
+          "tableFrom": "UserDocument",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "UserDocument_id_unique": {
+          "name": "UserDocument_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.TaskChecklistItem": {
+      "name": "TaskChecklistItem",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "taskId": {
+          "name": "taskId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isComplete": {
+          "name": "isComplete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "TaskChecklistItem_taskId_Task_id_fk": {
+          "name": "TaskChecklistItem_taskId_Task_id_fk",
+          "tableFrom": "TaskChecklistItem",
+          "tableTo": "Task",
+          "columnsFrom": [
+            "taskId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskChecklistItem_createdBy_User_id_fk": {
+          "name": "TaskChecklistItem_createdBy_User_id_fk",
+          "tableFrom": "TaskChecklistItem",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "TaskChecklistItem_deletedBy_User_id_fk": {
+          "name": "TaskChecklistItem_deletedBy_User_id_fk",
+          "tableFrom": "TaskChecklistItem",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "TaskChecklistItem_id_unique": {
+          "name": "TaskChecklistItem_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyRole": {
+      "name": "CompanyRole",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyRole_companyId_Company_id_fk": {
+          "name": "CompanyRole_companyId_Company_id_fk",
+          "tableFrom": "CompanyRole",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyRole_createdBy_User_id_fk": {
+          "name": "CompanyRole_createdBy_User_id_fk",
+          "tableFrom": "CompanyRole",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyRole_deletedBy_User_id_fk": {
+          "name": "CompanyRole_deletedBy_User_id_fk",
+          "tableFrom": "CompanyRole",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyRole_id_unique": {
+          "name": "CompanyRole_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyRolePermission": {
+      "name": "CompanyRolePermission",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "roleId": {
+          "name": "roleId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "asset": {
+          "name": "asset",
+          "type": "company_permission_action",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "create": {
+          "name": "create",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "read": {
+          "name": "read",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "update": {
+          "name": "update",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "delete": {
+          "name": "delete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyRolePermission_roleId_CompanyRole_id_fk": {
+          "name": "CompanyRolePermission_roleId_CompanyRole_id_fk",
+          "tableFrom": "CompanyRolePermission",
+          "tableTo": "CompanyRole",
+          "columnsFrom": [
+            "roleId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyRolePermission_roleId_asset_unique": {
+          "name": "CompanyRolePermission_roleId_asset_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "roleId",
+            "asset"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.UserCompanyRole": {
+      "name": "UserCompanyRole",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "userCompanyId": {
+          "name": "userCompanyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roleId": {
+          "name": "roleId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "worker_role_idx": {
+          "name": "worker_role_idx",
+          "columns": [
+            {
+              "expression": "userCompanyId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "roleId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "UserCompanyRole_userCompanyId_UserCompany_id_fk": {
+          "name": "UserCompanyRole_userCompanyId_UserCompany_id_fk",
+          "tableFrom": "UserCompanyRole",
+          "tableTo": "UserCompany",
+          "columnsFrom": [
+            "userCompanyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserCompanyRole_roleId_CompanyRole_id_fk": {
+          "name": "UserCompanyRole_roleId_CompanyRole_id_fk",
+          "tableFrom": "UserCompanyRole",
+          "tableTo": "CompanyRole",
+          "columnsFrom": [
+            "roleId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectRole": {
+      "name": "ProjectRole",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedDate": {
+          "name": "deletedDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedBy": {
+          "name": "deletedBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectRole_projectId_Project_id_fk": {
+          "name": "ProjectRole_projectId_Project_id_fk",
+          "tableFrom": "ProjectRole",
+          "tableTo": "Project",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectRole_createdBy_User_id_fk": {
+          "name": "ProjectRole_createdBy_User_id_fk",
+          "tableFrom": "ProjectRole",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectRole_deletedBy_User_id_fk": {
+          "name": "ProjectRole_deletedBy_User_id_fk",
+          "tableFrom": "ProjectRole",
+          "tableTo": "User",
+          "columnsFrom": [
+            "deletedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectRole_id_unique": {
+          "name": "ProjectRole_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectRolePermission": {
+      "name": "ProjectRolePermission",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "roleId": {
+          "name": "roleId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "asset": {
+          "name": "asset",
+          "type": "project_permission_action",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "create": {
+          "name": "create",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "read": {
+          "name": "read",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "update": {
+          "name": "update",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "delete": {
+          "name": "delete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectRolePermission_roleId_ProjectRole_id_fk": {
+          "name": "ProjectRolePermission_roleId_ProjectRole_id_fk",
+          "tableFrom": "ProjectRolePermission",
+          "tableTo": "ProjectRole",
+          "columnsFrom": [
+            "roleId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectRolePermission_roleId_asset_unique": {
+          "name": "ProjectRolePermission_roleId_asset_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "roleId",
+            "asset"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProjectRole": {
+      "name": "CompanyProjectRole",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProjectId": {
+          "name": "companyProjectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roleId": {
+          "name": "roleId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "company_project_role_idx": {
+          "name": "company_project_role_idx",
+          "columns": [
+            {
+              "expression": "companyProjectId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "roleId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "CompanyProjectRole_companyProjectId_CompanyProject_id_fk": {
+          "name": "CompanyProjectRole_companyProjectId_CompanyProject_id_fk",
+          "tableFrom": "CompanyProjectRole",
+          "tableTo": "CompanyProject",
+          "columnsFrom": [
+            "companyProjectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProjectRole_roleId_ProjectRole_id_fk": {
+          "name": "CompanyProjectRole_roleId_ProjectRole_id_fk",
+          "tableFrom": "CompanyProjectRole",
+          "tableTo": "ProjectRole",
+          "columnsFrom": [
+            "roleId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyPaymentMethod": {
+      "name": "CompanyPaymentMethod",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyId": {
+          "name": "companyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paymentMethodId": {
+          "name": "paymentMethodId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyPaymentMethod_companyId_Company_id_fk": {
+          "name": "CompanyPaymentMethod_companyId_Company_id_fk",
+          "tableFrom": "CompanyPaymentMethod",
+          "tableTo": "Company",
+          "columnsFrom": [
+            "companyId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyPaymentMethod_paymentMethodId_PaymentMethod_id_fk": {
+          "name": "CompanyPaymentMethod_paymentMethodId_PaymentMethod_id_fk",
+          "tableFrom": "CompanyPaymentMethod",
+          "tableTo": "PaymentMethod",
+          "columnsFrom": [
+            "paymentMethodId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyPaymentMethod_createdBy_User_id_fk": {
+          "name": "CompanyPaymentMethod_createdBy_User_id_fk",
+          "tableFrom": "CompanyPaymentMethod",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyPaymentMethod_id_unique": {
+          "name": "CompanyPaymentMethod_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.PaymentMethod": {
+      "name": "PaymentMethod",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "logoURL": {
+          "name": "logoURL",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "PaymentMethod_createdBy_User_id_fk": {
+          "name": "PaymentMethod_createdBy_User_id_fk",
+          "tableFrom": "PaymentMethod",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "PaymentMethod_id_unique": {
+          "name": "PaymentMethod_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileHoursOfOperation": {
+      "name": "CompanyProfileHoursOfOperation",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mondayStart": {
+          "name": "mondayStart",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mondayEnd": {
+          "name": "mondayEnd",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tuesdayStart": {
+          "name": "tuesdayStart",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tuesdayEnd": {
+          "name": "tuesdayEnd",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wednesdayStart": {
+          "name": "wednesdayStart",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wednesdayEnd": {
+          "name": "wednesdayEnd",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thursdayStart": {
+          "name": "thursdayStart",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "thursdayEnd": {
+          "name": "thursdayEnd",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fridayStart": {
+          "name": "fridayStart",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fridayEnd": {
+          "name": "fridayEnd",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "saturdayStart": {
+          "name": "saturdayStart",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "saturdayEnd": {
+          "name": "saturdayEnd",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sundayStart": {
+          "name": "sundayStart",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sundayEnd": {
+          "name": "sundayEnd",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileHoursOfOperation_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfileHoursOfOperation_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfileHoursOfOperation",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileHoursOfOperation_createdBy_User_id_fk": {
+          "name": "CompanyProfileHoursOfOperation_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileHoursOfOperation",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileHoursOfOperation_id_unique": {
+          "name": "CompanyProfileHoursOfOperation_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileAlbum": {
+      "name": "CompanyProfileAlbum",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileAlbum_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfileAlbum_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfileAlbum",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileAlbum_createdBy_User_id_fk": {
+          "name": "CompanyProfileAlbum_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileAlbum",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileAlbum_id_unique": {
+          "name": "CompanyProfileAlbum_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileAlbumImage": {
+      "name": "CompanyProfileAlbumImage",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileAlbumId": {
+          "name": "companyProfileAlbumId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image": {
+          "name": "image",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileAlbumImage_companyProfileAlbumId_CompanyProfileAlbum_id_fk": {
+          "name": "CompanyProfileAlbumImage_companyProfileAlbumId_CompanyProfileAlbum_id_fk",
+          "tableFrom": "CompanyProfileAlbumImage",
+          "tableTo": "CompanyProfileAlbum",
+          "columnsFrom": [
+            "companyProfileAlbumId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileAlbumImage_image_CompanyDocument_id_fk": {
+          "name": "CompanyProfileAlbumImage_image_CompanyDocument_id_fk",
+          "tableFrom": "CompanyProfileAlbumImage",
+          "tableTo": "CompanyDocument",
+          "columnsFrom": [
+            "image"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileAlbumImage_createdBy_User_id_fk": {
+          "name": "CompanyProfileAlbumImage_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileAlbumImage",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileAlbumImage_id_unique": {
+          "name": "CompanyProfileAlbumImage_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileDocument": {
+      "name": "CompanyProfileDocument",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "documentId": {
+          "name": "documentId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileDocument_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfileDocument_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfileDocument",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileDocument_documentId_Document_id_fk": {
+          "name": "CompanyProfileDocument_documentId_Document_id_fk",
+          "tableFrom": "CompanyProfileDocument",
+          "tableTo": "Document",
+          "columnsFrom": [
+            "documentId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileDocument_createdBy_User_id_fk": {
+          "name": "CompanyProfileDocument_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileDocument",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileDocument_id_unique": {
+          "name": "CompanyProfileDocument_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileEmail": {
+      "name": "CompanyProfileEmail",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileEmail_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfileEmail_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfileEmail",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileEmail_createdBy_User_id_fk": {
+          "name": "CompanyProfileEmail_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileEmail",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileEmail_id_unique": {
+          "name": "CompanyProfileEmail_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileInfoList": {
+      "name": "CompanyProfileInfoList",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileInfoList_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfileInfoList_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfileInfoList",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileInfoList_createdBy_User_id_fk": {
+          "name": "CompanyProfileInfoList_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileInfoList",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileInfoList_id_unique": {
+          "name": "CompanyProfileInfoList_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileInfoListItem": {
+      "name": "CompanyProfileInfoListItem",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfilInfoListId": {
+          "name": "companyProfilInfoListId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileInfoListItem_companyProfilInfoListId_CompanyProfileInfoList_id_fk": {
+          "name": "CompanyProfileInfoListItem_companyProfilInfoListId_CompanyProfileInfoList_id_fk",
+          "tableFrom": "CompanyProfileInfoListItem",
+          "tableTo": "CompanyProfileInfoList",
+          "columnsFrom": [
+            "companyProfilInfoListId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileInfoListItem_createdBy_User_id_fk": {
+          "name": "CompanyProfileInfoListItem_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileInfoListItem",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileInfoListItem_id_unique": {
+          "name": "CompanyProfileInfoListItem_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileLocation": {
+      "name": "CompanyProfileLocation",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "zoneIdentifier": {
+          "name": "zoneIdentifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region": {
+          "name": "region",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileLocation_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfileLocation_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfileLocation",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileLocation_createdBy_User_id_fk": {
+          "name": "CompanyProfileLocation_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileLocation",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileLocation_id_unique": {
+          "name": "CompanyProfileLocation_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfilePhoneNumber": {
+      "name": "CompanyProfilePhoneNumber",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "number": {
+          "name": "number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfilePhoneNumber_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfilePhoneNumber_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfilePhoneNumber",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfilePhoneNumber_createdBy_User_id_fk": {
+          "name": "CompanyProfilePhoneNumber_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfilePhoneNumber",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfilePhoneNumber_id_unique": {
+          "name": "CompanyProfilePhoneNumber_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.CompanyProfileWebsite": {
+      "name": "CompanyProfileWebsite",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "companyProfileId": {
+          "name": "companyProfileId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdDate": {
+          "name": "createdDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "CompanyProfileWebsite_companyProfileId_CompanyProfile_id_fk": {
+          "name": "CompanyProfileWebsite_companyProfileId_CompanyProfile_id_fk",
+          "tableFrom": "CompanyProfileWebsite",
+          "tableTo": "CompanyProfile",
+          "columnsFrom": [
+            "companyProfileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "CompanyProfileWebsite_createdBy_User_id_fk": {
+          "name": "CompanyProfileWebsite_createdBy_User_id_fk",
+          "tableFrom": "CompanyProfileWebsite",
+          "tableTo": "User",
+          "columnsFrom": [
+            "createdBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "CompanyProfileWebsite_id_unique": {
+          "name": "CompanyProfileWebsite_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectLocation": {
+      "name": "ProjectLocation",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "location_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectLocation_projectId_Project_id_fk": {
+          "name": "ProjectLocation_projectId_Project_id_fk",
+          "tableFrom": "ProjectLocation",
+          "tableTo": "Project",
+          "columnsFrom": [
+            "projectId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectLocation_id_unique": {
+          "name": "ProjectLocation_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "ProjectLocation_projectId_unique": {
+          "name": "ProjectLocation_projectId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "projectId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.company_permission_action": {
+      "name": "company_permission_action",
+      "schema": "public",
+      "values": [
+        "company",
+        "profile",
+        "workers",
+        "roles",
+        "documents",
+        "folders",
+        "invoices",
+        "license_numbers",
+        "all_clients",
+        "all_projects",
+        "all_tasks",
+        "all_checklist_items",
+        "assigned_projects",
+        "assigned_tasks",
+        "assigned_clients",
+        "assigned_checklist_items",
+        "project_documents",
+        "task_documents",
+        "checklist_item_documents"
+      ]
+    },
+    "public.project_permission_action": {
+      "name": "project_permission_action",
+      "schema": "public",
+      "values": [
+        "invoices",
+        "project_documents",
+        "all_tasks",
+        "assigned_tasks",
+        "task_documents",
+        "all_checklist_items",
+        "assigned_checklist_items",
+        "checklist_item_documents"
+      ]
+    },
+    "public.location_type": {
+      "name": "location_type",
+      "schema": "public",
+      "values": [
+        "country",
+        "region",
+        "postcode",
+        "district",
+        "place",
+        "locality",
+        "neighborhood",
+        "address"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

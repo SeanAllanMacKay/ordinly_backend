@@ -15,12 +15,23 @@ export const selectProjectTask = async ({
 }: SelectProjectTaskProps) => {
   const permissions = buildProjectTaskPermissionFilter({ userId, projectId });
 
-  return await db.query.Task.findFirst({
+  const task = await db.query.Task.findFirst({
     where: and(permissions, eq(Task.id, taskId)),
     with: {
       status: true,
       priority: true,
       checklist: true,
+      documents: {
+        with: {
+          document: true,
+        },
+      },
     },
   });
+
+  if (!task) {
+    return undefined;
+  }
+
+  return { ...task, documents: task.documents.map(({ document }) => document) };
 };

@@ -1,5 +1,6 @@
 import { insertCompany, InsertCompanyProps } from "../../services/db/index.js";
-import { uploadSingle } from "../../services/files/index.js";
+import { fileService } from "../../services/files/index.js";
+import { htmlToPlaintext } from "../../services/formatting/index.js";
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import { randomUUID as uuid } from "crypto";
 import * as z from "zod";
@@ -33,9 +34,8 @@ export const createCompany = async (
     let logo = undefined;
 
     if (companyProps.logo) {
-      logo = await uploadSingle({
+      logo = await fileService.uploadCompanyLogo({
         file: companyProps.logo,
-        path: "document",
         companyId,
       });
     }
@@ -44,6 +44,7 @@ export const createCompany = async (
       ...companyProps,
       companyId,
       logo,
+      shortDescription: htmlToPlaintext(companyProps.description),
     });
 
     return {
@@ -52,6 +53,7 @@ export const createCompany = async (
       company: newCompany,
     };
   } catch (caught: any) {
+    console.log(caught);
     if (caught instanceof z.ZodError) {
       throw {
         status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,

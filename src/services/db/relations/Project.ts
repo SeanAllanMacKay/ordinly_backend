@@ -9,6 +9,7 @@ import {
   ProjectDocument,
   CompanyProject,
   Task,
+  ProjectLocation,
 } from "../schemas/index.js";
 
 export const ProjectRelations = relations(Project, ({ one, many }) => ({
@@ -30,6 +31,7 @@ export const ProjectRelations = relations(Project, ({ one, many }) => ({
   }),
 
   tasks: many(Task),
+  locations: many(ProjectLocation),
   users: many(UserProject, { relationName: "project_to_userProject" }),
   clients: many(ProjectClient, {
     relationName: "project_to_projectClient",

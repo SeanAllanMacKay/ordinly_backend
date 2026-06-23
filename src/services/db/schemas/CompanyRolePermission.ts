@@ -1,12 +1,12 @@
-import { boolean, pgEnum, pgTable, unique, uuid } from "drizzle-orm/pg-core";
-import { companyRolePermissionAction } from "../constants.js";
+import { pgTable, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { CompanyRole } from "./CompanyRole.js";
+import { CompanyPermission } from "./CompanyPermission.js";
+import { CompanyPermissionLevel } from "./CompanyPermissionLevel.js";
+import { User } from "./User.js";
 
-export const CompanyRolePermissionActionEnum = pgEnum(
-  "company_permission_action",
-  companyRolePermissionAction,
-);
-
+// Assigns a level from the permission catalog to a role. The chosen level is
+// referenced (not copied) — CompanyPermissionLevel is the source of truth for
+// the granted CRUD, resolved via join when enforcing.
 export const CompanyRolePermission = pgTable(
   "CompanyRolePermission",
   {
@@ -14,13 +14,19 @@ export const CompanyRolePermission = pgTable(
     roleId: uuid()
       .references(() => CompanyRole.id)
       .notNull(),
-    asset: CompanyRolePermissionActionEnum().notNull(),
-    create: boolean().default(false).notNull(),
-    read: boolean().default(false).notNull(),
-    update: boolean().default(false).notNull(),
-    delete: boolean().default(false).notNull(),
+    permissionId: uuid()
+      .references(() => CompanyPermission.id)
+      .notNull(),
+    levelId: uuid()
+      .references(() => CompanyPermissionLevel.id)
+      .notNull(),
+
+    createdDate: timestamp().defaultNow().notNull(),
+    createdBy: uuid().references(() => User.id),
+    deletedDate: timestamp(),
+    deletedBy: uuid().references(() => User.id),
   },
   (table) => ({
-    unq: unique().on(table.roleId, table.asset),
+    unq: unique().on(table.roleId, table.permissionId),
   }),
 );

@@ -6,6 +6,7 @@ import {
 } from "../../../../../actions/projects/index.js";
 import { HTTP_STATUSES } from "../../../../../actions/index.js";
 import checklistRouter from "./checklist.js";
+import documentsRouter from "./documents.js";
 
 const router = Router({ mergeParams: true });
 
@@ -61,5 +62,6 @@ router
   });
 
 router.use("/checklist", checklistRouter);
+router.use("/documents", documentsRouter);
 
 export default router;

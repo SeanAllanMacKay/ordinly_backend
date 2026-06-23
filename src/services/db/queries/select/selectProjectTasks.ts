@@ -30,7 +30,7 @@ export const selectProjectTasks = async ({
       priority: true,
       checklist: true,
     },
-    orderBy: (tasks, { asc }) => asc(tasks.name),
+    orderBy: (tasks, { desc }) => desc(tasks.updatedDate),
     limit: pageSize,
     offset: (page - 1) * pageSize,
   });

@@ -8,5 +8,6 @@ export const CompanyProfile = pgTable("CompanyProfile", {
     .unique()
     .notNull(),
   description: text(),
+  shortDescription: text(),
   establishedDate: date(),
 });

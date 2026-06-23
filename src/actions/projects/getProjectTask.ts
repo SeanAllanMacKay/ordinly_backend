@@ -5,6 +5,7 @@ import {
   SelectProjectTaskProps,
 } from "../../services/db/index.js";
 import * as z from "zod";
+import { fileService } from "../../services/files/index.js";
 
 const GetProjectTaskSchema = z.object({
   userId: z.string("Invalid userId"),
@@ -27,10 +28,14 @@ export const getProjectTask = async (
       };
     }
 
+    const documents = await fileService.appendExternalURLsToObjectsInArray({
+      documents: task.documents,
+    });
+
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Task fetched",
-      task,
+      task: { ...task, documents },
     };
   } catch (caught: any) {
     if (caught instanceof z.ZodError) {

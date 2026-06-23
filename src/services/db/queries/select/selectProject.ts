@@ -30,6 +30,8 @@ export const selectProject = async ({
     with: {
       status: true,
       priority: true,
+      locations: true,
+      tasks: true,
     },
   });
 };

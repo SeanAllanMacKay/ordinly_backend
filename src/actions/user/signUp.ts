@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import send from "../../services/email/index.js";
+import auth from "../../services/auth/index.js";
 import { HTTP_STATUSES } from "../index.js";
 import * as z from "zod";
 
@@ -61,10 +62,15 @@ export const signUp = async ({
         referer,
       });
 
+      // Log the new (still unverified) user in immediately so they reach value
+      // without a separate login step. The FE shows an "unverified" banner.
+      const newToken = auth.sign({ id: newUser.id });
+
       return {
         status: HTTP_STATUSES.SUCCESS.CREATED,
         message: successMessage,
         user: newUser,
+        newToken,
       };
     }
   } catch (caught: any) {

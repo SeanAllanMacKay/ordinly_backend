@@ -4,6 +4,7 @@ import {
   SelectProjectsProps,
 } from "../../services/db/index.js";
 import * as z from "zod";
+import { getBatchLocationData } from "../../services/maps/getBatchProjectLocationData.js";
 
 const ListProjectsSchema = z.object({
   userId: z.string("Invalid userId"),
@@ -24,7 +25,7 @@ export const listProjects = async (listProjectsProps: SelectProjectsProps) => {
         ? HTTP_STATUSES.SUCCESS.OK
         : HTTP_STATUSES.SUCCESS.EMPTY,
       message: "Projects fetched",
-      projects,
+      projects: await getBatchLocationData({ projects }),
       totalItems,
       totalPages,
     };

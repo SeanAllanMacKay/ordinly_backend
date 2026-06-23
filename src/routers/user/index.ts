@@ -2,7 +2,9 @@ import { Router } from "express";
 import verifyToken from "../../services/auth/verifyToken.js";
 import signUpRouter from "./sign-up.js";
 import verifyAccountRouter from "./verify-account.js";
+import resendVerificationRouter from "./resend-verification.js";
 import loginRouter from "./login.js";
+import logoutRouter from "./logout.js";
 import { HTTP_STATUSES } from "../../actions/index.js";
 
 const router = Router({ mergeParams: true });
@@ -31,6 +33,8 @@ router.route("/").get(verifyToken, async (req: any, res) => {
 
 router.use("/sign-up", signUpRouter);
 router.use("/verify-account", verifyAccountRouter);
+router.use("/resend-verification", resendVerificationRouter);
 router.use("/login", loginRouter);
+router.use("/logout", logoutRouter);
 
 export default router;

@@ -8,6 +8,7 @@ import {
 } from "../../actions/index.js";
 import { HTTP_STATUSES } from "../../actions/index.js";
 import projectIdRouter from "./[projectId]/index.js";
+import { getBatchLocationData } from "../../services/maps/getBatchProjectLocationData.js";
 
 const router = Router({ mergeParams: true });
 
@@ -24,9 +25,15 @@ router.route("/").get(verifyToken, async (req: any, res) => {
         page: Number(page),
       });
 
-    res
-      .status(status)
-      .send({ message, projects, totalItems, totalPages, page: Number(page) });
+    console.log({ projects });
+
+    res.status(status).send({
+      message,
+      projects,
+      totalItems,
+      totalPages,
+      page: Number(page),
+    });
   } catch (caught: any) {
     const {
       status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,

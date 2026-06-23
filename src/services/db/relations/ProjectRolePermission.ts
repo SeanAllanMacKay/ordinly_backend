@@ -1,5 +1,10 @@
 import { relations } from "drizzle-orm";
-import { ProjectRole, ProjectRolePermission } from "../schemas/index.js";
+import {
+  ProjectRole,
+  ProjectPermission,
+  ProjectPermissionLevel,
+  ProjectRolePermission,
+} from "../schemas/index.js";
 
 export const ProjectRolePermissionRelations = relations(
   ProjectRolePermission,
@@ -7,6 +12,14 @@ export const ProjectRolePermissionRelations = relations(
     role: one(ProjectRole, {
       fields: [ProjectRolePermission.roleId],
       references: [ProjectRole.id],
+    }),
+    permission: one(ProjectPermission, {
+      fields: [ProjectRolePermission.permissionId],
+      references: [ProjectPermission.id],
+    }),
+    level: one(ProjectPermissionLevel, {
+      fields: [ProjectRolePermission.levelId],
+      references: [ProjectPermissionLevel.id],
     }),
   }),
 );

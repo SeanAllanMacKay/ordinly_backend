@@ -1,5 +1,5 @@
 export const companyRolePermissionAction = [
-  "company",
+  "company_settings",
   "profile",
   "workers",
   "roles",
@@ -22,6 +22,7 @@ export const companyRolePermissionAction = [
 
 export const projectPermissionAction = [
   "invoices",
+  "project_roles",
   "project_documents",
   "all_tasks",
   "assigned_tasks",
@@ -29,4 +30,41 @@ export const projectPermissionAction = [
   "all_checklist_items",
   "assigned_checklist_items",
   "checklist_item_documents",
+] as const;
+
+export const locationType = [
+  "country",
+  "region",
+  "postcode",
+  "district",
+  "place",
+  "locality",
+  "neighborhood",
+  "address",
+] as const;
+
+export const taskType = ["phase", "milestone", "task"] as const;
+
+/**
+ * start-to-start: Task 1 must be started to start task 2
+ * start-to-finish: Task 1 must be started to finish task 1
+ * finish-to-start: Task 1 must be finished to start task 2
+ * finish-to-finish: Task 1 must be finished to finish task 2
+ */
+export const taskSequenceType = [
+  "start-to-start",
+  "start-to-finish",
+  "finish-to-start",
+  "finish-to-finish",
+] as const;
+
+/**
+ * references: Most relationships, just a connection to another task that might be worth noting
+ * impacts: Used for tasks resulting in change orders
+ * conflicts: Used for non-temporal conflicts like space, equipment, worker allocation
+ */
+export const taskRelationshipType = [
+  "references",
+  "impacts",
+  "conflicts",
 ] as const;

@@ -1,0 +1,1 @@
+ALTER TABLE "ProjectLocation" ADD CONSTRAINT "ProjectLocation_projectId_unique" UNIQUE("projectId");
