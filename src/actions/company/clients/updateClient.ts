@@ -13,6 +13,9 @@ const UpdateClientSchema = z.object({
   clientCompanyId: z.string("Invalid clientCompanyId").optional(),
   clientUserId: z.string("Invalid clientUserId").optional(),
   ...contactInfoFields,
+}).meta({
+  id: "PUT /api/company/{companyId}/clients/{clientId}",
+  route: "PUT /api/company/{companyId}/clients/{clientId}",
 });
 
 export type UpdateClientProps = z.infer<typeof UpdateClientSchema>;

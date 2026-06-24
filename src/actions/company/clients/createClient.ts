@@ -13,6 +13,9 @@ const CreateClientSchema = z.object({
   clientUserId: z.string("Invalid clientUserId").optional(),
   contacts: z.array(NestedContactSchema).optional(),
   ...contactInfoFields,
+}).meta({
+  id: "POST /api/company/{companyId}/clients",
+  route: "POST /api/company/{companyId}/clients",
 });
 
 export type CreateClientProps = z.infer<typeof CreateClientSchema>;

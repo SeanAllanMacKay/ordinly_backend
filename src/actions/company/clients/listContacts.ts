@@ -7,6 +7,9 @@ const ListContactsSchema = z.object({
   userId: z.string("Invalid userId"),
   companyId: z.string("Invalid companyId"),
   clientId: z.string("Invalid clientId"),
+}).meta({
+  id: "GET /api/company/{companyId}/clients/{clientId}/contacts",
+  route: "GET /api/company/{companyId}/clients/{clientId}/contacts",
 });
 
 export type ListContactsProps = z.infer<typeof ListContactsSchema>;

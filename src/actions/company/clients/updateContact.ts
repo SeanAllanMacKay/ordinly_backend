@@ -13,6 +13,9 @@ const UpdateContactSchema = z.object({
   role: z.string("Role must be a string if passed").optional(),
   description: z.string("Description must be a string if passed").optional(),
   ...contactInfoFields,
+}).meta({
+  id: "PUT /api/company/{companyId}/clients/{clientId}/contacts/{contactId}",
+  route: "PUT /api/company/{companyId}/clients/{clientId}/contacts/{contactId}",
 });
 
 export type UpdateContactProps = z.infer<typeof UpdateContactSchema>;

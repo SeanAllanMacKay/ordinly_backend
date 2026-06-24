@@ -13,7 +13,18 @@ export const OPENAPI_TARGET = "openapi-3.0" as const;
  * client request body, so they are stripped before conversion. Path params are
  * documented separately as `in: path` parameters.
  */
-const INJECTED_KEYS = ["userId", "companyId", "projectId", "taskId"] as const;
+const INJECTED_KEYS = [
+  "userId",
+  "companyId",
+  "projectId",
+  "taskId",
+  "clientId",
+  "contactId",
+  "roleId",
+  "teamId",
+  "invitationId",
+  "documentId",
+] as const;
 
 // Fresh, empty registry so toJSONSchema never extracts registered schemas as
 // `$ref`/`$defs` — we want fully inlined bodies regardless of `.meta({ id })`.

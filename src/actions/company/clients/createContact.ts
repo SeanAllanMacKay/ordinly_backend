@@ -12,6 +12,9 @@ const CreateContactSchema = z.object({
   role: z.string("Role must be a string if passed").optional(),
   description: z.string("Description must be a string if passed").optional(),
   ...contactInfoFields,
+}).meta({
+  id: "POST /api/company/{companyId}/clients/{clientId}/contacts",
+  route: "POST /api/company/{companyId}/clients/{clientId}/contacts",
 });
 
 export type CreateContactProps = z.infer<typeof CreateContactSchema>;

@@ -10,6 +10,9 @@ const ListClientsSchema = z.object({
   companyId: z.string("Invalid companyId"),
   page: z.coerce.number("Page must be a number if passed").optional(),
   pageSize: z.coerce.number("pageSize must be a number if passed").optional(),
+}).meta({
+  id: "GET /api/company/{companyId}/clients",
+  route: "GET /api/company/{companyId}/clients",
 });
 
 export type ListClientsProps = z.infer<typeof ListClientsSchema>;
