@@ -10,17 +10,20 @@ import * as z from "zod";
 
 const VerifyAccountSchema = z.object({
   code: z.string("Invalid code"),
+  referer: z.string().optional(),
 }).meta({ id: "POST /api/user/verify-account", route: "POST /api/user/verify-account" });
 
 type VerifyAccountProps = {
   code: string;
+  referer?: string;
 };
 
 export const verifyAccount = async ({
   code,
+  referer,
 }: VerifyAccountProps): Promise<APIResponse> => {
   try {
-    VerifyAccountSchema.parse({ code });
+    VerifyAccountSchema.parse({ code, referer });
 
     const account = await selectUserByVerificationCode({
       verificationCode: code,
@@ -42,7 +45,7 @@ export const verifyAccount = async ({
 
     updateUserById({ userId: account.id, isVerified: true });
 
-    await send({ email: account.email, type: "accountVerified" });
+    await send({ email: account.email, type: "accountVerified", referer });
 
     return {
       status: HTTP_STATUSES.SUCCESS.ACCEPTED,

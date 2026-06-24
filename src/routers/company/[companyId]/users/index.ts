@@ -52,6 +52,7 @@ router
         ...body,
         userId: user.id,
         companyId,
+        referer: req.headers.referer?.split("?")[0] as string,
       });
 
       res.status(status).send({ message, invitation });

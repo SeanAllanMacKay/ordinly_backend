@@ -46,6 +46,7 @@ router
           ...body,
           userId: user.id,
           logo,
+          referer: req.headers.referer?.split("?")[0] as string,
         });
 
         res.status(status).send({ message, company });

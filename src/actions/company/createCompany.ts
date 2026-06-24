@@ -1,6 +1,11 @@
-import { insertCompany, InsertCompanyProps } from "../../services/db/index.js";
+import {
+  insertCompany,
+  InsertCompanyProps,
+  selectUserById,
+} from "../../services/db/index.js";
 import { fileService } from "../../services/files/index.js";
 import { htmlToPlaintext } from "../../services/formatting/index.js";
+import send from "../../services/email/index.js";
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import { randomUUID as uuid } from "crypto";
 import * as z from "zod";
@@ -9,6 +14,7 @@ const CreateCompanySchema = z.object({
   userId: z.string("Invalid userId"),
   name: z.string("Name must be a string"),
   description: z.string("Description must be a string if passed").optional(),
+  referer: z.string().optional(),
   logo: z
     .object({
       fieldname: z.string(),
@@ -24,7 +30,10 @@ const CreateCompanySchema = z.object({
 }).meta({ id: "POST /api/company", route: "POST /api/company", multipart: { file: "logo" } });
 
 export const createCompany = async (
-  companyProps: InsertCompanyProps & { logo: Express.Multer.File },
+  companyProps: InsertCompanyProps & {
+    logo: Express.Multer.File;
+    referer?: string;
+  },
 ) => {
   try {
     CreateCompanySchema.parse(companyProps);
@@ -46,6 +55,23 @@ export const createCompany = async (
       logo,
       shortDescription: htmlToPlaintext(companyProps.description),
     });
+
+    // Welcome the creator and kick off their 14-day free trial. Best-effort:
+    // a failure here shouldn't block company creation.
+    try {
+      const creator = await selectUserById({ userId: companyProps.userId });
+
+      if (creator?.email) {
+        await send({
+          email: creator.email,
+          type: "companyCreated",
+          companyName: newCompany.name,
+          referer: companyProps.referer,
+        });
+      }
+    } catch (emailError) {
+      console.log("companyCreated email failed", emailError);
+    }
 
     return {
       status: HTTP_STATUSES.SUCCESS.CREATED,

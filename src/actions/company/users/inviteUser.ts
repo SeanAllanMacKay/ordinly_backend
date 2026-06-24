@@ -18,6 +18,7 @@ const InviteUserSchema = z.object({
   companyId: z.string("Invalid companyId"),
   email: z.email("A valid email is required"),
   roleId: z.string("Invalid roleId"),
+  referer: z.string().optional(),
 }).meta({ id: "POST /api/company/{companyId}/users", route: "POST /api/company/{companyId}/users" });
 
 export type InviteUserProps = z.infer<typeof InviteUserSchema>;
@@ -29,7 +30,7 @@ export const inviteUser = async (props: InviteUserProps) => {
   try {
     InviteUserSchema.parse(props);
 
-    const { userId, companyId, email, roleId } = props;
+    const { userId, companyId, email, roleId, referer } = props;
 
     await assertNotPersonalCompany({ userId, companyId });
     await assertCompanyPermission({
@@ -69,6 +70,7 @@ export const inviteUser = async (props: InviteUserProps) => {
         email,
         type: "existingUserInvitedToCompany",
         companyName,
+        referer,
       });
 
       return {
@@ -84,7 +86,7 @@ export const inviteUser = async (props: InviteUserProps) => {
       invitedBy: userId,
     });
 
-    await send({ email, type: "newUserInvitedToCompany", companyName });
+    await send({ email, type: "newUserInvitedToCompany", companyName, referer });
 
     return {
       status: HTTP_STATUSES.SUCCESS.CREATED,

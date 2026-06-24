@@ -1,3 +1,5 @@
 .env
 node_modules/
 *.pem
+# Generated email preview (yarn email:preview)
+email-preview.html

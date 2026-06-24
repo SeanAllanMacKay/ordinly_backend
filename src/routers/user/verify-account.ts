@@ -12,6 +12,7 @@ router.route("/").post(async (req: any, res) => {
 
     const { status, message } = await verifyAccount({
       code,
+      referer: req.headers.referer?.split("?")[0] as string,
     });
 
     res.status(status).send({ message });

@@ -41,12 +41,13 @@ export const signUp = async ({
 
     if (existingAccount) {
       if (existingAccount.isVerified) {
-        await send({ email, type: "attemptedSignUp" });
+        await send({ email, type: "attemptedSignUp", referer });
       } else {
         await send({
           email,
           type: "attemptedSignUpWithUnverified",
           verificationCode: existingAccount.verificationCode,
+          referer,
         });
       }
 
@@ -94,6 +95,7 @@ export const signUp = async ({
                 type: "acceptedInvitationToCompany",
                 userName: newUser.name,
                 companyName: company?.name ?? "your company",
+                referer,
               });
             }
           }
