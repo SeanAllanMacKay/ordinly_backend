@@ -14,7 +14,7 @@ export const getBatchLocationData = async ({
   projects,
 }: {
   projects: ProjectsType;
-}) => {
+}): Promise<ProjectsType> => {
   const locations = projects.reduce<FlattenedLocation[]>(
     (total, current, projectIndex) =>
       current.locations
@@ -59,7 +59,7 @@ export const getBatchLocationData = async ({
 
   const data = await response.json();
 
-  const enrichedProjects = JSON.parse(JSON.stringify(projects));
+  const enrichedProjects: ProjectsType = JSON.parse(JSON.stringify(projects));
 
   locations.forEach(
     ({ projectIndex, locationIndex, ...restLocation }, index) => {

@@ -3,10 +3,22 @@ import type { Express } from "express";
 import { listEndpoints, DiscoveredEndpoint } from "./listEndpoints.js";
 import { getRouteSchemas, RegisteredRoute } from "./registry.js";
 import { schemaToJsonSchema } from "./schemaToOpenApi.js";
+import { buildResponseSchemas } from "./responseSchemas.js";
 
 const API_PORT = process.env.API_PORT;
 
 const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
+
+// Convention: creates (POST) → 201, updates (PUT/PATCH) → 202, otherwise 200.
+// Overridable per route via RESPONSE_TYPE_MAP's `status`.
+const defaultSuccessStatus = (method: string) =>
+  method === "post" ? 201 : method === "put" || method === "patch" ? 202 : 200;
+
+const SUCCESS_DESCRIPTIONS: Record<number, string> = {
+  200: "OK",
+  201: "Created",
+  202: "Accepted",
+};
 
 const toOpenApiPath = (path: string) =>
   path.replace(/:([A-Za-z0-9_]+)/g, "{$1}");
@@ -38,6 +50,10 @@ export const buildOpenApiSpec = (app: Express) => {
     console.warn("[openapi] failed to list endpoints:", caught);
   }
 
+  // Success-body schemas derived from action return types (best-effort; empty on
+  // failure so routes fall back to a generic 200 OK).
+  const responseSchemas = buildResponseSchemas();
+
   const paths: Record<string, any> = {};
 
   for (const endpoint of endpoints) {
@@ -50,6 +66,27 @@ export const buildOpenApiSpec = (app: Express) => {
       const method = rawMethod.toLowerCase();
       if (!HTTP_METHODS.includes(method)) continue;
 
+      const responseEntry = responseSchemas.byRoute.get(
+        `${rawMethod} ${openApiPath}`,
+      );
+      const successStatus =
+        responseEntry?.status ?? defaultSuccessStatus(method);
+      const successResponse = responseEntry
+        ? {
+            [successStatus]: {
+              description: SUCCESS_DESCRIPTIONS[successStatus] ?? "Success",
+              content: {
+                "application/json": {
+                  schema: { $ref: responseEntry.ref },
+                },
+              },
+            },
+          }
+        : {
+            ...(method === "post" ? { "201": { description: "Created" } } : {}),
+            "200": { description: "OK" },
+          };
+
       const operation: any = {
         tags: [openApiPath.split("/")[2] || "root"],
         operationId: `${method}_${openApiPath}`.replace(/[^A-Za-z0-9_]/g, "_"),
@@ -60,8 +97,7 @@ export const buildOpenApiSpec = (app: Express) => {
           schema: { type: "string" },
         })),
         responses: {
-          ...(method === "post" ? { "201": { description: "Created" } } : {}),
-          "200": { description: "OK" },
+          ...successResponse,
           "400": {
             description: "Bad request",
             content: {
@@ -141,6 +177,7 @@ export const buildOpenApiSpec = (app: Express) => {
       securitySchemes: {
         cookieAuth: { type: "apiKey", in: "cookie", name: "auth" },
       },
+      schemas: responseSchemas.components,
     },
     paths,
   };
