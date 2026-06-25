@@ -1,5 +1,7 @@
 export * from "./createProject.js";
 export * from "./listProjects.js";
+export * from "./listProjectOptions.js";
+export * from "./listProjectTaskTypeOptions.js";
 export * from "./updateProject.js";
 export * from "./getProject.js";
 export * from "./listProjectPriorities.js";

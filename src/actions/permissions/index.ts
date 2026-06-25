@@ -7,8 +7,51 @@ import {
   CompanyPermissionKey,
   PermissionBits,
 } from "../../services/db/index.js";
+import { companyRolePermissionAction } from "../../services/db/constants.js";
 
 export type PermissionAction = keyof PermissionBits; // create | read | update | delete
+
+const PERMISSION_ACTIONS: PermissionAction[] = [
+  "create",
+  "read",
+  "update",
+  "delete",
+];
+
+/**
+ * Build the complete, flat permission map the frontend consumes: every
+ * permission key × CRUD action as a `${key}:${action}` boolean, with all keys
+ * always present. Owners get every flag true (they bypass RBAC); everyone else
+ * gets the effective bits from their roles, defaulting ungranted entries to
+ * false. Returns the company existence/owner/personal flags alongside the map.
+ */
+export const buildCompanyPermissionFlags = async ({
+  userId,
+  companyId,
+}: {
+  userId: string;
+  companyId: string;
+}): Promise<{
+  exists: boolean;
+  isOwner: boolean;
+  isPersonal: boolean;
+  permissions: Record<string, boolean>;
+}> => {
+  const { exists, isOwner, isPersonal, permissions } =
+    await resolveCompanyPermissions({ userId, companyId });
+
+  const flags: Record<string, boolean> = {};
+
+  for (const key of companyRolePermissionAction) {
+    for (const action of PERMISSION_ACTIONS) {
+      flags[`${key}:${action}`] = isOwner
+        ? true
+        : permissions[key]?.[action] ?? false;
+    }
+  }
+
+  return { exists, isOwner, isPersonal, permissions: flags };
+};
 
 const forbidden = (message = "You don't have permission to perform this action") => ({
   status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,

@@ -3,6 +3,8 @@ import {
   Contact,
   insertOwnedContactInfo,
   OwnedContactInfoInput,
+  reconcileProjectsForContact,
+  AccessibleIds,
 } from "../../index.js";
 
 export type InsertContactProps = {
@@ -12,6 +14,8 @@ export type InsertContactProps = {
   name: string;
   role?: string;
   description?: string;
+  projectIds?: string[];
+  projectAccess?: AccessibleIds;
 } & OwnedContactInfoInput;
 
 // Creates a contact under a client, plus its phone/email/location info.
@@ -25,6 +29,8 @@ export const insertContact = async ({
   phoneNumbers,
   emails,
   locations,
+  projectIds,
+  projectAccess,
 }: InsertContactProps) => {
   return await db.transaction(async (tx) => {
     const [contact] = await tx
@@ -40,6 +46,17 @@ export const insertContact = async ({
       emails,
       locations,
     });
+
+    if (projectIds !== undefined && projectAccess) {
+      await reconcileProjectsForContact(tx, {
+        contactId: contact.id,
+        clientId,
+        companyId,
+        userId,
+        projectIds,
+        projectAccess,
+      });
+    }
 
     return contact;
   });

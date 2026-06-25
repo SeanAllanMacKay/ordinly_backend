@@ -6,12 +6,19 @@ import {
   db,
   Company,
   ProjectLocation,
+  reconcileProjectConnectionsForProject,
+  AccessibleIds,
 } from "../../index.js";
 
 export type InsertProjectProps = { userId: string; companyId?: string } & Omit<
   typeof Project.$inferInsert,
   "id" | "createdDate" | "createdBy" | "deletedDate" | "deletedBy"
-> & { location: Omit<typeof ProjectLocation.$inferInsert, "id" | "projectId"> };
+> & {
+    location: Omit<typeof ProjectLocation.$inferInsert, "id" | "projectId">;
+    clientIds?: string[];
+    contactIds?: string[];
+    clientAccess?: AccessibleIds;
+  };
 
 export const insertProject = async ({
   userId,
@@ -23,6 +30,9 @@ export const insertProject = async ({
   startDate,
   dueDate,
   location,
+  clientIds,
+  contactIds,
+  clientAccess,
 }: InsertProjectProps) => {
   return await db.transaction(async (transaction) => {
     const [project] = await transaction
@@ -70,6 +80,21 @@ export const insertProject = async ({
       await transaction
         .insert(ProjectLocation)
         .values({ projectId: project.id, ...location });
+    }
+
+    if (
+      companyId &&
+      (clientIds !== undefined || contactIds !== undefined) &&
+      clientAccess
+    ) {
+      await reconcileProjectConnectionsForProject(transaction, {
+        projectId: project.id,
+        companyId,
+        userId,
+        clientIds,
+        contactIds,
+        clientAccess,
+      });
     }
 
     return project;

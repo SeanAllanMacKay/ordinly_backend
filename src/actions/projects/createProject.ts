@@ -1,6 +1,10 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
-import { insertProject, InsertProjectProps } from "../../services/db/index.js";
+import {
+  insertProject,
+  InsertProjectProps,
+  getAccessibleClientIds,
+} from "../../services/db/index.js";
 import { assertCompanyPermission } from "../permissions/index.js";
 import * as z from "zod";
 
@@ -30,6 +34,8 @@ const CreateProjectSchema = z.object({
       longitude: z.number(),
     })
     .optional(),
+  clientIds: z.array(z.string("Invalid clientId")).optional(),
+  contactIds: z.array(z.string("Invalid contactId")).optional(),
 }).meta({ id: "POST /api/company/{companyId}/projects", route: "POST /api/company/{companyId}/projects" });
 
 export const createProject = async (createProjectProps: InsertProjectProps) => {
@@ -52,7 +58,22 @@ export const createProject = async (createProjectProps: InsertProjectProps) => {
       action: "create",
     });
 
-    const newProject = await insertProject(createProjectProps);
+    // Connecting clients/contacts additionally requires the client-read tier —
+    // the user can only connect (and we only reconcile) clients/contacts they
+    // can see.
+    const { clientIds, contactIds } = createProjectProps;
+    let clientAccess;
+    if (clientIds !== undefined || contactIds !== undefined) {
+      clientAccess = await getAccessibleClientIds({ userId, companyId });
+      if (!clientAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect clients or contacts"],
+        };
+      }
+    }
+
+    const newProject = await insertProject({ ...createProjectProps, clientAccess });
 
     return {
       status: HTTP_STATUSES.SUCCESS.CREATED,

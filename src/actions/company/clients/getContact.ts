@@ -1,5 +1,9 @@
 import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
-import { selectContact } from "../../../services/db/index.js";
+import {
+  selectContact,
+  getAccessibleProjectIds,
+  selectProjectsForContact,
+} from "../../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../../permissions/index.js";
 import * as z from "zod";
 
@@ -40,10 +44,14 @@ export const getContact = async (props: GetContactProps) => {
       };
     }
 
+    // Attach connected projects, filtered to what the caller may see.
+    const projectAccess = await getAccessibleProjectIds({ userId, companyId });
+    const projects = await selectProjectsForContact({ contactId, projectAccess });
+
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Contact fetched",
-      contact,
+      contact: { ...contact, projects },
     };
   } catch (caught: any) {
     console.log(caught);

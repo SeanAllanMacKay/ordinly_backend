@@ -4,6 +4,8 @@ import {
   Contact,
   insertOwnedContactInfo,
   OwnedContactInfoInput,
+  reconcileProjectsForClient,
+  AccessibleIds,
 } from "../../index.js";
 
 type NestedContactInput = {
@@ -20,6 +22,8 @@ export type InsertClientProps = {
   clientCompanyId?: string;
   clientUserId?: string;
   contacts?: NestedContactInput[];
+  projectIds?: string[];
+  projectAccess?: AccessibleIds;
 } & OwnedContactInfoInput;
 
 // Creates a client with its (polymorphic) phone/email/location info and any
@@ -35,6 +39,8 @@ export const insertClient = async ({
   emails,
   locations,
   contacts = [],
+  projectIds,
+  projectAccess,
 }: InsertClientProps) => {
   return await db.transaction(async (tx) => {
     const [client] = await tx
@@ -78,6 +84,16 @@ export const insertClient = async ({
         phoneNumbers: contact.phoneNumbers,
         emails: contact.emails,
         locations: contact.locations,
+      });
+    }
+
+    if (projectIds !== undefined && projectAccess) {
+      await reconcileProjectsForClient(tx, {
+        clientId: client.id,
+        companyId,
+        userId,
+        projectIds,
+        projectAccess,
       });
     }
 

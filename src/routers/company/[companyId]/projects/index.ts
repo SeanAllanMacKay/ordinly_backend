@@ -2,6 +2,7 @@ import { Router } from "express";
 import verifyToken from "../../../../services/auth/verifyToken.js";
 import {
   listProjects,
+  listProjectOptions,
   createProject,
   listProjectPriorities,
   listProjectStatuses,
@@ -64,6 +65,32 @@ router.route("/").post(verifyToken, async (req: any, res) => {
     const {
       status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
       error = "There was an error creating this project",
+    } = caught;
+
+    res.status(status).send({ error });
+  }
+});
+
+// GET /api/company/:companyId/projects/options — slim { value, label } list for FE selects
+router.route("/options").get(verifyToken, async (req: any, res) => {
+  try {
+    const {
+      query: { search },
+      params: { companyId },
+      user,
+    } = req;
+
+    const { status, message, options } = await listProjectOptions({
+      userId: user.id,
+      companyId,
+      search,
+    });
+
+    res.status(status).send({ message, options });
+  } catch (caught: any) {
+    const {
+      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+      error = "There was an error fetching the project options",
     } = caught;
 
     res.status(status).send({ error });

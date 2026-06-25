@@ -1,6 +1,7 @@
 import {
   updateProject as updateProjectQuery,
   UpdateProjectProps,
+  getAccessibleClientIds,
 } from "../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../permissions/index.js";
 import * as z from "zod";
@@ -33,6 +34,8 @@ const UpdateProjectSchema = z.object({
       longitude: z.number(),
     })
     .optional(),
+  clientIds: z.array(z.string("Invalid clientId")).optional(),
+  contactIds: z.array(z.string("Invalid contactId")).optional(),
 }).meta({ id: "PUT /api/company/{companyId}/projects/{projectId}", route: "PUT /api/company/{companyId}/projects/{projectId}" });
 
 export const updateProject = async (updateProjectProps: UpdateProjectProps) => {
@@ -49,7 +52,21 @@ export const updateProject = async (updateProjectProps: UpdateProjectProps) => {
       action: "update",
     });
 
-    const project = await updateProjectQuery(updateProjectProps);
+    // Connecting clients/contacts additionally requires the client-read tier;
+    // reconciliation is confined to the clients/contacts the user can see.
+    const { clientIds, contactIds } = updateProjectProps;
+    let clientAccess;
+    if (clientIds !== undefined || contactIds !== undefined) {
+      clientAccess = await getAccessibleClientIds({ userId, companyId });
+      if (!clientAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect clients or contacts"],
+        };
+      }
+    }
+
+    const project = await updateProjectQuery({ ...updateProjectProps, clientAccess });
 
     if (!project) {
       throw {

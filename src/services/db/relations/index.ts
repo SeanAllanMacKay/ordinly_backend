@@ -9,6 +9,7 @@ export * from "./CompanySubscription.js";
 export * from "./Document.js";
 export * from "./Project.js";
 export * from "./ProjectClient.js";
+export * from "./ProjectContact.js";
 export * from "./ProjectDocument.js";
 export * from "./ProjectPriority.js";
 export * from "./ProjectStatus.js";

@@ -1,5 +1,12 @@
 import { eq, and, exists } from "drizzle-orm";
-import { db, Project, ProjectLocation, CompanyProject } from "../../index.js";
+import {
+  db,
+  Project,
+  ProjectLocation,
+  CompanyProject,
+  reconcileProjectConnectionsForProject,
+  AccessibleIds,
+} from "../../index.js";
 
 export type UpdateProjectProps = {
   userId: string;
@@ -10,7 +17,12 @@ export type UpdateProjectProps = {
     typeof Project.$inferInsert,
     "id" | "verificationCode" | "createdDate" | "createdBy"
   >
-> & { location: Omit<typeof ProjectLocation.$inferInsert, "id"> };
+> & {
+    location: Omit<typeof ProjectLocation.$inferInsert, "id">;
+    clientIds?: string[];
+    contactIds?: string[];
+    clientAccess?: AccessibleIds;
+  };
 
 export const updateProject = async ({
   userId,
@@ -23,6 +35,9 @@ export const updateProject = async ({
   startDate,
   dueDate,
   location,
+  clientIds,
+  contactIds,
+  clientAccess,
 }: UpdateProjectProps) => {
   return await db.transaction(async (transaction) => {
     // Scoped by companyId so a project that doesn't belong to the company in the
@@ -64,6 +79,21 @@ export const updateProject = async ({
           target: ProjectLocation.projectId,
           set: location,
         });
+    }
+
+    if (
+      project &&
+      (clientIds !== undefined || contactIds !== undefined) &&
+      clientAccess
+    ) {
+      await reconcileProjectConnectionsForProject(transaction, {
+        projectId,
+        companyId,
+        userId,
+        clientIds,
+        contactIds,
+        clientAccess,
+      });
     }
 
     return project;

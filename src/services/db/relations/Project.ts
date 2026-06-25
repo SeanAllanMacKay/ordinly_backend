@@ -6,6 +6,7 @@ import {
   User,
   UserProject,
   ProjectClient,
+  ProjectContact,
   ProjectDocument,
   CompanyProject,
   Task,
@@ -35,6 +36,9 @@ export const ProjectRelations = relations(Project, ({ one, many }) => ({
   users: many(UserProject, { relationName: "project_to_userProject" }),
   clients: many(ProjectClient, {
     relationName: "project_to_projectClient",
+  }),
+  contacts: many(ProjectContact, {
+    relationName: "project_to_projectContact",
   }),
   documents: many(ProjectDocument, {
     relationName: "project_to_projectDocument",

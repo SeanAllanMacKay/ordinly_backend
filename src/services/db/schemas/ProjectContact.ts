@@ -1,16 +1,16 @@
 import { pgTable, uuid, timestamp, unique, index } from "drizzle-orm/pg-core";
 
 import { Company } from "./Company.js";
-import { Client } from "./Client.js";
+import { Contact } from "./Contact.js";
 import { Project } from "./Project.js";
 import { User } from "./User.js";
 
-export const ProjectClient = pgTable(
-  "ProjectClient",
+export const ProjectContact = pgTable(
+  "ProjectContact",
   {
     id: uuid().defaultRandom().unique().primaryKey(),
-    clientId: uuid()
-      .references(() => Client.id)
+    contactId: uuid()
+      .references(() => Contact.id)
       .notNull(),
     projectId: uuid()
       .references(() => Project.id)
@@ -23,16 +23,16 @@ export const ProjectClient = pgTable(
       .notNull(),
   },
   (table) => ({
-    // One link row per (project, client) — makes re-linking idempotent.
-    projectClientUnique: unique("project_client_unique").on(
+    // One link row per (project, contact) — makes re-linking idempotent.
+    projectContactUnique: unique("project_contact_unique").on(
       table.projectId,
-      table.clientId,
+      table.contactId,
     ),
-    projectClientProjectIdx: index("project_client_project_idx").on(
+    projectContactProjectIdx: index("project_contact_project_idx").on(
       table.projectId,
     ),
-    projectClientClientIdx: index("project_client_client_idx").on(
-      table.clientId,
+    projectContactContactIdx: index("project_contact_contact_idx").on(
+      table.contactId,
     ),
   }),
 );

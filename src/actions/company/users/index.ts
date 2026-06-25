@@ -1,4 +1,5 @@
 export * from "./listCompanyMembers.js";
+export * from "./listMemberOptions.js";
 export * from "./getCompanyMember.js";
 export * from "./inviteUser.js";
 export * from "./updateMemberRoles.js";

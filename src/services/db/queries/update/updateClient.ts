@@ -5,6 +5,8 @@ import {
   Client,
   replaceOwnedContactInfo,
   OwnedContactInfoInput,
+  reconcileProjectsForClient,
+  AccessibleIds,
 } from "../../index.js";
 
 export type UpdateClientProps = {
@@ -15,6 +17,8 @@ export type UpdateClientProps = {
   description?: string;
   clientCompanyId?: string;
   clientUserId?: string;
+  projectIds?: string[];
+  projectAccess?: AccessibleIds;
 } & OwnedContactInfoInput;
 
 // Updates a client's fields and, when a phone/email/location array is provided,
@@ -31,6 +35,8 @@ export const updateClient = async ({
   phoneNumbers,
   emails,
   locations,
+  projectIds,
+  projectAccess,
 }: UpdateClientProps) => {
   return await db.transaction(async (tx) => {
     const [client] = await tx
@@ -62,6 +68,16 @@ export const updateClient = async ({
       emails,
       locations,
     });
+
+    if (projectIds !== undefined && projectAccess) {
+      await reconcileProjectsForClient(tx, {
+        clientId: client.id,
+        companyId,
+        userId,
+        projectIds,
+        projectAccess,
+      });
+    }
 
     return client;
   });

@@ -1,5 +1,10 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
-import { selectProject, SelectProjectProps } from "../../services/db/index.js";
+import {
+  selectProject,
+  SelectProjectProps,
+  getAccessibleClientIds,
+  selectProjectConnections,
+} from "../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../permissions/index.js";
 import * as z from "zod";
 import { getBatchLocationData } from "../../services/maps/getBatchProjectLocationData.js";
@@ -33,10 +38,21 @@ export const getProject = async (getProjectProps: SelectProjectProps) => {
       };
     }
 
+    // Attach connected clients/contacts, filtered to what the caller may see
+    // (their client-read scope; contacts inherit their client's visibility).
+    const clientAccess = await getAccessibleClientIds({ userId, companyId });
+    const connections = await selectProjectConnections({
+      projectId,
+      companyId,
+      clientAccess,
+    });
+
+    const [hydrated] = await getBatchLocationData({ projects: [project] });
+
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Project fetched",
-      project: (await getBatchLocationData({ projects: [project] }))[0],
+      project: { ...hydrated, ...connections },
     };
   } catch (caught: any) {
     console.log(caught);

@@ -2,6 +2,7 @@ import { Router } from "express";
 import verifyToken from "../../../../services/auth/verifyToken.js";
 import {
   listCompanyMembers,
+  listMemberOptions,
   getCompanyMember,
   inviteUser,
   updateMemberRoles,
@@ -10,6 +11,32 @@ import {
 } from "../../../../actions/index.js";
 
 const router = Router({ mergeParams: true });
+
+// GET /api/company/:companyId/users/options — slim { value, label } list for FE selects
+router.route("/options").get(verifyToken, async (req: any, res) => {
+  try {
+    const {
+      query: { search },
+      params: { companyId },
+      user,
+    } = req;
+
+    const { status, message, options } = await listMemberOptions({
+      userId: user.id,
+      companyId,
+      search,
+    });
+
+    res.status(status).send({ message, options });
+  } catch (caught: any) {
+    const {
+      status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+      error = "There was an error fetching the member options",
+    } = caught;
+
+    res.status(status).send({ error });
+  }
+});
 
 // GET /api/company/:companyId/users — list members
 // POST /api/company/:companyId/users — invite a person by email

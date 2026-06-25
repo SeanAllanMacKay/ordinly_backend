@@ -1,5 +1,9 @@
 import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
-import { selectClient } from "../../../services/db/index.js";
+import {
+  selectClient,
+  getAccessibleProjectIds,
+  selectProjectsForClient,
+} from "../../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../../permissions/index.js";
 import * as z from "zod";
 
@@ -35,10 +39,14 @@ export const getClient = async (props: GetClientProps) => {
       };
     }
 
+    // Attach connected projects, filtered to what the caller may see.
+    const projectAccess = await getAccessibleProjectIds({ userId, companyId });
+    const projects = await selectProjectsForClient({ clientId, projectAccess });
+
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Client fetched",
-      client,
+      client: { ...client, projects },
     };
   } catch (caught: any) {
     console.log(caught);

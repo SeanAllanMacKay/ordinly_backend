@@ -7,6 +7,8 @@ import {
 } from "../../../../../actions/projects/index.js";
 import { HTTP_STATUSES } from "../../../../../actions/index.js";
 import tasksRouter from "./tasks/index.js";
+import phasesRouter from "./phases/index.js";
+import milestonesRouter from "./milestones/index.js";
 
 const router = Router({ mergeParams: true });
 
@@ -85,5 +87,7 @@ router
   });
 
 router.use("/tasks", tasksRouter);
+router.use("/phases", phasesRouter);
+router.use("/milestones", milestonesRouter);
 
 export default router;

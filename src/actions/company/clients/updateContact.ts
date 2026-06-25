@@ -1,5 +1,8 @@
 import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
-import { updateContact as updateContactQuery } from "../../../services/db/index.js";
+import {
+  updateContact as updateContactQuery,
+  getAccessibleProjectIds,
+} from "../../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../../permissions/index.js";
 import * as z from "zod";
 import { contactInfoFields } from "./schemas.js";
@@ -12,6 +15,7 @@ const UpdateContactSchema = z.object({
   name: z.string("Name must be a string if passed").optional(),
   role: z.string("Role must be a string if passed").optional(),
   description: z.string("Description must be a string if passed").optional(),
+  projectIds: z.array(z.string("Invalid projectId")).optional(),
   ...contactInfoFields,
 }).meta({
   id: "PUT /api/company/{companyId}/clients/{clientId}/contacts/{contactId}",
@@ -35,7 +39,20 @@ export const updateContact = async (props: UpdateContactProps) => {
       action: "update",
     });
 
-    const contact = await updateContactQuery(props);
+    // Connecting projects additionally requires the project-read tier; we only
+    // reconcile within the projects the user can see.
+    let projectAccess;
+    if (props.projectIds !== undefined) {
+      projectAccess = await getAccessibleProjectIds({ userId, companyId });
+      if (!projectAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect projects"],
+        };
+      }
+    }
+
+    const contact = await updateContactQuery({ ...props, projectAccess });
 
     if (!contact) {
       throw {

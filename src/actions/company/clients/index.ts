@@ -1,4 +1,6 @@
 export * from "./listClients.js";
+export * from "./listClientOptions.js";
+export * from "./listContactOptions.js";
 export * from "./getClient.js";
 export * from "./createClient.js";
 export * from "./updateClient.js";

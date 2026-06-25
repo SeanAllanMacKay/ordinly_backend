@@ -1,5 +1,8 @@
 import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
-import { insertClient } from "../../../services/db/index.js";
+import {
+  insertClient,
+  getAccessibleProjectIds,
+} from "../../../services/db/index.js";
 import { assertCompanyPermission } from "../../permissions/index.js";
 import * as z from "zod";
 import { NestedContactSchema, contactInfoFields } from "./schemas.js";
@@ -12,6 +15,7 @@ const CreateClientSchema = z.object({
   clientCompanyId: z.string("Invalid clientCompanyId").optional(),
   clientUserId: z.string("Invalid clientUserId").optional(),
   contacts: z.array(NestedContactSchema).optional(),
+  projectIds: z.array(z.string("Invalid projectId")).optional(),
   ...contactInfoFields,
 }).meta({
   id: "POST /api/company/{companyId}/clients",
@@ -35,7 +39,20 @@ export const createClient = async (props: CreateClientProps) => {
       action: "create",
     });
 
-    const client = await insertClient(props);
+    // Connecting projects additionally requires the project-read tier; we only
+    // reconcile within the projects the user can see.
+    let projectAccess;
+    if (props.projectIds !== undefined) {
+      projectAccess = await getAccessibleProjectIds({ userId, companyId });
+      if (!projectAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect projects"],
+        };
+      }
+    }
+
+    const client = await insertClient({ ...props, projectAccess });
 
     return {
       status: HTTP_STATUSES.SUCCESS.CREATED,

@@ -16,6 +16,7 @@ import {
   TaskStatus,
   TaskPriority,
   ProjectClient,
+  ProjectContact,
   ProjectDocument,
   ProjectLocation,
   UserProject,
@@ -219,6 +220,9 @@ export const hardDeleteAccount = async ({ userId }: HardDeleteAccountProps) => {
         await tx
           .delete(ProjectClient)
           .where(inArray(ProjectClient.projectId, projectIds));
+        await tx
+          .delete(ProjectContact)
+          .where(inArray(ProjectContact.projectId, projectIds));
         await tx
           .delete(ProjectDocument)
           .where(inArray(ProjectDocument.projectId, projectIds));
