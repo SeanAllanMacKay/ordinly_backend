@@ -3,6 +3,12 @@ import {
   UpdateProjectTaskProps,
 } from "../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../permissions/index.js";
+import {
+  validateCompanyMembers,
+  validateCompanyTeams,
+  validateProjectTaskLinks,
+} from "../util/validateConnections.js";
+import { taskLinkFields } from "./taskLinkSchemas.js";
 import * as z from "zod";
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 
@@ -17,15 +23,18 @@ const UpdateProjectTaskSchema = z.object({
   priority: z.string().optional(),
   startDate: z.coerce.date().optional(),
   dueDate: z.coerce.date().optional(),
+  // Re-parent the task under a phase (null clears it).
+  phaseId: z.string("Invalid phaseId").nullable().optional(),
+  ...taskLinkFields,
 }).meta({ id: "PUT /api/company/{companyId}/projects/{projectId}/tasks/{taskId}", route: "PUT /api/company/{companyId}/projects/{projectId}/tasks/{taskId}" });
 
 export const updateProjectTask = async (
-  updateProjectProps: UpdateProjectTaskProps,
+  updateProjectProps: UpdateProjectTaskProps & { phaseId?: string | null },
 ) => {
   try {
     UpdateProjectTaskSchema.parse(updateProjectProps);
 
-    const { userId, companyId, taskId } = updateProjectProps;
+    const { userId, companyId, projectId, taskId, phaseId } = updateProjectProps;
 
     await assertCompanyAssetPermission({
       userId,
@@ -35,7 +44,21 @@ export const updateProjectTask = async (
       action: "update",
     });
 
-    const task = await updateProjectTaskQuery(updateProjectProps);
+    // Links must belong to the company / project.
+    await validateCompanyMembers({ companyId, userIds: updateProjectProps.userIds });
+    await validateCompanyTeams({ companyId, teamIds: updateProjectProps.teamIds });
+    await validateProjectTaskLinks({
+      projectId,
+      phaseId,
+      sequences: updateProjectProps.sequences,
+      relationships: updateProjectProps.relationships,
+    });
+
+    const task = await updateProjectTaskQuery({
+      ...updateProjectProps,
+      typeFilter: "task",
+      parentTaskId: phaseId === undefined ? undefined : phaseId,
+    });
 
     if (!task) {
       throw {

@@ -2,6 +2,9 @@ import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import {
   selectProjectTask,
   SelectProjectTaskProps,
+  selectUsersForTask,
+  selectTeamsForTask,
+  selectTaskGraph,
 } from "../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../permissions/index.js";
 import * as z from "zod";
@@ -30,7 +33,7 @@ export const getProjectTask = async (
       action: "read",
     });
 
-    const task = await selectProjectTask(getProjectTaskProps);
+    const task = await selectProjectTask({ ...getProjectTaskProps, type: "task" });
 
     if (!task) {
       throw {
@@ -39,14 +42,19 @@ export const getProjectTask = async (
       };
     }
 
-    const documents = await fileService.appendExternalURLsToObjectsInArray({
-      documents: task.documents,
-    });
+    const [documents, users, teams, graph] = await Promise.all([
+      fileService.appendExternalURLsToObjectsInArray({
+        documents: task.documents,
+      }),
+      selectUsersForTask({ taskId, companyId }),
+      selectTeamsForTask({ taskId }),
+      selectTaskGraph({ taskId, parentTaskId: task.parentTaskId }),
+    ]);
 
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Task fetched",
-      task: { ...task, documents },
+      task: { ...task, documents, users, teams, ...graph },
     };
   } catch (caught: any) {
     if (caught instanceof z.ZodError) {

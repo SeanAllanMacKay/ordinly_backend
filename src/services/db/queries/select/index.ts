@@ -9,6 +9,7 @@ export * from "./selectProjectPriorities.js";
 export * from "./selectProjectStatuses.js";
 export * from "./selectProjectTasks.js";
 export * from "./selectProjectTask.js";
+export * from "./selectProjectTaskTypes.js";
 export * from "./selectTaskPriorities.js";
 export * from "./selectTaskStatuses.js";
 export * from "./selectProjectTaskDocument.js";

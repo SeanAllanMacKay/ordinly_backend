@@ -4,6 +4,10 @@ import {
   getAccessibleProjectIds,
 } from "../../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../../permissions/index.js";
+import {
+  validateCompanyMembers,
+  validateCompanyTeams,
+} from "../../util/validateConnections.js";
 import * as z from "zod";
 import { contactInfoFields } from "./schemas.js";
 
@@ -16,6 +20,8 @@ const UpdateClientSchema = z.object({
   clientCompanyId: z.string("Invalid clientCompanyId").optional(),
   clientUserId: z.string("Invalid clientUserId").optional(),
   projectIds: z.array(z.string("Invalid projectId")).optional(),
+  userIds: z.array(z.string("Invalid userId")).optional(),
+  teamIds: z.array(z.string("Invalid teamId")).optional(),
   ...contactInfoFields,
 }).meta({
   id: "PUT /api/company/{companyId}/clients/{clientId}",
@@ -51,6 +57,10 @@ export const updateClient = async (props: UpdateClientProps) => {
         };
       }
     }
+
+    // Linked users/teams must belong to the company.
+    await validateCompanyMembers({ companyId, userIds: props.userIds });
+    await validateCompanyTeams({ companyId, teamIds: props.teamIds });
 
     const client = await updateClientQuery({ ...props, projectAccess });
 

@@ -4,6 +4,10 @@ import {
   getAccessibleProjectIds,
 } from "../../../services/db/index.js";
 import { assertCompanyPermission } from "../../permissions/index.js";
+import {
+  validateCompanyMembers,
+  validateCompanyTeams,
+} from "../../util/validateConnections.js";
 import * as z from "zod";
 import { NestedContactSchema, contactInfoFields } from "./schemas.js";
 
@@ -16,6 +20,8 @@ const CreateClientSchema = z.object({
   clientUserId: z.string("Invalid clientUserId").optional(),
   contacts: z.array(NestedContactSchema).optional(),
   projectIds: z.array(z.string("Invalid projectId")).optional(),
+  userIds: z.array(z.string("Invalid userId")).optional(),
+  teamIds: z.array(z.string("Invalid teamId")).optional(),
   ...contactInfoFields,
 }).meta({
   id: "POST /api/company/{companyId}/clients",
@@ -51,6 +57,10 @@ export const createClient = async (props: CreateClientProps) => {
         };
       }
     }
+
+    // Linked users/teams must belong to the company.
+    await validateCompanyMembers({ companyId, userIds: props.userIds });
+    await validateCompanyTeams({ companyId, teamIds: props.teamIds });
 
     const client = await insertClient({ ...props, projectAccess });
 

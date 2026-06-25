@@ -5,6 +5,8 @@ import {
   ProjectLocation,
   CompanyProject,
   reconcileProjectConnectionsForProject,
+  reconcileUsersForProject,
+  reconcileTeamsForProject,
   AccessibleIds,
 } from "../../index.js";
 
@@ -21,6 +23,8 @@ export type UpdateProjectProps = {
     location: Omit<typeof ProjectLocation.$inferInsert, "id">;
     clientIds?: string[];
     contactIds?: string[];
+    userIds?: string[];
+    teamIds?: string[];
     clientAccess?: AccessibleIds;
   };
 
@@ -37,6 +41,8 @@ export const updateProject = async ({
   location,
   clientIds,
   contactIds,
+  userIds,
+  teamIds,
   clientAccess,
 }: UpdateProjectProps) => {
   return await db.transaction(async (transaction) => {
@@ -93,6 +99,21 @@ export const updateProject = async ({
         clientIds,
         contactIds,
         clientAccess,
+      });
+    }
+
+    if (project) {
+      await reconcileUsersForProject(transaction, {
+        projectId,
+        companyId,
+        userId,
+        userIds,
+      });
+      await reconcileTeamsForProject(transaction, {
+        projectId,
+        companyId,
+        userId,
+        teamIds,
       });
     }
 

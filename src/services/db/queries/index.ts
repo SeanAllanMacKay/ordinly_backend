@@ -4,3 +4,7 @@ export * from "./update/index.js";
 export * from "./delete/index.js";
 export * from "./util/ownedContactInfo.js";
 export * from "./util/projectConnections.js";
+export * from "./util/userConnections.js";
+export * from "./util/teamConnections.js";
+export * from "./util/taskConnections.js";
+export * from "./util/connectionReads.js";

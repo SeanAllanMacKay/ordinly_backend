@@ -50,4 +50,7 @@ export * from "./CompanyProfileWebsite.js";
 export * from "./ProjectLocation.js";
 export * from "./Team.js";
 export * from "./TeamMember.js";
+export * from "./ProjectTeam.js";
+export * from "./ClientTeam.js";
+export * from "./TaskTeam.js";
 export * from "./CompanyInvitation.js";

@@ -6,6 +6,8 @@ import {
   replaceOwnedContactInfo,
   OwnedContactInfoInput,
   reconcileProjectsForClient,
+  reconcileUsersForClient,
+  reconcileTeamsForClient,
   AccessibleIds,
 } from "../../index.js";
 
@@ -18,6 +20,8 @@ export type UpdateClientProps = {
   clientCompanyId?: string;
   clientUserId?: string;
   projectIds?: string[];
+  userIds?: string[];
+  teamIds?: string[];
   projectAccess?: AccessibleIds;
 } & OwnedContactInfoInput;
 
@@ -36,6 +40,8 @@ export const updateClient = async ({
   emails,
   locations,
   projectIds,
+  userIds,
+  teamIds,
   projectAccess,
 }: UpdateClientProps) => {
   return await db.transaction(async (tx) => {
@@ -78,6 +84,19 @@ export const updateClient = async ({
         projectAccess,
       });
     }
+
+    await reconcileUsersForClient(tx, {
+      clientId: client.id,
+      companyId,
+      userId,
+      userIds,
+    });
+    await reconcileTeamsForClient(tx, {
+      clientId: client.id,
+      companyId,
+      userId,
+      teamIds,
+    });
 
     return client;
   });

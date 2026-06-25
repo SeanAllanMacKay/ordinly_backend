@@ -1,5 +1,6 @@
 import { and, eq, exists, isNull } from "drizzle-orm";
 import { db, Task, TaskChecklistItem, CompanyProject, UserTask } from "../../index.js";
+import { taskType } from "../../constants.js";
 
 export type SelectProjectTasksProps = {
   userId: string;
@@ -7,6 +8,8 @@ export type SelectProjectTasksProps = {
   projectId: string;
   /** When true, restrict to tasks the user is assigned to (assigned_* tier). */
   assignedOnly?: boolean;
+  /** When set, restrict to this Task.type (task/phase/milestone). */
+  type?: (typeof taskType)[number];
   page?: number;
   pageSize?: number;
 };
@@ -16,6 +19,7 @@ export const selectProjectTasks = async ({
   companyId,
   projectId,
   assignedOnly = false,
+  type,
   page = 1,
   pageSize = 15,
 }: SelectProjectTasksProps) => {
@@ -26,6 +30,7 @@ export const selectProjectTasks = async ({
     and(
       isNull(Task.deletedDate),
       eq(Task.projectId, projectId),
+      type ? eq(Task.type, type) : undefined,
       exists(
         db
           .select()

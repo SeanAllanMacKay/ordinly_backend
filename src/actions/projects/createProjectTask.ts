@@ -1,16 +1,23 @@
 import { HTTP_STATUSES } from "../HTTP_STATUSES.js";
 import { randomUUID as uuid } from "crypto";
-import { InsertTaskProps, isProjectInCompany } from "../../services/db/index.js";
+import {
+  InsertProjectTaskProps,
+  isProjectInCompany,
+  insertProjectTask,
+} from "../../services/db/index.js";
 import * as z from "zod";
-import { insertProjectTask } from "../../services/db/index.js";
 import { assertCompanyPermission } from "../permissions/index.js";
+import {
+  validateCompanyMembers,
+  validateCompanyTeams,
+  validateProjectTaskLinks,
+} from "../util/validateConnections.js";
+import { taskLinkFields } from "./taskLinkSchemas.js";
 import { fileService } from "../../services/files/index.js";
-import { taskType } from "../../services/db/constants.js";
 
 const CreateProjectTaskSchema = z.object({
   userId: z.string("Invalid userId"),
   projectId: z.string("Invalid projectId"),
-  type: z.enum(taskType),
   companyId: z.string("Invalid companyId"),
   name: z.string("Name must be a string"),
   description: z.string("Description must be a string if passed").optional(),
@@ -19,6 +26,9 @@ const CreateProjectTaskSchema = z.object({
   startDate: z.coerce.date().optional(),
   dueDate: z.coerce.date().optional(),
   checklist: z.array(z.string()).optional(),
+  // Link a task to its parent phase.
+  phaseId: z.string("Invalid phaseId").nullable().optional(),
+  ...taskLinkFields,
   documents: z
     .array(
       z.object({
@@ -36,15 +46,18 @@ const CreateProjectTaskSchema = z.object({
 }).meta({ id: "POST /api/company/{companyId}/projects/{projectId}/tasks", route: "POST /api/company/{companyId}/projects/{projectId}/tasks" });
 
 export const createProjectTask = async (
-  createTaskProps: InsertTaskProps & {
+  createTaskProps: InsertProjectTaskProps & {
     companyId: string;
+    phaseId?: string | null;
     documents: Express.Multer.File[];
   },
 ) => {
   try {
     CreateProjectTaskSchema.parse(createTaskProps);
 
-    const { userId, companyId, projectId } = createTaskProps;
+    // phaseId maps to Task.parentTaskId; raw multer files are re-uploaded below.
+    const { phaseId, documents: _rawDocuments, ...taskProps } = createTaskProps;
+    const { userId, companyId, projectId } = taskProps;
 
     await assertCompanyPermission({
       userId,
@@ -69,6 +82,16 @@ export const createProjectTask = async (
       };
     }
 
+    // Links must belong to the company / project.
+    await validateCompanyMembers({ companyId, userIds: createTaskProps.userIds });
+    await validateCompanyTeams({ companyId, teamIds: createTaskProps.teamIds });
+    await validateProjectTaskLinks({
+      projectId,
+      phaseId,
+      sequences: createTaskProps.sequences,
+      relationships: createTaskProps.relationships,
+    });
+
     const taskId = uuid();
 
     let documents = undefined;
@@ -81,7 +104,9 @@ export const createProjectTask = async (
     }
 
     const newTask = await insertProjectTask({
-      ...createTaskProps,
+      ...taskProps,
+      type: "task",
+      parentTaskId: phaseId ?? undefined,
       documents,
       taskId,
     });

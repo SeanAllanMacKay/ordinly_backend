@@ -1,5 +1,12 @@
 import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
-import { selectCompanyMember } from "../../../services/db/index.js";
+import {
+  selectCompanyMember,
+  getAccessibleProjectIds,
+  getAccessibleClientIds,
+  selectProjectsForMember,
+  selectClientsForMember,
+  selectTeamsForMember,
+} from "../../../services/db/index.js";
 import { assertCompanyPermission } from "../../permissions/index.js";
 import * as z from "zod";
 
@@ -37,10 +44,21 @@ export const getCompanyMember = async (props: GetCompanyMemberProps) => {
       };
     }
 
+    // Member's assigned projects/clients (scoped to the caller) + team memberships.
+    const [projectAccess, clientAccess] = await Promise.all([
+      getAccessibleProjectIds({ userId, companyId }),
+      getAccessibleClientIds({ userId, companyId }),
+    ]);
+    const [projects, clients, teams] = await Promise.all([
+      selectProjectsForMember({ memberId, companyId, projectAccess }),
+      selectClientsForMember({ memberId, companyId, clientAccess }),
+      selectTeamsForMember({ memberId, companyId }),
+    ]);
+
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Member fetched",
-      member,
+      member: { ...member, projects, clients, teams },
     };
   } catch (caught: any) {
     console.log(caught);

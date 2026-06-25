@@ -4,6 +4,8 @@ import {
   SelectProjectProps,
   getAccessibleClientIds,
   selectProjectConnections,
+  selectUsersForProject,
+  selectTeamsForProject,
 } from "../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../permissions/index.js";
 import * as z from "zod";
@@ -47,12 +49,18 @@ export const getProject = async (getProjectProps: SelectProjectProps) => {
       clientAccess,
     });
 
+    // Assigned users + linked teams (assignment-by-team is derived from these).
+    const [users, teams] = await Promise.all([
+      selectUsersForProject({ projectId, companyId }),
+      selectTeamsForProject({ projectId }),
+    ]);
+
     const [hydrated] = await getBatchLocationData({ projects: [project] });
 
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Project fetched",
-      project: { ...hydrated, ...connections },
+      project: { ...hydrated, ...connections, users, teams },
     };
   } catch (caught: any) {
     console.log(caught);

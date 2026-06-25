@@ -6,6 +6,10 @@ import {
   getAccessibleClientIds,
 } from "../../services/db/index.js";
 import { assertCompanyPermission } from "../permissions/index.js";
+import {
+  validateCompanyMembers,
+  validateCompanyTeams,
+} from "../util/validateConnections.js";
 import * as z from "zod";
 
 const CreateProjectSchema = z.object({
@@ -36,6 +40,8 @@ const CreateProjectSchema = z.object({
     .optional(),
   clientIds: z.array(z.string("Invalid clientId")).optional(),
   contactIds: z.array(z.string("Invalid contactId")).optional(),
+  userIds: z.array(z.string("Invalid userId")).optional(),
+  teamIds: z.array(z.string("Invalid teamId")).optional(),
 }).meta({ id: "POST /api/company/{companyId}/projects", route: "POST /api/company/{companyId}/projects" });
 
 export const createProject = async (createProjectProps: InsertProjectProps) => {
@@ -72,6 +78,10 @@ export const createProject = async (createProjectProps: InsertProjectProps) => {
         };
       }
     }
+
+    // Linked users/teams must belong to the company.
+    await validateCompanyMembers({ companyId, userIds: createProjectProps.userIds });
+    await validateCompanyTeams({ companyId, teamIds: createProjectProps.teamIds });
 
     const newProject = await insertProject({ ...createProjectProps, clientAccess });
 

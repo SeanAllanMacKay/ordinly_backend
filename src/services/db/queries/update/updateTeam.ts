@@ -1,5 +1,12 @@
 import { and, eq, isNull, notInArray } from "drizzle-orm";
-import { db, Team, TeamMember } from "../../index.js";
+import {
+  db,
+  Team,
+  TeamMember,
+  reconcileProjectsForTeam,
+  reconcileClientsForTeam,
+  AccessibleIds,
+} from "../../index.js";
 
 export type UpdateTeamProps = {
   teamId: string;
@@ -9,6 +16,10 @@ export type UpdateTeamProps = {
   description?: string;
   // When provided, the team's membership is reconciled to exactly this set.
   memberIds?: string[];
+  projectIds?: string[];
+  clientIds?: string[];
+  projectAccess?: AccessibleIds;
+  clientAccess?: AccessibleIds;
 };
 
 // Updates a team's name/description and, when memberIds is provided, reconciles
@@ -21,6 +32,10 @@ export const updateTeam = async ({
   name,
   description,
   memberIds,
+  projectIds,
+  clientIds,
+  projectAccess,
+  clientAccess,
 }: UpdateTeamProps) => {
   return await db.transaction(async (transaction) => {
     const [team] = await transaction
@@ -67,6 +82,25 @@ export const updateTeam = async ({
             },
           });
       }
+    }
+
+    if (projectIds !== undefined && projectAccess) {
+      await reconcileProjectsForTeam(transaction, {
+        teamId,
+        companyId,
+        userId,
+        projectIds,
+        projectAccess,
+      });
+    }
+    if (clientIds !== undefined && clientAccess) {
+      await reconcileClientsForTeam(transaction, {
+        teamId,
+        companyId,
+        userId,
+        clientIds,
+        clientAccess,
+      });
     }
 
     return team;

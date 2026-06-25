@@ -29,7 +29,10 @@ export const deleteProjectTask = async (
       action: "delete",
     });
 
-    const task = await deleteProjectTaskQuery(deleteProjectTaskProps);
+    const task = await deleteProjectTaskQuery({
+      ...deleteProjectTaskProps,
+      type: "task",
+    });
 
     if (!task) {
       throw {

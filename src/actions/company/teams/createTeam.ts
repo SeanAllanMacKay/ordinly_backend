@@ -2,6 +2,8 @@ import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
 import {
   insertTeam,
   selectCompanyMember,
+  getAccessibleProjectIds,
+  getAccessibleClientIds,
 } from "../../../services/db/index.js";
 import {
   assertCompanyPermission,
@@ -15,6 +17,8 @@ const CreateTeamSchema = z.object({
   name: z.string("Name must be a string"),
   description: z.string("Description must be a string if passed").optional(),
   memberIds: z.array(z.string("Invalid memberId")).optional(),
+  projectIds: z.array(z.string("Invalid projectId")).optional(),
+  clientIds: z.array(z.string("Invalid clientId")).optional(),
 }).meta({ id: "POST /api/company/{companyId}/teams", route: "POST /api/company/{companyId}/teams" });
 
 export type CreateTeamProps = z.infer<typeof CreateTeamSchema>;
@@ -24,7 +28,15 @@ export const createTeam = async (props: CreateTeamProps) => {
   try {
     CreateTeamSchema.parse(props);
 
-    const { userId, companyId, name, description, memberIds = [] } = props;
+    const {
+      userId,
+      companyId,
+      name,
+      description,
+      memberIds = [],
+      projectIds,
+      clientIds,
+    } = props;
 
     await assertNotPersonalCompany({ userId, companyId });
     await assertCompanyPermission({
@@ -49,12 +61,39 @@ export const createTeam = async (props: CreateTeamProps) => {
       }
     }
 
+    // Connecting projects/clients requires the relevant read tier; we only
+    // reconcile within the projects/clients the user can see.
+    let projectAccess;
+    if (projectIds !== undefined) {
+      projectAccess = await getAccessibleProjectIds({ userId, companyId });
+      if (!projectAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect projects"],
+        };
+      }
+    }
+    let clientAccess;
+    if (clientIds !== undefined) {
+      clientAccess = await getAccessibleClientIds({ userId, companyId });
+      if (!clientAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect clients"],
+        };
+      }
+    }
+
     const team = await insertTeam({
       companyId,
       userId,
       name,
       description,
       memberIds,
+      projectIds,
+      clientIds,
+      projectAccess,
+      clientAccess,
     });
 
     return {

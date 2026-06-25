@@ -1,5 +1,11 @@
 import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
-import { selectTeam } from "../../../services/db/index.js";
+import {
+  selectTeam,
+  getAccessibleProjectIds,
+  getAccessibleClientIds,
+  selectProjectsForTeam,
+  selectClientsForTeam,
+} from "../../../services/db/index.js";
 import { assertCompanyPermission } from "../../permissions/index.js";
 import * as z from "zod";
 
@@ -34,10 +40,20 @@ export const getTeam = async (props: GetTeamProps) => {
       };
     }
 
+    // Linked projects/clients, each filtered to what the caller may see.
+    const [projectAccess, clientAccess] = await Promise.all([
+      getAccessibleProjectIds({ userId, companyId }),
+      getAccessibleClientIds({ userId, companyId }),
+    ]);
+    const [projects, clients] = await Promise.all([
+      selectProjectsForTeam({ teamId, projectAccess }),
+      selectClientsForTeam({ teamId, companyId, clientAccess }),
+    ]);
+
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Team fetched",
-      team,
+      team: { ...team, projects, clients },
     };
   } catch (caught: any) {
     console.log(caught);

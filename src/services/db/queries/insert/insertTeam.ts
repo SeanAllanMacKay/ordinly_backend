@@ -1,4 +1,11 @@
-import { db, Team, TeamMember } from "../../index.js";
+import {
+  db,
+  Team,
+  TeamMember,
+  reconcileProjectsForTeam,
+  reconcileClientsForTeam,
+  AccessibleIds,
+} from "../../index.js";
 
 export type InsertTeamProps = {
   companyId: string;
@@ -6,6 +13,10 @@ export type InsertTeamProps = {
   name: string;
   description?: string;
   memberIds?: string[];
+  projectIds?: string[];
+  clientIds?: string[];
+  projectAccess?: AccessibleIds;
+  clientAccess?: AccessibleIds;
 };
 
 // Creates a team and its initial membership. The action validates that every
@@ -16,6 +27,10 @@ export const insertTeam = async ({
   name,
   description,
   memberIds = [],
+  projectIds,
+  clientIds,
+  projectAccess,
+  clientAccess,
 }: InsertTeamProps) => {
   return await db.transaction(async (transaction) => {
     const [team] = await transaction
@@ -31,6 +46,25 @@ export const insertTeam = async ({
           assignedBy: userId,
         })),
       );
+    }
+
+    if (projectIds !== undefined && projectAccess) {
+      await reconcileProjectsForTeam(transaction, {
+        teamId: team.id,
+        companyId,
+        userId,
+        projectIds,
+        projectAccess,
+      });
+    }
+    if (clientIds !== undefined && clientAccess) {
+      await reconcileClientsForTeam(transaction, {
+        teamId: team.id,
+        companyId,
+        userId,
+        clientIds,
+        clientAccess,
+      });
     }
 
     return team;

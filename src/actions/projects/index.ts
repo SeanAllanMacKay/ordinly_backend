@@ -13,3 +13,5 @@ export * from "./updateProjectTask.js";
 export * from "./updateProjectTaskChecklist.js";
 export * from "./deleteProject.js";
 export * from "./deleteProjectTask.js";
+export * from "./phaseActions.js";
+export * from "./milestoneActions.js";

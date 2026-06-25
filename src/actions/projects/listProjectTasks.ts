@@ -41,6 +41,7 @@ export const listProjectTasks = async (
     const { tasks, totalItems, totalPages } = await selectProjectTasks({
       ...listProjectStatusesProps,
       assignedOnly: !canAll,
+      type: "task",
     });
 
     return {

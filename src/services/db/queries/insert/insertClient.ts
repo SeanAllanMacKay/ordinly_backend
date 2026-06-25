@@ -5,6 +5,8 @@ import {
   insertOwnedContactInfo,
   OwnedContactInfoInput,
   reconcileProjectsForClient,
+  reconcileUsersForClient,
+  reconcileTeamsForClient,
   AccessibleIds,
 } from "../../index.js";
 
@@ -23,6 +25,8 @@ export type InsertClientProps = {
   clientUserId?: string;
   contacts?: NestedContactInput[];
   projectIds?: string[];
+  userIds?: string[];
+  teamIds?: string[];
   projectAccess?: AccessibleIds;
 } & OwnedContactInfoInput;
 
@@ -40,6 +44,8 @@ export const insertClient = async ({
   locations,
   contacts = [],
   projectIds,
+  userIds,
+  teamIds,
   projectAccess,
 }: InsertClientProps) => {
   return await db.transaction(async (tx) => {
@@ -96,6 +102,19 @@ export const insertClient = async ({
         projectAccess,
       });
     }
+
+    await reconcileUsersForClient(tx, {
+      clientId: client.id,
+      companyId,
+      userId,
+      userIds,
+    });
+    await reconcileTeamsForClient(tx, {
+      clientId: client.id,
+      companyId,
+      userId,
+      teamIds,
+    });
 
     return client;
   });

@@ -2,6 +2,8 @@ import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
 import {
   updateTeam as updateTeamQuery,
   selectCompanyMember,
+  getAccessibleProjectIds,
+  getAccessibleClientIds,
 } from "../../../services/db/index.js";
 import {
   assertCompanyPermission,
@@ -16,6 +18,8 @@ const UpdateTeamSchema = z.object({
   name: z.string("Name must be a string").optional(),
   description: z.string("Description must be a string if passed").optional(),
   memberIds: z.array(z.string("Invalid memberId")).optional(),
+  projectIds: z.array(z.string("Invalid projectId")).optional(),
+  clientIds: z.array(z.string("Invalid clientId")).optional(),
 }).meta({ id: "PUT /api/company/{companyId}/teams/{teamId}", route: "PUT /api/company/{companyId}/teams/{teamId}" });
 
 export type UpdateTeamProps = z.infer<typeof UpdateTeamSchema>;
@@ -26,12 +30,23 @@ export const updateTeam = async (props: UpdateTeamProps) => {
   try {
     UpdateTeamSchema.parse(props);
 
-    const { userId, companyId, teamId, name, description, memberIds } = props;
+    const {
+      userId,
+      companyId,
+      teamId,
+      name,
+      description,
+      memberIds,
+      projectIds,
+      clientIds,
+    } = props;
 
     if (
       name === undefined &&
       description === undefined &&
-      memberIds === undefined
+      memberIds === undefined &&
+      projectIds === undefined &&
+      clientIds === undefined
     ) {
       throw {
         status: HTTP_STATUSES.CLIENT_ERROR.BAD_REQUEST,
@@ -62,6 +77,29 @@ export const updateTeam = async (props: UpdateTeamProps) => {
       }
     }
 
+    // Connecting projects/clients requires the relevant read tier; we only
+    // reconcile within the projects/clients the user can see.
+    let projectAccess;
+    if (projectIds !== undefined) {
+      projectAccess = await getAccessibleProjectIds({ userId, companyId });
+      if (!projectAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect projects"],
+        };
+      }
+    }
+    let clientAccess;
+    if (clientIds !== undefined) {
+      clientAccess = await getAccessibleClientIds({ userId, companyId });
+      if (!clientAccess.canRead) {
+        throw {
+          status: HTTP_STATUSES.CLIENT_ERROR.FORBIDDEN,
+          error: ["You don't have permission to connect clients"],
+        };
+      }
+    }
+
     const team = await updateTeamQuery({
       teamId,
       companyId,
@@ -69,6 +107,10 @@ export const updateTeam = async (props: UpdateTeamProps) => {
       name,
       description,
       memberIds,
+      projectIds,
+      clientIds,
+      projectAccess,
+      clientAccess,
     });
 
     if (!team) {

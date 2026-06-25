@@ -3,6 +3,8 @@ import {
   selectClient,
   getAccessibleProjectIds,
   selectProjectsForClient,
+  selectUsersForClient,
+  selectTeamsForClient,
 } from "../../../services/db/index.js";
 import { assertCompanyAssetPermission } from "../../permissions/index.js";
 import * as z from "zod";
@@ -39,14 +41,18 @@ export const getClient = async (props: GetClientProps) => {
       };
     }
 
-    // Attach connected projects, filtered to what the caller may see.
+    // Attach connected projects (scoped), plus assigned users + linked teams.
     const projectAccess = await getAccessibleProjectIds({ userId, companyId });
-    const projects = await selectProjectsForClient({ clientId, projectAccess });
+    const [projects, users, teams] = await Promise.all([
+      selectProjectsForClient({ clientId, projectAccess }),
+      selectUsersForClient({ clientId, companyId }),
+      selectTeamsForClient({ clientId }),
+    ]);
 
     return {
       status: HTTP_STATUSES.SUCCESS.OK,
       message: "Client fetched",
-      client: { ...client, projects },
+      client: { ...client, projects, users, teams },
     };
   } catch (caught: any) {
     console.log(caught);

@@ -1,11 +1,14 @@
 import { and, eq, exists, inArray, isNull, sql } from "drizzle-orm";
 import { db, Project, Task, TaskChecklistItem, CompanyProject } from "../../index.js";
+import { taskType } from "../../constants.js";
 
 export type DeleteProjectTaskProps = {
   userId: string;
   taskId: string;
   projectId: string;
   companyId: string;
+  /** When set, only deletes a row of this Task.type (task/phase/milestone). */
+  type?: (typeof taskType)[number];
 };
 
 /**
@@ -19,6 +22,7 @@ export const deleteProjectTask = async ({
   taskId,
   projectId,
   companyId,
+  type,
 }: DeleteProjectTaskProps) => {
   return await db.transaction(async (transaction) => {
     const now = new Date();
@@ -30,6 +34,7 @@ export const deleteProjectTask = async ({
         and(
           eq(Task.id, taskId),
           eq(Task.projectId, projectId),
+          type ? eq(Task.type, type) : undefined,
           isNull(Task.deletedDate),
           exists(
             db

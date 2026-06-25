@@ -1,11 +1,14 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { db, TaskChecklistItem, CompanyProject } from "../../index.js";
+import { taskType } from "../../constants.js";
 
 export type SelectProjectTaskProps = {
   userId: string;
   companyId: string;
   projectId: string;
   taskId: string;
+  /** When set, restrict to this Task.type (task/phase/milestone). */
+  type?: (typeof taskType)[number];
 };
 
 // Scoped to the project + owning company for integrity; authorization is handled
@@ -14,12 +17,14 @@ export const selectProjectTask = async ({
   companyId,
   projectId,
   taskId,
+  type,
 }: SelectProjectTaskProps) => {
   const task = await db.query.Task.findFirst({
     where: (task, { exists }) =>
       and(
         eq(task.id, taskId),
         eq(task.projectId, projectId),
+        type ? eq(task.type, type) : undefined,
         isNull(task.deletedDate),
         exists(
           db
