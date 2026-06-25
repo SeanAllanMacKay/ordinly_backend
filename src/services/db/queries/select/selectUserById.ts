@@ -1,11 +1,14 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 import { db, User, UserCompany } from "../../index.js";
 
 export const selectUserById = async ({ userId }: { userId: string }) => {
   const [user, personalCompany] = await Promise.all([
     db.query.User.findFirst({
-      where: eq(User.id, userId),
+      // Exclude soft-deleted accounts so a lingering auth cookie can't be used
+      // during the deletion grace window. Restore happens via login, which uses
+      // selectUserByEmail (no such filter), not this read.
+      where: and(eq(User.id, userId), isNull(User.deletedDate)),
       columns: {
         id: true,
         name: true,

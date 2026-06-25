@@ -14,3 +14,8 @@ export * from "./updateClient.js";
 export * from "./deleteClient.js";
 export * from "./updateContact.js";
 export * from "./deleteContact.js";
+export * from "./updateReminder.js";
+export * from "./reminderLifecycle.js";
+export * from "./markNotificationRead.js";
+export * from "./restoreAccount.js";
+export * from "./setUserHardDeleteJobId.js";

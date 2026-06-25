@@ -5,6 +5,7 @@ import routers from "./routers/index.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import ngrok from "@ngrok/ngrok";
+import { startWorker, startQueueClient } from "./services/jobs/index.js";
 
 const API_PORT = process.env.API_PORT;
 const FE_ORIGIN = process.env.FE_ORIGIN;
@@ -38,6 +39,19 @@ server.listen(API_PORT, () => {
   console.log(`Server online: connected to port ${API_PORT}`);
   console.log(`Accepting requests from ${FE_ORIGIN}`);
 });
+
+// Background jobs (reminders, scheduled emails). In development — or anywhere
+// RUN_WORKER_INLINE is set — the worker runs in-process so `yarn dev` boots the
+// whole system with one command. In production the dedicated worker process
+// (src/worker.ts) owns the workers/crons, and the API only needs an enqueue-only
+// client so it can schedule reminders.
+const runWorkerInline =
+  process.env.RUN_WORKER_INLINE === "true" ||
+  process.env.NODE_ENV === "development";
+
+(runWorkerInline ? startWorker() : startQueueClient()).catch((error) =>
+  console.error("[jobs] failed to start", error),
+);
 
 if (process.env.NODE_ENV === "development") {
   (async () => {

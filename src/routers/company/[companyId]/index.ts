@@ -9,6 +9,8 @@ import usersRouter from "./users/index.js";
 import invitationsRouter from "./invitations/index.js";
 import teamsRouter from "./teams/index.js";
 import clientsRouter from "./clients/index.js";
+import remindersRouter from "./reminders/index.js";
+import notificationsRouter from "./notifications/index.js";
 
 // Everything scoped to a single company lives under /company/:companyId, so
 // companyId is always a path param available to the RBAC guards in the actions.
@@ -43,5 +45,7 @@ router.use("/users", usersRouter);
 router.use("/invitations", invitationsRouter);
 router.use("/teams", teamsRouter);
 router.use("/clients", clientsRouter);
+router.use("/reminders", remindersRouter);
+router.use("/notifications", notificationsRouter);
 
 export default router;

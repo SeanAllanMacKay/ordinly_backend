@@ -58,6 +58,28 @@ export const ownerType = ["client", "contact"] as const;
 
 export const taskType = ["phase", "milestone", "task"] as const;
 
+// Delivery channels a notification/reminder can fan out to. Decoupled but used
+// in tandem — one fired reminder can produce a delivery per channel.
+export const notificationChannel = ["email", "in_app", "push"] as const;
+
+// Lifecycle of a user-created reminder.
+export const reminderStatus = ["scheduled", "fired", "cancelled"] as const;
+
+// Per-channel delivery lifecycle, recorded on NotificationDelivery.
+export const deliveryStatus = ["pending", "sent", "failed"] as const;
+
+// What produced a delivery: a user Reminder, or a system scan (trial, digest).
+export const notificationSourceType = ["reminder", "system"] as const;
+
+// Polymorphic target a reminder can be "about" (optional context for the user).
+export const reminderTargetType = [
+  "client",
+  "contact",
+  "project",
+  "task",
+  "company",
+] as const;
+
 /**
  * start-to-start: Task 1 must be started to start task 2
  * start-to-finish: Task 1 must be started to finish task 1

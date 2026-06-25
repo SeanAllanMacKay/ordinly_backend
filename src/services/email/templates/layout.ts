@@ -14,6 +14,14 @@
 /** Centralized brand styling. Tweak here to restyle every email at once. */
 export const BRAND = {
   name: "Ordinly",
+  // Web-safe sans-serif stack. Applied to every text element (not just <body>)
+  // because Outlook and some clients don't inherit font-family into table cells
+  // and otherwise fall back to Times New Roman.
+  // Font names use single quotes so they don't collide with the double quotes
+  // that delimit the inline style="..." attributes this value is interpolated
+  // into — a stray double quote here terminates the whole attribute early and
+  // silently drops every later declaration (color, background, font-size, …).
+  font: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif",
   accent: "#4f46e5",
   accentDark: "#4338ca",
   text: "#1f2933",
@@ -54,11 +62,11 @@ export const buildUrl = (referer?: string, path = ""): string => {
 
 /** A styled body paragraph. Compose template bodies from these. */
 export const paragraph = (html: string): string =>
-  `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:${BRAND.text};">${html}</p>`;
+  `<p style="margin:0 0 16px;font-family:${BRAND.font};font-size:16px;line-height:1.6;color:${BRAND.text};">${html}</p>`;
 
 /** A small, muted note — good for "if this wasn't you" footnotes. */
 export const note = (html: string): string =>
-  `<p style="margin:24px 0 0;font-size:14px;line-height:1.6;color:${BRAND.muted};">${html}</p>`;
+  `<p style="margin:24px 0 0;font-family:${BRAND.font};font-size:14px;line-height:1.6;color:${BRAND.muted};">${html}</p>`;
 
 /** A bulletproof, table-based call-to-action button. */
 export const button = ({ href, label }: Cta): string => `
@@ -66,7 +74,7 @@ export const button = ({ href, label }: Cta): string => `
     <tr>
       <td align="center" bgcolor="${BRAND.accent}" style="border-radius:8px;">
         <a href="${href}" target="_blank"
-           style="display:inline-block;padding:13px 28px;font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;background:${BRAND.accent};">
+           style="display:inline-block;padding:13px 28px;font-family:${BRAND.font};font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;background:${BRAND.accent};">
           ${label}
         </a>
       </td>
@@ -91,9 +99,9 @@ export const featureList = (features: Feature[]): string =>
       ({ title, description, href, linkLabel = "Open" }) => `
       <tr>
         <td style="padding:12px 0;border-top:1px solid ${BRAND.border};">
-          <p style="margin:0 0 4px;font-size:16px;font-weight:600;color:${BRAND.text};">${title}</p>
-          <p style="margin:0 0 6px;font-size:14px;line-height:1.6;color:${BRAND.muted};">${description}</p>
-          <a href="${href}" target="_blank" style="font-size:14px;font-weight:600;color:${BRAND.accent};text-decoration:none;">${linkLabel} &rarr;</a>
+          <p style="margin:0 0 4px;font-family:${BRAND.font};font-size:16px;font-weight:600;color:${BRAND.text};">${title}</p>
+          <p style="margin:0 0 6px;font-family:${BRAND.font};font-size:14px;line-height:1.6;color:${BRAND.muted};">${description}</p>
+          <a href="${href}" target="_blank" style="font-family:${BRAND.font};font-size:14px;font-weight:600;color:${BRAND.accent};text-decoration:none;">${linkLabel} &rarr;</a>
         </td>
       </tr>`,
     )
@@ -128,7 +136,7 @@ export const wrapHtml = ({
     <meta name="color-scheme" content="light only" />
     <title>${heading}</title>
   </head>
-  <body style="margin:0;padding:0;background:${BRAND.background};">
+  <body style="margin:0;padding:0;font-family:${BRAND.font};background:${BRAND.background};">
     ${
       preheader
         ? `<span style="display:none;max-height:0;overflow:hidden;opacity:0;color:${BRAND.background};">${preheader}</span>`
@@ -139,20 +147,20 @@ export const wrapHtml = ({
         <td align="center" style="padding:32px 16px;">
           <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
             <tr>
-              <td style="padding:8px 4px 20px;font-size:22px;font-weight:700;letter-spacing:-0.02em;color:${BRAND.accent};">
+              <td style="padding:8px 4px 20px;font-family:${BRAND.font};font-size:22px;font-weight:700;letter-spacing:-0.02em;color:${BRAND.accent};">
                 ${BRAND.name}
               </td>
             </tr>
             <tr>
               <td style="background:${BRAND.card};border:1px solid ${BRAND.border};border-radius:12px;padding:32px;">
-                <h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:${BRAND.text};">${heading}</h1>
+                <h1 style="margin:0 0 16px;font-family:${BRAND.font};font-size:22px;line-height:1.3;color:${BRAND.text};">${heading}</h1>
                 ${bodyHtml}
                 ${cta ? button(cta) : ""}
                 ${footnote ? note(footnote) : ""}
               </td>
             </tr>
             <tr>
-              <td style="padding:20px 4px 8px;font-size:13px;line-height:1.6;color:${BRAND.muted};">
+              <td style="padding:20px 4px 8px;font-family:${BRAND.font};font-size:13px;line-height:1.6;color:${BRAND.muted};">
                 This is an automated message from ${BRAND.name}. Need a hand? Reach us at
                 <a href="mailto:${BRAND.supportEmail}" style="color:${BRAND.accent};text-decoration:none;">${BRAND.supportEmail}</a>.
                 <br />© ${year} ${BRAND.name}.

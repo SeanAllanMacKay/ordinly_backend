@@ -65,6 +65,13 @@ const sampleProps: Record<EmailType, Record<string, unknown>> = {
   companyFreeTrialOverInTwoDays: { companyName: "Acme Construction", referer },
   companyFreeTrialExpiredNoSubscription: { companyName: "Acme Construction", referer },
   companyFreeTrialExpiredWithSubscription: { companyName: "Acme Construction", referer },
+  reminder: {
+    title: "Call Beta Developments about the change order",
+    body: "You asked Ordinly to remind you to follow up on the kitchen change order.",
+    referer,
+  },
+  accountDeleted: { graceDays: 30, referer },
+  accountRestored: { referer },
 };
 
 const escape = (s: string) =>

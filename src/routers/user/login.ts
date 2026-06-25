@@ -9,9 +9,14 @@ router.route("/").post(async (req: any, res) => {
   try {
     const {
       body: { password, email },
+      headers: { referer },
     } = req;
 
-    const { status, user, newToken } = await login({ password, email });
+    const { status, user, newToken } = await login({
+      password,
+      email,
+      referer,
+    });
 
     if (newToken) {
       res.cookie("auth", newToken, AUTH_COOKIE_OPTIONS);

@@ -10,4 +10,7 @@ export const User = pgTable("User", {
 
   createdDate: timestamp().defaultNow().notNull(),
   deletedDate: timestamp(),
+  // pg-boss job id for the scheduled 30-day hard delete. Stored so a restore
+  // (login during the grace window) can best-effort cancel the pending job.
+  hardDeleteJobId: text(),
 });

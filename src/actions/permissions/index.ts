@@ -35,6 +35,22 @@ const ASSET_KEYS = {
 export type AssetScope = keyof typeof ASSET_KEYS;
 
 /**
+ * Assert the user simply belongs to the company (any role / the owner). Used by
+ * per-member features like reminders and the in-app notification feed, which
+ * aren't gated by a specific permission key. Throws in the action convention.
+ */
+export const assertCompanyMembership = async ({
+  userId,
+  companyId,
+}: {
+  userId: string;
+  companyId: string;
+}) => {
+  const { exists } = await resolveCompanyPermissions({ userId, companyId });
+  if (!exists) throw notFound();
+};
+
+/**
  * Assert a single-key company permission (collection / management permissions
  * such as workers, roles, company_settings, *_documents). Owner-bypass applies.
  * Throws { status, error } in the action error convention on denial.

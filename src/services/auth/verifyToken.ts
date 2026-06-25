@@ -14,12 +14,23 @@ const verifyToken: RequestHandler = async (req, res, next) => {
     const verifiedToken = (await auth.verify(token)) as { id: string };
 
     if (verifiedToken) {
-      const { user } = await getUserById({ id: verifiedToken.id });
+      try {
+        const { user } = await getUserById({ id: verifiedToken.id });
 
-      // @ts-ignore
-      req.user = user;
+        // No live user (e.g. soft-deleted during the deletion grace window):
+        // treat the cookie as invalid.
+        if (!user) {
+          return res.status(401).send({ error: "Unauthorized" });
+        }
 
-      next();
+        // @ts-ignore
+        req.user = user;
+
+        next();
+      } catch {
+        // getUserById throws NOT_FOUND for missing/soft-deleted accounts.
+        return res.status(401).send({ error: "Unauthorized" });
+      }
     } else {
       return res.status(401).send({ error: "Unauthorized" });
     }

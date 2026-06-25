@@ -22,6 +22,9 @@ import companyFreeTrialHalfOver from "./companyFreeTrialHalfOver.js";
 import companyFreeTrialOverInTwoDays from "./companyFreeTrialOverInTwoDays.js";
 import companyFreeTrialExpiredNoSubscription from "./companyFreeTrialExpiredNoSubscription.js";
 import companyFreeTrialExpiredWithSubscription from "./companyFreeTrialExpiredWithSubscription.js";
+import reminder from "./reminder.js";
+import accountDeleted from "./accountDeleted.js";
+import accountRestored from "./accountRestored.js";
 
 /**
  * Registry of every email type the app can send. Add a new template by creating
@@ -50,6 +53,9 @@ export const emailTemplates = {
   companyFreeTrialOverInTwoDays,
   companyFreeTrialExpiredNoSubscription,
   companyFreeTrialExpiredWithSubscription,
+  reminder,
+  accountDeleted,
+  accountRestored,
 } satisfies Record<string, EmailTemplate>;
 
 export type EmailType = keyof typeof emailTemplates;

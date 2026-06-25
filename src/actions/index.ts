@@ -5,5 +5,7 @@ export * from "./roles/index.js";
 export * from "./company/users/index.js";
 export * from "./company/teams/index.js";
 export * from "./company/clients/index.js";
+export * from "./company/reminders/index.js";
+export * from "./company/notifications/index.js";
 export * from "./permissions/index.js";
 export * from "./HTTP_STATUSES.js";
