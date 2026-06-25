@@ -4,6 +4,9 @@ export const User = pgTable("User", {
   id: uuid().defaultRandom().unique().primaryKey(),
   name: text().notNull(),
   email: text().notNull().unique(),
+  // BCP-47 locale tag (e.g. "en", "en-US"). The FE owns the supported set; we
+  // persist whatever it sends so a user's i18n choice survives across sign-ins.
+  preferredLanguage: text().default("en").notNull(),
   password: text().notNull(),
   isVerified: boolean(),
   verificationCode: uuid().defaultRandom().notNull(),

@@ -1,0 +1,1 @@
+ALTER TABLE "User" ADD COLUMN "preferredLanguage" text DEFAULT 'en' NOT NULL;

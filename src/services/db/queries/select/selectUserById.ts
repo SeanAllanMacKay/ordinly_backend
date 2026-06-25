@@ -13,6 +13,7 @@ export const selectUserById = async ({ userId }: { userId: string }) => {
         id: true,
         name: true,
         email: true,
+        preferredLanguage: true,
         isVerified: true,
         createdDate: true,
       },

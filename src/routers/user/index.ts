@@ -5,7 +5,7 @@ import verifyAccountRouter from "./verify-account.js";
 import resendVerificationRouter from "./resend-verification.js";
 import loginRouter from "./login.js";
 import logoutRouter from "./logout.js";
-import { HTTP_STATUSES, deleteAccount } from "../../actions/index.js";
+import { HTTP_STATUSES, deleteAccount, updateUser } from "../../actions/index.js";
 
 const router = Router({ mergeParams: true });
 
@@ -27,6 +27,29 @@ router
       const {
         status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
         error = "There was an error fetching this user",
+      } = caught;
+
+      res.status(status).send({ error });
+    }
+  })
+  .patch(verifyToken, async (req: any, res) => {
+    try {
+      const {
+        body: { preferredLanguage },
+        user,
+      } = req;
+
+      const {
+        status,
+        message,
+        user: updated,
+      } = await updateUser({ userId: user.id, preferredLanguage });
+
+      res.status(status).send({ message, user: updated });
+    } catch (caught: any) {
+      const {
+        status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+        error = "There was an error updating your profile",
       } = caught;
 
       res.status(status).send({ error });
