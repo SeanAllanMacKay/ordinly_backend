@@ -17,6 +17,13 @@ const client = new Pool({
       .readFileSync(path.resolve(import.meta.dirname, "../../../ca.pem"))
       .toString(),
   },
+  // The hosted dev plan caps max_connections at 15 (3 reserved for superuser,
+  // ~6 consumed by Aiven's own background workers), and pg-boss runs its own
+  // pool alongside this one. Without a cap, node-postgres defaults to 10, which
+  // — combined with pg-boss — exhausts the ceiling and makes pg-boss's pollers
+  // time out acquiring a connection. Keep the app pool small to stay within
+  // budget. Override via DB_MAX_CONNECTIONS in environments with a higher limit.
+  max: Number(process.env.DB_MAX_CONNECTIONS) || 5,
 });
 
 export const db = drizzle(client, { schema: { ...schema, ...relations } });

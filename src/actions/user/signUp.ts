@@ -26,6 +26,12 @@ const SignUpSchema = z.object({
   password: z.string().min(8),
   referer: z.string().optional(),
   name: z.string(),
+  // Light BCP-47 shape check (e.g. "en", "en-US", "pt-BR"). The FE owns the
+  // supported-locale set, so we only guard against obviously malformed values.
+  preferredLanguage: z
+    .string()
+    .regex(/^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$/, "Invalid language code")
+    .optional(),
 }).meta({ id: "POST /api/user/sign-up", route: "POST /api/user/sign-up" });
 
 export const signUp = async ({

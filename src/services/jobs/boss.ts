@@ -28,7 +28,7 @@ export const getBoss = (): PgBoss => {
       // Cap pg-boss's own connection pool. It runs alongside the app's pg Pool
       // (and, in prod, in a separate worker process), so keep it small to stay
       // well under the database's connection limit.
-      max: Number(process.env.PGBOSS_MAX_CONNECTIONS) || 4,
+      max: Number(process.env.PGBOSS_MAX_CONNECTIONS) || 3,
     });
 
     // pg-boss surfaces background (maintenance/connection) errors here. Log them

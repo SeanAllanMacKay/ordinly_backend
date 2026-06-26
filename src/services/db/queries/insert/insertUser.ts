@@ -18,6 +18,7 @@ export const insertUser = async ({
   name,
   email,
   password,
+  preferredLanguage,
 }: InsertUserProps) => {
   return await db.transaction(async (transaction) => {
     const [user] = await transaction
@@ -26,6 +27,7 @@ export const insertUser = async ({
         name,
         email,
         password,
+        preferredLanguage,
         isVerified: false,
       })
       .returning({

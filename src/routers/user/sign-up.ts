@@ -8,13 +8,14 @@ const router = Router({ mergeParams: true });
 router.route("/").post(async (req: any, res) => {
   try {
     const {
-      body: { email, password, name },
+      body: { email, password, name, preferredLanguage },
     } = req;
 
     const { status, message, user, newToken } = await signUp({
       email,
       name,
       password,
+      preferredLanguage,
       referer: req.headers.referer?.split("?")[0] as string,
     });
 
