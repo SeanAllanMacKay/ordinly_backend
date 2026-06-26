@@ -1,5 +1,6 @@
 import { Router } from "express";
 import verifyToken from "../../../../services/auth/verifyToken.js";
+import { singleFileHandler } from "../../../../services/files/index.js";
 import {
   listTeams,
   listTeamOptions,
@@ -7,6 +8,8 @@ import {
   getTeam,
   updateTeam,
   deleteTeam,
+  updateTeamProfilePicture,
+  removeTeamProfilePicture,
   HTTP_STATUSES,
 } from "../../../../actions/index.js";
 
@@ -64,30 +67,35 @@ router
       res.status(status).send({ error });
     }
   })
-  .post(verifyToken, async (req: any, res) => {
-    try {
-      const {
-        body,
-        params: { companyId },
-        user,
-      } = req;
+  .post(
+    verifyToken,
+    singleFileHandler({ fieldName: "profilePicture", uploadType: "image" }),
+    async (req: any, res) => {
+      try {
+        const {
+          body,
+          params: { companyId },
+          user,
+        } = req;
 
-      const { status, message, team } = await createTeam({
-        ...body,
-        userId: user.id,
-        companyId,
-      });
+        const { status, message, team } = await createTeam({
+          ...body,
+          userId: user.id,
+          companyId,
+          profilePicture: req.profilePicture,
+        });
 
-      res.status(status).send({ message, team });
-    } catch (caught: any) {
-      const {
-        status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-        error = "There was an error creating the team",
-      } = caught;
+        res.status(status).send({ message, team });
+      } catch (caught: any) {
+        const {
+          status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+          error = "There was an error creating the team",
+        } = caught;
 
-      res.status(status).send({ error });
-    }
-  });
+        res.status(status).send({ error });
+      }
+    },
+  );
 
 // GET / PUT / DELETE /api/company/:companyId/teams/:teamId
 router
@@ -158,6 +166,61 @@ router
       const {
         status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
         error = "There was an error deleting the team",
+      } = caught;
+
+      res.status(status).send({ error });
+    }
+  });
+
+// PUT / DELETE /api/company/:companyId/teams/:teamId/profile-picture
+router
+  .route("/:teamId/profile-picture")
+  .put(
+    verifyToken,
+    singleFileHandler({ fieldName: "profilePicture", uploadType: "image" }),
+    async (req: any, res) => {
+      try {
+        const {
+          params: { companyId, teamId },
+          user,
+        } = req;
+
+        const { status, message, team } = await updateTeamProfilePicture({
+          userId: user.id,
+          companyId,
+          teamId,
+          file: req.profilePicture,
+        });
+
+        res.status(status).send({ message, team });
+      } catch (caught: any) {
+        const {
+          status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+          error = "There was an error updating the team profile picture",
+        } = caught;
+
+        res.status(status).send({ error });
+      }
+    },
+  )
+  .delete(verifyToken, async (req: any, res) => {
+    try {
+      const {
+        params: { companyId, teamId },
+        user,
+      } = req;
+
+      const { status, message, team } = await removeTeamProfilePicture({
+        userId: user.id,
+        companyId,
+        teamId,
+      });
+
+      res.status(status).send({ message, team });
+    } catch (caught: any) {
+      const {
+        status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+        error = "There was an error removing the team profile picture",
       } = caught;
 
       res.status(status).send({ error });

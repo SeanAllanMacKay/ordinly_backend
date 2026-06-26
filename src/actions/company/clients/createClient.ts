@@ -2,12 +2,15 @@ import { HTTP_STATUSES } from "../../HTTP_STATUSES.js";
 import {
   insertClient,
   getAccessibleProjectIds,
+  setClientProfilePicture,
 } from "../../../services/db/index.js";
+import { fileService } from "../../../services/files/index.js";
 import { assertCompanyPermission } from "../../permissions/index.js";
 import {
   validateCompanyMembers,
   validateCompanyTeams,
 } from "../../util/validateConnections.js";
+import { coerceJsonFields } from "../../util/multipart.js";
 import * as z from "zod";
 import { NestedContactSchema, contactInfoFields } from "./schemas.js";
 
@@ -28,12 +31,31 @@ const CreateClientSchema = z.object({
   route: "POST /api/company/{companyId}/clients",
 });
 
-export type CreateClientProps = z.infer<typeof CreateClientSchema>;
+export type CreateClientProps = z.infer<typeof CreateClientSchema> & {
+  // Optional avatar set at creation. Best-effort: an upload failure must not
+  // block client creation.
+  profilePicture?: Express.Multer.File;
+};
 
 // Creates a client with its contact info and any nested contacts. Requires the
 // all_clients create permission (you can't be "assigned" to a new client).
-export const createClient = async (props: CreateClientProps) => {
+export const createClient = async ({
+  profilePicture,
+  ...raw
+}: CreateClientProps) => {
   try {
+    // Structured fields arrive as JSON strings when the request is multipart
+    // (i.e. a profile picture is attached); decode them before validation.
+    const props = coerceJsonFields(raw, [
+      "contacts",
+      "projectIds",
+      "userIds",
+      "teamIds",
+      "phoneNumbers",
+      "emails",
+      "locations",
+    ]);
+
     CreateClientSchema.parse(props);
 
     const { userId, companyId } = props;
@@ -64,10 +86,33 @@ export const createClient = async (props: CreateClientProps) => {
 
     const client = await insertClient({ ...props, projectAccess });
 
+    // Optional avatar set at creation. Best-effort: a failure here shouldn't
+    // block client creation.
+    let profilePictureURLs = null;
+    if (profilePicture) {
+      try {
+        const upload = await fileService.uploadClientProfilePicture({
+          clientId: client.id,
+          file: profilePicture,
+        });
+        await setClientProfilePicture({
+          clientId: client.id,
+          companyId,
+          userId,
+          upload,
+        });
+        profilePictureURLs = await fileService.buildClientProfilePictureURLs(
+          upload.path,
+        );
+      } catch (pictureError) {
+        console.log("Client profile picture upload failed", pictureError);
+      }
+    }
+
     return {
       status: HTTP_STATUSES.SUCCESS.CREATED,
       message: "Client created",
-      client,
+      client: { ...client, profilePicture: profilePictureURLs },
     };
   } catch (caught: any) {
     console.log(caught);

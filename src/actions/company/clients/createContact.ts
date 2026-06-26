@@ -3,8 +3,11 @@ import {
   insertContact,
   selectClient,
   getAccessibleProjectIds,
+  setContactProfilePicture,
 } from "../../../services/db/index.js";
+import { fileService } from "../../../services/files/index.js";
 import { assertCompanyAssetPermission } from "../../permissions/index.js";
+import { coerceJsonFields } from "../../util/multipart.js";
 import * as z from "zod";
 import { contactInfoFields } from "./schemas.js";
 
@@ -22,12 +25,28 @@ const CreateContactSchema = z.object({
   route: "POST /api/company/{companyId}/clients/{clientId}/contacts",
 });
 
-export type CreateContactProps = z.infer<typeof CreateContactSchema>;
+export type CreateContactProps = z.infer<typeof CreateContactSchema> & {
+  // Optional avatar set at creation. Best-effort: an upload failure must not
+  // block contact creation.
+  profilePicture?: Express.Multer.File;
+};
 
 // Adds a contact to a client. Managing a client's contacts requires the client
 // update permission.
-export const createContact = async (props: CreateContactProps) => {
+export const createContact = async ({
+  profilePicture,
+  ...raw
+}: CreateContactProps) => {
   try {
+    // Structured fields arrive as JSON strings when the request is multipart
+    // (i.e. a profile picture is attached); decode them before validation.
+    const props = coerceJsonFields(raw, [
+      "projectIds",
+      "phoneNumbers",
+      "emails",
+      "locations",
+    ]);
+
     CreateContactSchema.parse(props);
 
     const { userId, companyId, clientId } = props;
@@ -64,10 +83,34 @@ export const createContact = async (props: CreateContactProps) => {
 
     const contact = await insertContact({ ...props, projectAccess });
 
+    // Optional avatar set at creation. Best-effort: a failure here shouldn't
+    // block contact creation.
+    let profilePictureURLs = null;
+    if (profilePicture) {
+      try {
+        const upload = await fileService.uploadContactProfilePicture({
+          contactId: contact.id,
+          file: profilePicture,
+        });
+        await setContactProfilePicture({
+          contactId: contact.id,
+          clientId,
+          companyId,
+          userId,
+          upload,
+        });
+        profilePictureURLs = await fileService.buildContactProfilePictureURLs(
+          upload.path,
+        );
+      } catch (pictureError) {
+        console.log("Contact profile picture upload failed", pictureError);
+      }
+    }
+
     return {
       status: HTTP_STATUSES.SUCCESS.CREATED,
       message: "Contact created",
-      contact,
+      contact: { ...contact, profilePicture: profilePictureURLs },
     };
   } catch (caught: any) {
     console.log(caught);

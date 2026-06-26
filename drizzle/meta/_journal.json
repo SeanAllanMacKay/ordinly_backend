@@ -246,6 +246,20 @@
       "when": 1782495732521,
       "tag": "0034_sparkling_maximus",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1782501946619,
+      "tag": "0035_happy_stardust",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1782507229166,
+      "tag": "0036_secret_doctor_octopus",
+      "breakpoints": true
     }
   ]
 }

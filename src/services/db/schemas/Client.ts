@@ -2,6 +2,7 @@ import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
 import { Company } from "./Company.js";
 import { User } from "./User.js";
+import { Document } from "./Document.js";
 
 export const Client = pgTable("Client", {
   id: uuid().defaultRandom().unique().primaryKey(),
@@ -12,6 +13,9 @@ export const Client = pgTable("Client", {
     .notNull(),
   clientCompanyId: uuid().references(() => Company.id),
   clientUserId: uuid().references(() => User.id),
+  // Square WebP avatar variants under one Document (mirrors User.profilePicture).
+  // Nullable — the FE falls back to initials when unset.
+  profilePicture: uuid().references(() => Document.id),
 
   createdDate: timestamp().defaultNow().notNull(),
   createdBy: uuid()

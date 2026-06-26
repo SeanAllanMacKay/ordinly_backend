@@ -7,6 +7,7 @@ import {
   selectOwnedContactInfo,
   selectOwnedContactInfoBatch,
 } from "../../index.js";
+import { fileService } from "../../../files/index.js";
 
 export type SelectClientProps = { clientId: string; companyId: string };
 
@@ -24,9 +25,11 @@ export const selectClient = async ({
       isNull(Client.deletedDate),
     ),
     with: {
+      profilePicture: { columns: { externalPath: true } },
       contacts: {
         where: isNull(Contact.deletedDate),
         orderBy: (contact, { asc }) => asc(contact.createdDate),
+        with: { profilePicture: { columns: { externalPath: true } } },
       },
     },
   });
@@ -43,10 +46,27 @@ export const selectClient = async ({
     ownerIds: client.contacts.map((contact) => contact.id),
   });
 
-  const contacts = client.contacts.map((contact) => ({
-    ...contact,
-    ...contactInfo[contact.id],
-  }));
+  const contacts = await Promise.all(
+    client.contacts.map(async ({ profilePicture, ...contact }) => ({
+      ...contact,
+      ...contactInfo[contact.id],
+      profilePicture: await fileService.buildContactProfilePictureURLs(
+        profilePicture?.externalPath,
+      ),
+    })),
+  );
 
-  return { exists: true, client: { ...client, ...ownInfo, contacts } };
+  const { profilePicture, ...clientRest } = client;
+
+  return {
+    exists: true,
+    client: {
+      ...clientRest,
+      ...ownInfo,
+      profilePicture: await fileService.buildClientProfilePictureURLs(
+        profilePicture?.externalPath,
+      ),
+      contacts,
+    },
+  };
 };

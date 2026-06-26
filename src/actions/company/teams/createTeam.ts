@@ -4,30 +4,50 @@ import {
   selectCompanyMember,
   getAccessibleProjectIds,
   getAccessibleClientIds,
+  setTeamProfilePicture,
 } from "../../../services/db/index.js";
+import { fileService } from "../../../services/files/index.js";
 import {
   assertCompanyPermission,
   assertNotPersonalCompany,
 } from "../../permissions/index.js";
 import * as z from "zod";
 
+// Array fields arrive as real arrays over JSON, but as JSON strings when the
+// request is multipart (i.e. a profile picture is attached). Parse the string
+// form so both content types validate the same way.
+const idArray = (message: string) =>
+  z.preprocess((value) => {
+    if (typeof value !== "string") return value;
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }, z.array(z.string(message)).optional());
+
 const CreateTeamSchema = z.object({
   userId: z.string("Invalid userId"),
   companyId: z.string("Invalid companyId"),
   name: z.string("Name must be a string"),
   description: z.string("Description must be a string if passed").optional(),
-  memberIds: z.array(z.string("Invalid memberId")).optional(),
-  projectIds: z.array(z.string("Invalid projectId")).optional(),
-  clientIds: z.array(z.string("Invalid clientId")).optional(),
+  memberIds: idArray("Invalid memberId"),
+  projectIds: idArray("Invalid projectId"),
+  clientIds: idArray("Invalid clientId"),
 }).meta({ id: "POST /api/company/{companyId}/teams", route: "POST /api/company/{companyId}/teams" });
 
-export type CreateTeamProps = z.infer<typeof CreateTeamSchema>;
+export type CreateTeamProps = z.infer<typeof CreateTeamSchema> & {
+  // Optional avatar set at creation. Best-effort: an upload failure must not
+  // block team creation.
+  profilePicture?: Express.Multer.File;
+};
 
 // Creates a team. Every memberId must be a member of the company.
-export const createTeam = async (props: CreateTeamProps) => {
+export const createTeam = async ({
+  profilePicture,
+  ...props
+}: CreateTeamProps) => {
   try {
-    CreateTeamSchema.parse(props);
-
     const {
       userId,
       companyId,
@@ -36,7 +56,7 @@ export const createTeam = async (props: CreateTeamProps) => {
       memberIds = [],
       projectIds,
       clientIds,
-    } = props;
+    } = CreateTeamSchema.parse(props);
 
     await assertNotPersonalCompany({ userId, companyId });
     await assertCompanyPermission({
@@ -96,10 +116,33 @@ export const createTeam = async (props: CreateTeamProps) => {
       clientAccess,
     });
 
+    // Optional avatar set at creation. Best-effort: a failure here shouldn't
+    // block team creation.
+    let profilePictureURLs = null;
+    if (profilePicture) {
+      try {
+        const upload = await fileService.uploadTeamProfilePicture({
+          teamId: team.id,
+          file: profilePicture,
+        });
+        await setTeamProfilePicture({
+          teamId: team.id,
+          companyId,
+          userId,
+          upload,
+        });
+        profilePictureURLs = await fileService.buildTeamProfilePictureURLs(
+          upload.path,
+        );
+      } catch (pictureError) {
+        console.log("Team profile picture upload failed", pictureError);
+      }
+    }
+
     return {
       status: HTTP_STATUSES.SUCCESS.CREATED,
       message: "Team created",
-      team,
+      team: { ...team, profilePicture: profilePictureURLs },
     };
   } catch (caught: any) {
     console.log(caught);

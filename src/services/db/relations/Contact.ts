@@ -4,6 +4,7 @@ import {
   Contact,
   Company,
   Client,
+  Document,
   User,
   ProjectContact,
 } from "../schemas/index.js";
@@ -24,6 +25,10 @@ export const ContactRelations = relations(Contact, ({ one, many }) => ({
   deletedBy: one(User, {
     fields: [Contact.deletedBy],
     references: [User.id],
+  }),
+  profilePicture: one(Document, {
+    fields: [Contact.profilePicture],
+    references: [Document.id],
   }),
 
   projects: many(ProjectContact, {

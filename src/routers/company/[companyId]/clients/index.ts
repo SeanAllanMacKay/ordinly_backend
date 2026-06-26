@@ -1,5 +1,6 @@
 import { Router } from "express";
 import verifyToken from "../../../../services/auth/verifyToken.js";
+import { singleFileHandler } from "../../../../services/files/index.js";
 import {
   listClients,
   listClientOptions,
@@ -61,30 +62,35 @@ router
       res.status(status).send({ error });
     }
   })
-  .post(verifyToken, async (req: any, res) => {
-    try {
-      const {
-        body,
-        params: { companyId },
-        user,
-      } = req;
+  .post(
+    verifyToken,
+    singleFileHandler({ fieldName: "profilePicture", uploadType: "image" }),
+    async (req: any, res) => {
+      try {
+        const {
+          body,
+          params: { companyId },
+          user,
+        } = req;
 
-      const { status, message, client } = await createClient({
-        ...body,
-        userId: user.id,
-        companyId,
-      });
+        const { status, message, client } = await createClient({
+          ...body,
+          userId: user.id,
+          companyId,
+          profilePicture: req.profilePicture,
+        });
 
-      res.status(status).send({ message, client });
-    } catch (caught: any) {
-      const {
-        status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-        error = "There was an error creating the client",
-      } = caught;
+        res.status(status).send({ message, client });
+      } catch (caught: any) {
+        const {
+          status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+          error = "There was an error creating the client",
+        } = caught;
 
-      res.status(status).send({ error });
-    }
-  });
+        res.status(status).send({ error });
+      }
+    },
+  );
 
 router.use("/:clientId", clientRouter);
 

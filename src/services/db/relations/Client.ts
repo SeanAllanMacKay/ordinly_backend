@@ -4,6 +4,7 @@ import {
   Client,
   Company,
   Contact,
+  Document,
   User,
   ProjectClient,
   UserClient,
@@ -29,6 +30,10 @@ export const ClientRelations = relations(Client, ({ one, many }) => ({
   clientCompany: one(Company, {
     fields: [Client.clientCompanyId],
     references: [Company.id],
+  }),
+  profilePicture: one(Document, {
+    fields: [Client.profilePicture],
+    references: [Document.id],
   }),
 
   contacts: many(Contact),

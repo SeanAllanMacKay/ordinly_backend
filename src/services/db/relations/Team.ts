@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { Company, Team, TeamMember, User } from "../schemas/index.js";
+import { Company, Document, Team, TeamMember, User } from "../schemas/index.js";
 
 export const TeamRelations = relations(Team, ({ one, many }) => ({
   company: one(Company, {
@@ -13,6 +13,10 @@ export const TeamRelations = relations(Team, ({ one, many }) => ({
   deletedBy: one(User, {
     fields: [Team.deletedBy],
     references: [User.id],
+  }),
+  profilePicture: one(Document, {
+    fields: [Team.profilePicture],
+    references: [Document.id],
   }),
   members: many(TeamMember),
 }));

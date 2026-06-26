@@ -1,6 +1,7 @@
 import { and, eq, isNull } from "drizzle-orm";
 
 import { db, Contact, selectOwnedContactInfo } from "../../index.js";
+import { fileService } from "../../../files/index.js";
 
 export type SelectContactProps = {
   contactId: string;
@@ -22,6 +23,7 @@ export const selectContact = async ({
       eq(Contact.companyId, companyId),
       isNull(Contact.deletedDate),
     ),
+    with: { profilePicture: { columns: { externalPath: true } } },
   });
 
   if (!contact) return { exists: false, contact: undefined };
@@ -31,5 +33,16 @@ export const selectContact = async ({
     ownerId: contact.id,
   });
 
-  return { exists: true, contact: { ...contact, ...info } };
+  const { profilePicture, ...contactRest } = contact;
+
+  return {
+    exists: true,
+    contact: {
+      ...contactRest,
+      ...info,
+      profilePicture: await fileService.buildContactProfilePictureURLs(
+        profilePicture?.externalPath,
+      ),
+    },
+  };
 };

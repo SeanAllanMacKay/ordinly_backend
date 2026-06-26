@@ -7,6 +7,7 @@ import {
   UserClient,
   selectOwnedContactInfoBatch,
 } from "../../index.js";
+import { fileService } from "../../../files/index.js";
 
 export type SelectClientsProps = {
   userId: string;
@@ -54,6 +55,7 @@ export const selectClients = async ({
   const clients = await db.query.Client.findMany({
     where: (client) => buildConditions(client.id),
     with: {
+      profilePicture: { columns: { externalPath: true } },
       contacts: {
         where: isNull(Contact.deletedDate),
         columns: { id: true },
@@ -69,11 +71,16 @@ export const selectClients = async ({
     ownerIds: clients.map((client) => client.id),
   });
 
-  const hydrated = clients.map(({ contacts, ...client }) => ({
-    ...client,
-    contactCount: contacts.length,
-    ...infoMap[client.id],
-  }));
+  const hydrated = await Promise.all(
+    clients.map(async ({ contacts, profilePicture, ...client }) => ({
+      ...client,
+      contactCount: contacts.length,
+      ...infoMap[client.id],
+      profilePicture: await fileService.buildClientProfilePictureURLs(
+        profilePicture?.externalPath,
+      ),
+    })),
+  );
 
   return {
     clients: hydrated,

@@ -1,6 +1,7 @@
 import { and, eq, isNull } from "drizzle-orm";
 
 import { db, Contact, selectOwnedContactInfoBatch } from "../../index.js";
+import { fileService } from "../../../files/index.js";
 
 export type SelectContactsProps = { clientId: string; companyId: string };
 
@@ -15,6 +16,7 @@ export const selectContacts = async ({
       eq(Contact.companyId, companyId),
       isNull(Contact.deletedDate),
     ),
+    with: { profilePicture: { columns: { externalPath: true } } },
     orderBy: (contact, { asc }) => asc(contact.createdDate),
   });
 
@@ -23,5 +25,13 @@ export const selectContacts = async ({
     ownerIds: contacts.map((contact) => contact.id),
   });
 
-  return contacts.map((contact) => ({ ...contact, ...infoMap[contact.id] }));
+  return Promise.all(
+    contacts.map(async ({ profilePicture, ...contact }) => ({
+      ...contact,
+      ...infoMap[contact.id],
+      profilePicture: await fileService.buildContactProfilePictureURLs(
+        profilePicture?.externalPath,
+      ),
+    })),
+  );
 };

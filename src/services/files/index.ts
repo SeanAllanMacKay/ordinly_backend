@@ -11,6 +11,9 @@ import {
   UploadSingleArgs,
   UploadTaskDocumentsArgs,
   UploadUserProfilePictureArgs,
+  UploadTeamProfilePictureArgs,
+  UploadClientProfilePictureArgs,
+  UploadContactProfilePictureArgs,
 } from "./types.js";
 import { fileServicePrefixes } from "./util.js";
 import { buildImageVariants } from "./imageVariants.js";
@@ -429,6 +432,69 @@ class StorageService {
   }
 
   /**
+   * Uploads a team's profile picture as square WebP variants (mirrors
+   * uploadUserProfilePicture).
+   *
+   * @param teamId - The id of the team
+   * @param file - The profile picture to upload
+   *
+   * @returns The information necessary to store a link to the uploaded profile picture in the DB
+   */
+  async uploadTeamProfilePicture({
+    teamId,
+    file,
+  }: UploadTeamProfilePictureArgs) {
+    return this.#uploadPublicImageVariants({
+      prefix: fileServicePrefixes.teamProfilePicture({ teamId }),
+      file,
+      sizes: PROFILE_PICTURE_SIZES,
+      fit: "cover",
+    });
+  }
+
+  /**
+   * Uploads a client's profile picture as square WebP variants (mirrors
+   * uploadUserProfilePicture).
+   *
+   * @param clientId - The id of the client
+   * @param file - The profile picture to upload
+   *
+   * @returns The information necessary to store a link to the uploaded profile picture in the DB
+   */
+  async uploadClientProfilePicture({
+    clientId,
+    file,
+  }: UploadClientProfilePictureArgs) {
+    return this.#uploadPublicImageVariants({
+      prefix: fileServicePrefixes.clientProfilePicture({ clientId }),
+      file,
+      sizes: PROFILE_PICTURE_SIZES,
+      fit: "cover",
+    });
+  }
+
+  /**
+   * Uploads a contact's profile picture as square WebP variants (mirrors
+   * uploadUserProfilePicture).
+   *
+   * @param contactId - The id of the contact
+   * @param file - The profile picture to upload
+   *
+   * @returns The information necessary to store a link to the uploaded profile picture in the DB
+   */
+  async uploadContactProfilePicture({
+    contactId,
+    file,
+  }: UploadContactProfilePictureArgs) {
+    return this.#uploadPublicImageVariants({
+      prefix: fileServicePrefixes.contactProfilePicture({ contactId }),
+      file,
+      sizes: PROFILE_PICTURE_SIZES,
+      fit: "cover",
+    });
+  }
+
+  /**
    * Builds the public, CDN-cacheable URL for an object in the public bucket.
    * Native B2 public files are served at /file/<bucketName>/<path>.
    */
@@ -463,6 +529,36 @@ class StorageService {
    * null when the user has no avatar.
    */
   async buildProfilePictureURLs(basePath: string | null | undefined) {
+    if (!basePath) return null;
+
+    return this.buildImageVariantURLs(basePath, PROFILE_PICTURE_SIZES);
+  }
+
+  /**
+   * Convenience: team profile-picture variant URL map for a Document base path,
+   * or null when the team has no avatar.
+   */
+  async buildTeamProfilePictureURLs(basePath: string | null | undefined) {
+    if (!basePath) return null;
+
+    return this.buildImageVariantURLs(basePath, PROFILE_PICTURE_SIZES);
+  }
+
+  /**
+   * Convenience: client profile-picture variant URL map for a Document base
+   * path, or null when the client has no avatar.
+   */
+  async buildClientProfilePictureURLs(basePath: string | null | undefined) {
+    if (!basePath) return null;
+
+    return this.buildImageVariantURLs(basePath, PROFILE_PICTURE_SIZES);
+  }
+
+  /**
+   * Convenience: contact profile-picture variant URL map for a Document base
+   * path, or null when the contact has no avatar.
+   */
+  async buildContactProfilePictureURLs(basePath: string | null | undefined) {
     if (!basePath) return null;
 
     return this.buildImageVariantURLs(basePath, PROFILE_PICTURE_SIZES);

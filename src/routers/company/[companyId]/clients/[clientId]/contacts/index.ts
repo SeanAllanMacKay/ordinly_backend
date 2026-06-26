@@ -1,5 +1,6 @@
 import { Router } from "express";
 import verifyToken from "../../../../../../services/auth/verifyToken.js";
+import { singleFileHandler } from "../../../../../../services/files/index.js";
 import {
   listContacts,
   listContactOptions,
@@ -64,31 +65,36 @@ router
       res.status(status).send({ error });
     }
   })
-  .post(verifyToken, async (req: any, res) => {
-    try {
-      const {
-        body,
-        params: { companyId, clientId },
-        user,
-      } = req;
+  .post(
+    verifyToken,
+    singleFileHandler({ fieldName: "profilePicture", uploadType: "image" }),
+    async (req: any, res) => {
+      try {
+        const {
+          body,
+          params: { companyId, clientId },
+          user,
+        } = req;
 
-      const { status, message, contact } = await createContact({
-        ...body,
-        userId: user.id,
-        companyId,
-        clientId,
-      });
+        const { status, message, contact } = await createContact({
+          ...body,
+          userId: user.id,
+          companyId,
+          clientId,
+          profilePicture: req.profilePicture,
+        });
 
-      res.status(status).send({ message, contact });
-    } catch (caught: any) {
-      const {
-        status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
-        error = "There was an error creating the contact",
-      } = caught;
+        res.status(status).send({ message, contact });
+      } catch (caught: any) {
+        const {
+          status = HTTP_STATUSES.SERVER_ERROR.INTERNAL_SERVER_ERROR,
+          error = "There was an error creating the contact",
+        } = caught;
 
-      res.status(status).send({ error });
-    }
-  });
+        res.status(status).send({ error });
+      }
+    },
+  );
 
 router.use("/:contactId", contactRouter);
 

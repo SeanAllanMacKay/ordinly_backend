@@ -10,3 +10,7 @@ export * from "./getContact.js";
 export * from "./createContact.js";
 export * from "./updateContact.js";
 export * from "./deleteContact.js";
+export * from "./updateClientProfilePicture.js";
+export * from "./removeClientProfilePicture.js";
+export * from "./updateContactProfilePicture.js";
+export * from "./removeContactProfilePicture.js";

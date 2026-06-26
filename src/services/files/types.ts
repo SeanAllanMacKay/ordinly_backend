@@ -59,6 +59,18 @@ export type UploadUserProfilePictureArgs = UploadArgs & {
   userId: string;
 };
 
+export type UploadTeamProfilePictureArgs = UploadArgs & {
+  teamId: string;
+};
+
+export type UploadClientProfilePictureArgs = UploadArgs & {
+  clientId: string;
+};
+
+export type UploadContactProfilePictureArgs = UploadArgs & {
+  contactId: string;
+};
+
 export type UploadTaskDocumentsArgs = MultiUploadArgs & {
   taskId: string;
 };
