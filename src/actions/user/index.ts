@@ -5,3 +5,5 @@ export * from "./getUserById.js";
 export * from "./login.js";
 export * from "./deleteAccount.js";
 export * from "./updateUser.js";
+export * from "./updateProfilePicture.js";
+export * from "./removeProfilePicture.js";

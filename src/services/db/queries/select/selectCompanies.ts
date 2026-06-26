@@ -54,16 +54,10 @@ export const selectCompanies = async ({
 
   return {
     companies: await Promise.all(
-      companies.map(async (company) => ({
+      companies.map(async ({ logo, ...company }) => ({
         ...company,
-        logo: company.logo
-          ? {
-              ...company.logo,
-              externalURL: await fileService.getCompanyLogoURL({
-                path: company.logo.externalURL,
-              }),
-            }
-          : undefined,
+        // Public, immutable variant URL map (or null) the FE renders via srcset.
+        logo: await fileService.buildCompanyLogoURLs(logo?.externalPath),
       })),
     ),
     totalItems,

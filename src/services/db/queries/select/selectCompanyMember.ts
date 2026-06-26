@@ -1,5 +1,6 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { db, UserCompany, UserCompanyRole } from "../../index.js";
+import { attachMemberAvatar } from "./selectCompanyMembers.js";
 
 export type SelectCompanyMemberProps = { userId: string; companyId: string };
 
@@ -19,6 +20,7 @@ export const selectCompanyMember = async ({
     with: {
       user: {
         columns: { id: true, name: true, email: true, isVerified: true },
+        with: { profilePicture: { columns: { externalPath: true } } },
       },
       roles: {
         where: isNull(UserCompanyRole.deletedDate),
@@ -27,5 +29,8 @@ export const selectCompanyMember = async ({
     },
   });
 
-  return { exists: !!member, member };
+  return {
+    exists: !!member,
+    member: member ? await attachMemberAvatar(member) : member,
+  };
 };

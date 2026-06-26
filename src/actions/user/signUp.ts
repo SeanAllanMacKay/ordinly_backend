@@ -13,10 +13,15 @@ import {
   updateCompanyInvitation,
   selectCompanyById,
   selectUserById,
+  setUserProfilePicture,
 } from "../../services/db/index.js";
+import { fileService } from "../../services/files/index.js";
 
 type SignUpProps = InsertUserProps & {
   referer: string;
+  // Optional avatar set at account creation. Best-effort: an upload failure must
+  // not block sign-up.
+  profilePicture?: Express.Multer.File;
 };
 
 const successMessage = "Verification email sent!";
@@ -38,6 +43,7 @@ export const signUp = async ({
   email,
   password,
   referer,
+  profilePicture,
   ...rest
 }: SignUpProps) => {
   try {
@@ -66,6 +72,24 @@ export const signUp = async ({
         email,
         password: hashedPassword,
       });
+
+      // Optional avatar set during sign-up. Best-effort: a failure here shouldn't
+      // block account creation.
+      let profilePictureURLs = null;
+      if (profilePicture) {
+        try {
+          const upload = await fileService.uploadUserProfilePicture({
+            userId: newUser.id,
+            file: profilePicture,
+          });
+          await setUserProfilePicture({ userId: newUser.id, upload });
+          profilePictureURLs = await fileService.buildProfilePictureURLs(
+            upload.path,
+          );
+        } catch (pictureError) {
+          console.log("Sign-up profile picture upload failed", pictureError);
+        }
+      }
 
       // Turn any pending company invitations addressed to this email into real
       // memberships now that the account exists. Best-effort: a failure here
@@ -124,7 +148,7 @@ export const signUp = async ({
       return {
         status: HTTP_STATUSES.SUCCESS.CREATED,
         message: successMessage,
-        user: newUser,
+        user: { ...newUser, profilePicture: profilePictureURLs },
         newToken,
       };
     }

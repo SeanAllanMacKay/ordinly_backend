@@ -19,3 +19,5 @@ export * from "./reminderLifecycle.js";
 export * from "./markNotificationRead.js";
 export * from "./restoreAccount.js";
 export * from "./setUserHardDeleteJobId.js";
+export * from "./setUserProfilePicture.js";
+export * from "./removeUserProfilePicture.js";

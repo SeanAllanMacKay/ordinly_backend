@@ -1,9 +1,23 @@
-import { pgTable, uuid, text, boolean, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  text,
+  boolean,
+  timestamp,
+  type AnyPgColumn,
+} from "drizzle-orm/pg-core";
+
+import { Document } from "./Document.js";
 
 export const User = pgTable("User", {
   id: uuid().defaultRandom().unique().primaryKey(),
   name: text().notNull(),
   email: text().notNull().unique(),
+  // Profile picture, stored as WebP size variants under one Document (mirrors
+  // Company.logo). Nullable — the FE falls back to initials when unset. The
+  // explicit AnyPgColumn return type breaks the User<->Document type cycle
+  // (Document references User for createdBy/deletedBy).
+  profilePicture: uuid().references((): AnyPgColumn => Document.id),
   // BCP-47 locale tag (e.g. "en", "en-US"). The FE owns the supported set; we
   // persist whatever it sends so a user's i18n choice survives across sign-ins.
   preferredLanguage: text().default("en").notNull(),

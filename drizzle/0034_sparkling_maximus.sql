@@ -1,0 +1,2 @@
+ALTER TABLE "User" ADD COLUMN "profilePicture" uuid;--> statement-breakpoint
+ALTER TABLE "User" ADD CONSTRAINT "User_profilePicture_Document_id_fk" FOREIGN KEY ("profilePicture") REFERENCES "public"."Document"("id") ON DELETE no action ON UPDATE no action;

@@ -28,7 +28,22 @@ export type UploadSingleArgs = UploadArgs &
     isPublic: boolean;
   };
 
-export type UploadSingleToPublicArgs = ConstructFilePathArgs & UploadArgs;
+export type UploadPublicImageVariantsArgs = UploadArgs & {
+  prefix: string;
+  sizes: readonly number[];
+  // "cover" -> square crop (avatars); "inside" -> width-bounded (logos)
+  fit: "cover" | "inside";
+};
+
+// Result of a variant upload. `path` is the base key (no size suffix); the
+// per-size objects live at `${path}-<size>.webp`. Shape mirrors #uploadSingle so
+// existing DB-insert callers (e.g. insertCompany) keep working unchanged.
+export type UploadedImageVariants = {
+  fileId: string;
+  fileName: string;
+  path: string;
+  isPublic: true;
+};
 
 export type UploadMultipleArgs = {
   files: (UploadArgs & {
@@ -38,10 +53,6 @@ export type UploadMultipleArgs = {
 
 export type UploadCompanyLogoArgs = UploadArgs & {
   companyId: string;
-};
-
-export type GetCompanyLogoURLArgs = {
-  path: string;
 };
 
 export type UploadUserProfilePictureArgs = UploadArgs & {

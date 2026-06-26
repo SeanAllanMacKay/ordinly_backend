@@ -1,5 +1,6 @@
 import { and, count, eq, isNull } from "drizzle-orm";
 import { db, UserCompany, UserCompanyRole } from "../../index.js";
+import { fileService } from "../../../files/index.js";
 
 export type SelectCompanyMembersProps = {
   companyId: string;
@@ -33,6 +34,7 @@ export const selectCompanyMembers = async ({
     with: {
       user: {
         columns: { id: true, name: true, email: true, isVerified: true },
+        with: { profilePicture: { columns: { externalPath: true } } },
       },
       roles: {
         where: isNull(UserCompanyRole.deletedDate),
@@ -45,8 +47,28 @@ export const selectCompanyMembers = async ({
   });
 
   return {
-    members,
+    members: await Promise.all(members.map(attachMemberAvatar)),
     totalItems,
     totalPages: Math.ceil(totalItems / pageSize),
+  };
+};
+
+// Replaces the embedded profilePicture Document with a public variant URL map
+// (or null) the FE can render via srcset. Shared with selectCompanyMember.
+export const attachMemberAvatar = async <
+  T extends { user: { profilePicture?: { externalPath: string } | null } },
+>(
+  member: T,
+) => {
+  const { profilePicture, ...user } = member.user;
+
+  return {
+    ...member,
+    user: {
+      ...user,
+      profilePicture: await fileService.buildProfilePictureURLs(
+        profilePicture?.externalPath,
+      ),
+    },
   };
 };

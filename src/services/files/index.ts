@@ -3,16 +3,18 @@ import crypto from "crypto";
 import {
   AppendableObject,
   ConstructFilePathArgs,
-  GetCompanyLogoURLArgs,
   GetUploadURLArgs,
   StorageConfig,
   UploadCompanyLogoArgs,
+  UploadedImageVariants,
+  UploadPublicImageVariantsArgs,
   UploadSingleArgs,
-  UploadSingleToPublicArgs,
   UploadTaskDocumentsArgs,
   UploadUserProfilePictureArgs,
 } from "./types.js";
 import { fileServicePrefixes } from "./util.js";
+import { buildImageVariants } from "./imageVariants.js";
+import { COMPANY_LOGO_SIZES, PROFILE_PICTURE_SIZES } from "./constants.js";
 
 class StorageService {
   // The connection to the file service
@@ -85,6 +87,18 @@ class StorageService {
       .toLowerCase();
 
     return `${prefix}/${dateString}/${hashString}-${safeName}`;
+  }
+
+  /**
+   * Constructs a base key (no extension/size suffix) for a set of image
+   * variants. Each variant is stored at `${base}-<size>.webp`.
+   *
+   * @param prefix - The path in the bucket to the file
+   *
+   * @returns the base key string
+   */
+  #createBasePath({ prefix }: { prefix: string }) {
+    return `${prefix}/${this.#getDateString()}/${this.#getHashString()}`;
   }
 
   #getDownloadContentDisposition({ fileName }: { fileName: string }) {
@@ -272,22 +286,76 @@ class StorageService {
   }
 
   /**
-   * Uploads a single file to the public bucket
+   * Uploads a raw buffer to a specific bucket at an exact path. Unlike
+   * #uploadSingle this isn't tied to a Multer file, so it can store the
+   * derived WebP variant buffers.
    *
-   * @param prefix - The path in the bucket to the file
-   * @param file - The file
-   *
-   * @returns The information necessary to store a link to the uploaded file in the DB
+   * @returns the B2 fileId of the stored object
    */
-  async #uploadSingleToPublic({ prefix, file }: UploadSingleToPublicArgs) {
-    const path = this.#createFilePath({ prefix, file });
+  async #uploadBuffer({
+    bucketId,
+    path,
+    buffer,
+  }: {
+    bucketId: string;
+    path: string;
+    buffer: Buffer;
+  }) {
+    await this.#authorize();
 
-    return this.#uploadSingle({
-      bucketId: this.config.publicBucketId,
-      file,
-      path,
-      isPublic: true,
+    const { uploadUrl, authorizationToken } = await this.#getUploadURL({
+      bucketId,
     });
+
+    const response = await this.connection.uploadFile({
+      uploadUrl,
+      uploadAuthToken: authorizationToken,
+      fileName: path,
+      data: buffer,
+    });
+
+    return response.data.fileId as string;
+  }
+
+  /**
+   * Resizes an image into WebP variants and uploads them to the public bucket
+   * under one shared base key (`${base}-<size>.webp`). Used for both avatars
+   * (square crop) and company logos (aspect-preserving width caps).
+   *
+   * @returns DB-ready info: `path` is the base key, `fileId` the id of one
+   *          stored variant. Shape matches #uploadSingle so existing inserters
+   *          (e.g. insertCompany) keep working.
+   */
+  async #uploadPublicImageVariants({
+    prefix,
+    file,
+    sizes,
+    fit,
+  }: UploadPublicImageVariantsArgs): Promise<UploadedImageVariants> {
+    const basePath = this.#createBasePath({ prefix });
+
+    const variants = await buildImageVariants({
+      buffer: file.buffer,
+      sizes,
+      fit,
+    });
+
+    const uploaded = await Promise.all(
+      variants.map(({ size, buffer }) =>
+        this.#uploadBuffer({
+          bucketId: this.config.publicBucketId,
+          path: `${basePath}-${size}.webp`,
+          buffer,
+        }),
+      ),
+    );
+
+    return {
+      fileId: uploaded[0],
+      fileName: file.originalname,
+      path: basePath,
+      isPublic: true,
+    };
   }
 
   /**
@@ -324,7 +392,7 @@ class StorageService {
   }
 
   /**
-   * Uploads a company logo
+   * Uploads a company logo as WebP variants (aspect ratio preserved).
    *
    * @param companyId - The id of the company
    * @param file - The logo to upload
@@ -332,30 +400,19 @@ class StorageService {
    * @returns The information necessary to store a link to the uploaded logo in the DB
    */
   async uploadCompanyLogo({ companyId, file }: UploadCompanyLogoArgs) {
-    return this.#uploadSingleToPublic({
+    return this.#uploadPublicImageVariants({
       prefix: fileServicePrefixes.companyLogo({ companyId }),
       file,
+      sizes: COMPANY_LOGO_SIZES,
+      fit: "inside",
     });
   }
 
   /**
-   * Constructs the public download URL for a company logo
-   *
-   * @param path - The path stored in the database (e.g., "company/123/logo/...")
-   *
-   * @returns The full public URL string
-   */
-  async getCompanyLogoURL({ path }: GetCompanyLogoURLArgs) {
-    const { downloadUrl } = await this.#authorize();
-
-    return `${downloadUrl}/${path}`;
-  }
-
-  /**
-   * Uploads a user's profile picture
+   * Uploads a user's profile picture as square WebP variants.
    *
    * @param userId - The id of the user
-   * @param file - The logo to upload
+   * @param file - The profile picture to upload
    *
    * @returns The information necessary to store a link to the uploaded profile picture in the DB
    */
@@ -363,10 +420,91 @@ class StorageService {
     userId,
     file,
   }: UploadUserProfilePictureArgs) {
-    const path = this.#uploadSingleToPublic({
+    return this.#uploadPublicImageVariants({
       prefix: fileServicePrefixes.userProfilePicture({ userId }),
       file,
+      sizes: PROFILE_PICTURE_SIZES,
+      fit: "cover",
     });
+  }
+
+  /**
+   * Builds the public, CDN-cacheable URL for an object in the public bucket.
+   * Native B2 public files are served at /file/<bucketName>/<path>.
+   */
+  buildPublicURL(path: string) {
+    const downloadUrl =
+      process.env.PUBLIC_ASSET_BASE_URL ?? this.authorization?.downloadUrl;
+
+    return `${downloadUrl}/file/${this.config.publicBucketName}/${path}`;
+  }
+
+  /**
+   * Builds a `{ size: url }` map of public variant URLs for one base key.
+   * Pure string concat after a single authorize — no per-size signing — so a
+   * screen with many images pays no per-request token cost.
+   *
+   * @param basePath - The base key stored on the Document (no size suffix)
+   * @param sizes - The variant sizes that were generated at upload
+   */
+  async buildImageVariantURLs(basePath: string, sizes: readonly number[]) {
+    await this.#authorize();
+
+    return Object.fromEntries(
+      sizes.map((size) => [
+        size,
+        this.buildPublicURL(`${basePath}-${size}.webp`),
+      ]),
+    ) as Record<number, string>;
+  }
+
+  /**
+   * Convenience: profile-picture variant URL map for a Document base path, or
+   * null when the user has no avatar.
+   */
+  async buildProfilePictureURLs(basePath: string | null | undefined) {
+    if (!basePath) return null;
+
+    return this.buildImageVariantURLs(basePath, PROFILE_PICTURE_SIZES);
+  }
+
+  /**
+   * Convenience: company-logo variant URL map for a Document base path, or null
+   * when the company has no logo.
+   */
+  async buildCompanyLogoURLs(basePath: string | null | undefined) {
+    if (!basePath) return null;
+
+    return this.buildImageVariantURLs(basePath, COMPANY_LOGO_SIZES);
+  }
+
+  /**
+   * Deletes every stored object (all size variants) under a base key. Used when
+   * an avatar or logo is replaced or removed. Best-effort by caller.
+   *
+   * @param basePath - The base key whose variants should be removed
+   */
+  async deletePublicImage(basePath: string) {
+    await this.#authorize();
+
+    const {
+      data: { files },
+    } = await this.connection.listFileNames({
+      bucketId: this.config.publicBucketId,
+      prefix: basePath,
+      maxFileCount: 100,
+      startFileName: "",
+      delimiter: "",
+    });
+
+    await Promise.all(
+      files.map((file: { fileId: string; fileName: string }) =>
+        this.connection.deleteFileVersion({
+          fileId: file.fileId,
+          fileName: file.fileName,
+        }),
+      ),
+    );
   }
 
   /**

@@ -45,15 +45,11 @@ export const selectCompany = async ({
 
   if (!company) return undefined;
 
+  const { logo, ...rest } = company;
+
   return {
-    ...company,
-    logo: company.logo
-      ? {
-          ...company.logo,
-          externalURL: await fileService.getCompanyLogoURL({
-            path: company.logo.externalURL,
-          }),
-        }
-      : undefined,
+    ...rest,
+    // Public, immutable variant URL map (or null) the FE renders via srcset.
+    logo: await fileService.buildCompanyLogoURLs(logo?.externalPath),
   };
 };

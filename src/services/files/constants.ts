@@ -2,6 +2,18 @@ export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 export const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 export const MAX_NUMBER_OF_FILES = 10;
 
+// Pre-generated square avatar sizes (px). Stored as WebP siblings of one base
+// path so screens with many avatars fetch the smallest sufficient variant.
+export const PROFILE_PICTURE_SIZES = [64, 128, 256] as const;
+
+// Company logo widths (px). Aspect ratio is preserved (logos aren't cropped),
+// so these bound the width and height scales proportionally.
+export const COMPANY_LOGO_SIZES = [64, 128, 256] as const;
+
+// Quality for generated WebP variants — a good size/clarity balance for avatars
+// and logos at small render sizes.
+export const IMAGE_VARIANT_WEBP_QUALITY = 82;
+
 export const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
   "image/svg+xml",
